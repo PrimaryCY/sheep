@@ -1,0 +1,15 @@
+Django==2.2.7
+django-cors-headers==3.1.1
+django-debug-toolbar
+django-extensions==2.2.5
+django-filter==2.2.0
+djangorestframework==3.10.3
+django-redis
+mysqlclient==1.4.5
+pytz==2019.3
+six==1.13.0
+sqlparse==0.3.0
+pillow
+django-mptt
+drf-extensions
+xpinyin==0.5.6

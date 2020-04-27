@@ -120,6 +120,6 @@
 </script>
 <style lang="scss">
 	.fullscreen{
-		height: 100vh!important;
+		height: 100%!important;
 	}
 </style>

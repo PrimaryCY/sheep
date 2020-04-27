@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="login_wrapper">
 		<vue-particles
 						color="#000000"
 						:particleOpacity="0.9"

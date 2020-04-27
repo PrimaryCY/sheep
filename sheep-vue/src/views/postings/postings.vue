@@ -67,14 +67,14 @@
 		<div v-show="post.content_type===1">
 			<tinymce-editor v-model="post.tiny_content"
 											ref="tinymce"
-											:height="600"
+											:height="700"
 			></tinymce-editor>
 		</div>
 		<div v-show="post.content_type===2">
 					<mavon_editor
 									ref="mavon"
 									v-model="post.mavon_content"
-									height="90vh"
+									height="120vh"
 					/>
 		</div>
 
@@ -284,4 +284,5 @@
 		height: 178px;
 		display: block;
 	}
+
 </style>

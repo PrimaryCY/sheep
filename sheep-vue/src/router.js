@@ -109,6 +109,15 @@ router.beforeEach((to, from, next) => {
       })
     }
   }
+  // 删除全局zoom属性
+  /*特定页面需要移除zoom属性,否则会造成页面弹窗,动画偏移*/
+  if(['login'].includes(to.name)){
+    let el = document.getElementsByTagName('body')[0]
+    el.style.zoom='initial'
+  }else {
+    let el = document.getElementsByTagName('body')[0]
+    el.style.zoom='.8'
+  }
   next()
 })
 

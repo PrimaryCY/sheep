@@ -1,6 +1,7 @@
 <template>
 	<div class="tinymce-box">
 		<editor v-model="myValue"
+						:id="id"
 						:init="init"
 						:disabled="disabled"
 						@onClick="onClick">
@@ -81,6 +82,7 @@
 					// skin_url: require('tinymce/skins/ui/oxide-dark/skin.css'),//暗色系
 					height: this.height,
 					min_height: this.height,
+					// max_height: this.max_height||this.height,
 					width:this.width,
 					plugins: plugins,
 					toolbar: this.toolbar,
@@ -186,8 +188,13 @@
 
 </script>
 <style lang="scss">
+
 	.tox-fullscreen{
 		width: 100%!important;
 		height: 100%!important;
 	}
+	.tox .tox-editor-header{
+		height: 20vh;
+	}
+
 </style>

@@ -1,10 +1,16 @@
 <template>
+	<div>
     <router-view v-if="isRouterAlive" ></router-view>
+
+		<backtop v-show="!$route.no_back_top"></backtop>
+
+  </div>
 </template>
 
 <script>
-    import {mapState} from 'vuex'
+		import {mapState} from 'vuex'
 
+		import backtop from './components/backtop'
     import setting from './conf/settings'
 
     export default {
@@ -67,9 +73,13 @@
             }
         },
         created(){
-            this._get_user_info()
-            this._debugger()
+          this._get_user_info()
+          this._debugger()
+          console.log(this.$route)
         },
+			components:{
+				backtop
+			}
     }
 </script>
 

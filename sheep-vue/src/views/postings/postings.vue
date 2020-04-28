@@ -67,15 +67,17 @@
 		<div v-show="post.content_type===1">
 			<tinymce-editor v-model="post.tiny_content"
 											ref="tinymce"
-											:height="700"
+											:height="515"
 			></tinymce-editor>
+			<backtop></backtop>
 		</div>
 		<div v-show="post.content_type===2">
 					<mavon_editor
 									ref="mavon"
 									v-model="post.mavon_content"
-									height="120vh"
+									height="90vh"
 					/>
+			<backtop target=".v-show-content" @click="mavon_backtop_click"></backtop>
 		</div>
 
 		<el-dialog title="文章封面" :visible.sync="upload_image.flag">
@@ -99,6 +101,7 @@
 	import tinymceEditor from '../../components/Tinymce/tinymce-editor'
 	import mavon_editor from '../../components/mavonEditor/mavon-editor'
 	import {get_post_category,upload,create_user_post} from '../../api/index'
+	import Backtop from "../../components/backtop"
 
 	export default {
 		name: "postings",
@@ -142,6 +145,10 @@
 			}
 		},
 		methods:{
+			mavon_backtop_click(){
+				// markdown的回到顶部
+				document.getElementsByClassName('v-note-edit')[0].scrollTo({top:0,behavior: "smooth"})
+			},
 			sumbit(){
 				this.$refs['rule_post'].validate(async (valid) => {
 					if (!valid) {
@@ -238,6 +245,7 @@
 			this._get_default_category()
 		},
 		components:{
+			Backtop,
 			tinymceEditor,
 			mavon_editor
 		},
@@ -251,8 +259,8 @@
 		margin-bottom: 17px;
 	}
 	.post_content{
+		/*height: 100%;*/
 		background-color: white;
-
 	}
 	.el-form-item__content{
 		margin-left: 0!important;

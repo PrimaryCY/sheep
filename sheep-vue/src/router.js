@@ -48,7 +48,7 @@ const routes = [
         name:'info',
         component:info,
         meta:{
-          isLogin:true
+          is_login:true
         }
       },
       {
@@ -57,7 +57,7 @@ const routes = [
         name:'my_post',
         component:my_post,
         meta:{
-          isLogin:true
+          is_login:true
         }
       },
       {
@@ -72,13 +72,18 @@ const routes = [
     name:'postings',
     component:postings,
     meta:{
-      // isLogin:true
+      delete_zoom: true,
+      no_back_top:true,
+      // is_login:true
     }
   },
   {
     path:'/login',
     name:'login',
-    component: login
+    component: login,
+    meta:{
+      delete_zoom:true,
+    }
   },
   {
     path:'/test',
@@ -101,7 +106,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   //如果未登录不可以访问修改用户资料的页面
-  if(to.meta.isLogin){
+  if(to.meta.is_login){
     if(!VueCookies.get(setting.TOKEN_NAME)){
       next({
         path: '/login',
@@ -111,7 +116,7 @@ router.beforeEach((to, from, next) => {
   }
   // 删除全局zoom属性
   /*特定页面需要移除zoom属性,否则会造成页面弹窗,动画偏移*/
-  if(['login'].includes(to.name)){
+  if(to.meta.delete_zoom){
     let el = document.getElementsByTagName('body')[0]
     el.style.zoom='initial'
   }else {

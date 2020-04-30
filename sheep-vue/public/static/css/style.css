@@ -618,7 +618,7 @@
 /* Sidebar                                                                       */
 /*********************************************************************************/
 
-	#sidebar
+	.sidebar
 	{
 		background-color: #364050;
 		background-image: url('images/bg1.png');
@@ -626,21 +626,21 @@
 		text-shadow: -1px -1px 0px rgba(0,0,0,0.5);
 	}
 
-		#sidebar form input,
-		#sidebar form select,
-		#sidebar form textarea
+		.sidebar form input,
+		.sidebar form select,
+		.sidebar form textarea
 		{
 			border: 0;
 		}
 
-		#sidebar section,
-		#sidebar nav
+		.sidebar section,
+		.sidebar nav
 		{
 			position: relative;
 		}
 
-			#sidebar section:before,
-			#sidebar nav:before
+			.sidebar section:before,
+			.sidebar nav:before
 			{
 				content: '';
 				border-top: solid 1px;
@@ -651,21 +651,21 @@
 				display: block;
 			}
 
-		#sidebar strong, #sidebar b
+		.sidebar strong, #sidebar b
 		{
 			color: #fff;
 		}
 
-		#sidebar a
+		.sidebar a
 		{
 			color: #d4dde0;
 		}
 
-		#sidebar h2,
-		#sidebar h3,
-		#sidebar h4,
-		#sidebar h5,
-		#sidebar h6
+		.sidebar h2,
+		.sidebar h3,
+		.sidebar h4,
+		.sidebar h5,
+		.sidebar h6
 		{
 			color: #fff;
 		}

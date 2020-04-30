@@ -1,14 +1,24 @@
 <template>
 	<div id="app" class="mobileUI-main-content">
 		<!-- Wrapper -->
-		<div id="wrapper">
+		<div id="wrapper" :class="{'pack-up':this.pack_up}">
 
 			<!-- Content -->
 			<div id="content" class="mobile-main-content">
 				<router-view id="content-inner"></router-view>
 			</div>
 
-			<div id="sidebar">
+			<div class="sidebar">
+				<!--pack-up-button-->
+				<div class="pack-up-btn">
+					<el-switch
+									v-model="pack_up"
+									active-color="#7d7d83"
+									inactive-color="#b53c57">
+					</el-switch>
+				</div>
+
+
 				<div v-if="!user.username">
 						<!-- Logo -->
 						<div id="logo">
@@ -32,7 +42,7 @@
 								<li><a href="#">意见反馈</a></li>
 							</ul>
 						</nav>
-				</div>
+					</div>
 				<div v-else>
 						<!-- logo -->
 						<div class="user" @click="push('/info',2)">
@@ -58,40 +68,143 @@
 							</form>
 						</section>
 						<!--postings-->
-						<section class="is-search is-first">
+						<section class="is-search postings">
 							<div id="postings">
 								<el-button
 												type="danger"
 												class="login-btn"
 												@click.prevent="blank_push('postings')"
-								>发表文章</el-button>
+								><svg class="icon-min" aria-hidden="true">
+									<use xlink:href="#icon-fabu"></use>
+								</svg>
+									发表文章
+								</el-button>
 							</div>
 						</section>
 
 						<!--Nav-->
 						<nav id="nav" class="mobileUI-site-nav">
 							<ul>
-								<li :class="{current_page_item:active==='/index'}" @click.prevent="push('/index')"><a href="#">所有文章</a></li>
-								<li :class="{current_page_item:active==='/info'}" @click.prevent="push('/info')"><a href="#">个人中心</a></li>
-								<li :class="{current_page_item:active==='/my_post'}" @click="push('/my_post')"><a href="#">我的文章</a></li>
-								<li><a href="#">我的收藏</a></li>
-								<li><a href="#">我的评论</a></li>
-								<li><a href="#">我的浏览</a></li>
-								<li><a href="#">意见反馈</a></li>
+								<li :class="{current_page_item:active==='/index'}" @click.prevent="push('/index')"><a href="#">
+									<svg class="icon-min" aria-hidden="true">
+										<use xlink:href="#icon-shiyongwendang"></use>
+									</svg>
+									所有文章
+								</a></li>
+								<li :class="{current_page_item:active==='/info'}" @click.prevent="push('/info')"><a href="#">
+									<svg class="icon-min" aria-hidden="true">
+										<use xlink:href="#icon-icon_zhanghao"></use>
+									</svg>
+									个人中心
+								</a></li>
+								<li :class="{current_page_item:active==='/my_post'}" @click.prevent="push('/my_post')"><a href="#">
+									<svg class="icon-min" aria-hidden="true">
+										<use xlink:href="#icon-chuangzuo"></use>
+									</svg>
+									我的文章
+								</a></li>
+								<li><a href="#">
+									<svg class="icon-min" aria-hidden="true">
+										<use xlink:href="#icon-shoucang"></use>
+									</svg>
+									我的收藏
+								</a></li>
+								<li><a href="#">
+									<svg class="icon-min" aria-hidden="true">
+										<use xlink:href="#icon-icon_community_line"></use>
+									</svg>
+									我的评论
+								</a></li>
+								<li><a href="#">
+									<svg class="icon-min" aria-hidden="true">
+										<use xlink:href="#icon-bofangjilu"></use>
+									</svg>
+									我的浏览
+								</a></li>
+								<li><a href="#">
+									<svg class="icon-min" aria-hidden="true">
+										<use xlink:href="#icon-yijianfankui"></use>
+									</svg>
+									意见反馈
+								</a></li>
 							</ul>
 						</nav>
 						<!--quit-->
 						<section class="is-text-style1">
 							<div class="inner" @click="quit()">
 								<p>
-									退出
+									<svg class="icon-min" aria-hidden="true">
+										<use xlink:href="#icon-switch"></use>
+									</svg>
+									<span>退出</span>
 								</p>
 							</div>
 						</section>
 
+					</div>
+
+				<div>
+<!--					<div v-if="!user.username">-->
+<!--						&lt;!&ndash; Logo &ndash;&gt;-->
+<!--						<div id="logo">-->
+<!--							<el-button-->
+<!--											type="danger"-->
+<!--											:loading="loginBtn.loading"-->
+<!--											class="login-btn"-->
+<!--											@click.prevent="login"-->
+<!--							>{{ loginBtn.loading ? '登陆中...' : '登录' }}</el-button>-->
+<!--						</div>-->
+<!--						&lt;!&ndash; Nav &ndash;&gt;-->
+<!--						<nav id="nav" class="mobileUI-site-nav">-->
+<!--							<ul>-->
+<!--								<li><a href="#">所</a></li>-->
+<!--								<li><a href="#">意</a></li>-->
+<!--							</ul>-->
+<!--						</nav>-->
+<!--					</div>-->
+<!--					<div v-else>-->
+<!--						&lt;!&ndash; logo &ndash;&gt;-->
+<!--						<div class="user" @click="push('/info',2)">-->
+<!--							<el-avatar :size="50" :src="user.portrait" >-->
+<!--								<img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>-->
+<!--							</el-avatar>-->
+<!--						</div>-->
+
+<!--						&lt;!&ndash;postings&ndash;&gt;-->
+<!--						<section class="is-search is-first">-->
+<!--							<div id="postings">-->
+<!--								<el-button-->
+<!--												type="danger"-->
+<!--												class="login-btn"-->
+<!--												@click.prevent="blank_push('postings')"-->
+<!--								>发</el-button>-->
+<!--							</div>-->
+<!--						</section>-->
+
+<!--						&lt;!&ndash;Nav&ndash;&gt;-->
+<!--						<nav id="nav" class="mobileUI-site-nav">-->
+<!--							<ul>-->
+<!--								<li :class="{current_page_item:active==='/index'}" @click.prevent="push('/index')"><a href="#">所</a></li>-->
+<!--								<li :class="{current_page_item:active==='/info'}" @click.prevent="push('/info')"><a href="#">个</a></li>-->
+<!--								<li :class="{current_page_item:active==='/my_post'}" @click="push('/my_post')"><a href="#">我</a></li>-->
+<!--								<li><a href="#">我</a></li>-->
+<!--								<li><a href="#">我</a></li>-->
+<!--								<li><a href="#">我</a></li>-->
+<!--								<li><a href="#">意</a></li>-->
+<!--							</ul>-->
+<!--						</nav>-->
+<!--						&lt;!&ndash;quit&ndash;&gt;-->
+<!--						<section class="is-text-style1">-->
+<!--							<div class="inner" @click="quit()">-->
+<!--								<p>-->
+<!--									退出-->
+<!--								</p>-->
+<!--							</div>-->
+<!--						</section>-->
+
+<!--					</div>-->
+
 				</div>
-
-
 				<!-- Recent Posts -->
 				<section class="is-recent-posts">
 					<header>
@@ -189,14 +302,10 @@
 				</div>
 
 			</div>
-			<div class="mobileUI-main-content">
-			</div>
-			</div>
-
-
-
 
 		</div>
+
+	</div>
 </template>
 
 <script>
@@ -209,6 +318,7 @@
 		inject:['push','blank_push'],
 		data(){
       return {
+				pack_up:false, // 是否展开收起
         loginBtn:{
           loading:false,
 				},
@@ -248,21 +358,102 @@
 
 <style scoped lang="scss">
 
+
+	@media (min-width: 1200px) {
+		.pack-up {
+			.sidebar{
+				width: 80px;
+				padding: 1.5em 1em 1em 1em;
+				/*登录按钮*/
+				#logo{
+					margin: 0;
+					button{
+						white-space: pre;
+						letter-spacing: 18px;
+						overflow: hidden;
+						padding: 25%;
+					}
+				}
+				/*发表文章按钮*/
+				#postings{
+					margin: 0;
+					button{
+						white-space: pre;
+						letter-spacing: 18px;
+						overflow: hidden;
+						padding: 30%;
+					}
+
+				}
+				/*用户信息*/
+				.user{
+					span{
+						height: 50px!important;
+						width: 50px!important;
+					}
+					.username{
+						display: none;
+					}
+				}
+				/*搜索框*/
+				section:nth-child(2){
+					display: none;
+				}
+				/*功能列表*/
+				section,nav{
+					overflow: hidden;
+					li a{
+						height: 39px;
+						overflow: hidden;
+					}
+				}
+				/*退出按钮*/
+				.is-text-style1 .inner{
+						overflow: hidden;
+						p{
+							height: 34px;
+							overflow: hidden;
+							svg{
+								margin: 10px
+							}
+						}
+					}
+			}
+			#content{
+				margin-left: 12%!important;
+				min-height: 118em;
+				#content-inner{
+					max-width: 95%;
+				}
+			}
+		}
+	}
+
+	.pack-up-btn{
+		margin-bottom: 15px;
+		text-align: right;
+	}
 	.user{
 		.username{
 			padding-top: 2%;
 			word-break: break-all;
+			b{
+				color: white;
+			}
 		}
 	}
 	#content{
-		/*width: 80%;*/
 		min-height: 106em;
-		/*margin-left: 1em!important;*/
+		transition: margin-left 0.25s ease-in-out;
 	}
 
-	#sidebar {
-		/*-webkit-transform: scale(.8,.8);*/
-		/*-webkit-transform-origin: 0 0;*/
+	.sidebar {
+		transition: width 0.25s ease-in-out;
+		-moz-box-shadow:7px 0px 15px #595654;
+		-webkit-box-shadow:7px 0px 15px #595654;
+		box-shadow:7px 0px 15px #595654;
+		border-top-right-radius:1%;
+		border-bottom-right-radius:1%;
 	}
 
 

@@ -35,5 +35,5 @@ export default {
     }else {
       this._vm.$message(user.msg);
     }
-  }
+  },
 }

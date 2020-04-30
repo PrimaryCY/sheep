@@ -49,7 +49,7 @@
             push(url){
                 // 页面跳转
                 if(this.$route.path===url){
-                    this.reload()
+                    // this.reload()
                     return
                 }
                 this.$router.push(url)

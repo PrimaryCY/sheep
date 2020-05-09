@@ -72,7 +72,6 @@ const routes = [
     name:'postings',
     component:postings,
     meta:{
-      delete_zoom: true,
       no_back_top:true,
       // is_login:true
     }
@@ -82,7 +81,6 @@ const routes = [
     name:'login',
     component: login,
     meta:{
-      delete_zoom:true,
     }
   },
   {
@@ -113,15 +111,6 @@ router.beforeEach((to, from, next) => {
         query: {redirect: to.fullPath}   //登录成功后重定向到当前页面
       })
     }
-  }
-  // 删除全局zoom属性
-  /*特定页面需要移除zoom属性,否则会造成页面弹窗,动画偏移*/
-  if(to.meta.delete_zoom){
-    let el = document.getElementsByTagName('body')[0]
-    el.style.zoom='initial'
-  }else {
-    let el = document.getElementsByTagName('body')[0]
-    el.style.zoom='.8'
   }
   next()
 })

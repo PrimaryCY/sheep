@@ -23,7 +23,7 @@
 
 	h2
 	{
-		font-size: 1.2em;
+		font-size: 1.4em;
 	}
 
 	h3, h4, h5, h6
@@ -130,7 +130,7 @@
 	{
 		background-color: #c94663;
 		background-image: url('images/bg1.png');
-		padding: 1.75em 0.5em 1.75em 0.5em;
+		padding: 1.65em 0.5em 1.65em 0.5em;
 		border-radius: 0.4em;
 		text-align: center;
 		box-shadow: inset 0px 0px 0px 1px rgba(255,255,255,0.15), 0 0.025em 0.15em 0em rgba(0,0,0,0.25);
@@ -141,7 +141,7 @@
 			font-family: 'Open Sans Condensed', sans-serif;
 			font-weight: 700;
 			color: #fff;
-			font-size: 2em;
+			font-size: 1.5em;
 			letter-spacing: 0.1em;
 		}
 
@@ -167,7 +167,7 @@
 		{
 			border-top: solid 1px rgba(0,0,0,0.25);
 			box-shadow: inset 0px 1px 0px 0px rgba(255,255,255,0.075);
-			padding: 0.5em 0 0.5em 0;
+			padding: 0.4em 0 0.4em 0;
 		}
 
 		#nav li:first-child
@@ -219,7 +219,7 @@
 	{
 		position: absolute;
 		top: 0;
-		width: 14em; /* = whatever you want */
+		width: 13em; /* = whatever you want */
 		padding: 1.5em 1.35em 1em 1.15em;
 		box-shadow: inset -0.1em 0em 0.35em 0em rgba(0,0,0,0.15);
 		height: 100%;
@@ -244,7 +244,7 @@
 		.sidebar nav
 		{
 			margin: 2em 0 0 0;
-			font-size: 0.9em;
+			font-size: 0.8em;
 		}
 
 			.sidebar section:before,

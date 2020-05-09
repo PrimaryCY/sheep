@@ -106,6 +106,10 @@
     .el-message-box__wrapper .message{
         width: 300px!important;
     }
+		.el-button--mini{
+			padding: 5px 11px!important;
+			font-size: 10px!important;
+		}
 
 
 </style>

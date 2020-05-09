@@ -13,6 +13,7 @@
 				<div class="pack-up-btn">
 					<el-switch
 									v-model="pack_up"
+									:width="20"
 									active-color="#7d7d83"
 									inactive-color="#b53c57">
 					</el-switch>
@@ -38,8 +39,18 @@
 						<!-- Nav -->
 						<nav id="nav" class="mobileUI-site-nav">
 							<ul>
-								<li><a href="#">所有帖子</a></li>
-								<li><a href="#">意见反馈</a></li>
+								<li :class="{current_page_item:active==='/index'}" @click.prevent="push('/index')"><a href="#">
+									<svg class="icon-min" aria-hidden="true">
+										<use xlink:href="#icon-shiyongwendang"></use>
+									</svg>
+									所有文章
+								</a></li>
+								<li><a href="#">
+									<svg class="icon-min" aria-hidden="true">
+										<use xlink:href="#icon-yijianfankui"></use>
+									</svg>
+									意见反馈
+								</a></li>
 							</ul>
 						</nav>
 					</div>
@@ -362,16 +373,19 @@
 	@media (min-width: 1200px) {
 		.pack-up {
 			.sidebar{
-				width: 80px;
+				width: 70px;
 				padding: 1.5em 1em 1em 1em;
+				.pack-up-btn{
+					/*text-align: center;*/
+				}
 				/*登录按钮*/
 				#logo{
 					margin: 0;
 					button{
-						white-space: pre;
-						letter-spacing: 18px;
+						white-space: initial;
 						overflow: hidden;
-						padding: 25%;
+						padding: 0;
+						font-size: 13px;
 					}
 				}
 				/*发表文章按钮*/
@@ -388,8 +402,8 @@
 				/*用户信息*/
 				.user{
 					span{
-						height: 50px!important;
-						width: 50px!important;
+						height: 47px!important;
+						width: 47px!important;
 					}
 					.username{
 						display: none;
@@ -401,10 +415,12 @@
 				}
 				/*功能列表*/
 				section,nav{
+					margin: 1.5em 0 0 0;
 					overflow: hidden;
 					li a{
-						height: 39px;
+						height: 30px;
 						overflow: hidden;
+						/*letter-spacing: 3px;*/
 					}
 				}
 				/*退出按钮*/
@@ -432,6 +448,9 @@
 	.pack-up-btn{
 		margin-bottom: 15px;
 		text-align: right;
+		width: 100%;
+		-webkit-transform: scale(.8,.8) !important;
+		/*-webkit-transform-origin: 0 0!important;*/
 	}
 	.user{
 		.username{
@@ -440,6 +459,15 @@
 			b{
 				color: white;
 			}
+		}
+	}
+	/*去掉火狐动画效果*/
+	@-moz-document url-prefix() {
+		#content{
+			transition: none!important;
+		}
+		.sidebar{
+			transition: none!important;
 		}
 	}
 	#content{
@@ -463,10 +491,11 @@
 		.login-btn{
 			background-color: #c94663;
 			width: 100%;
-			height: 85px;
+			height: 70px;
 			border: 0;
-			font-size: 26px;
-			margin: 0px;
+			font-size: 20px;
+			margin: 0;
+			padding: 0;
 		}
 		.login-btn:active{
 			background-color: #a14663;
@@ -480,7 +509,7 @@
 			width: 100%;
 			height: 50px;
 			border: 0;
-			font-size: 20px;
+			font-size: 16px;
 			margin: 0;
 		}
 		.login-btn:active{

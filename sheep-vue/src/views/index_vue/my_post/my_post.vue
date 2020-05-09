@@ -123,7 +123,7 @@
 					-ms-flex-pack: start;
 					justify-content: flex-start;
 					.article-title-text{
-						font-size: 19px;
+						font-size: 16px;
 						color: #4d4d4d;
 						margin-bottom: 0;
 						-webkit-box-flex: 1;
@@ -138,6 +138,7 @@
 					margin-top: 10px;
 					display: -webkit-box;
 					display: -ms-flexbox;
+					font-size: 11px;
 					display: flex;
 					-webkit-box-orient: horizontal;
 					-webkit-box-direction: normal;

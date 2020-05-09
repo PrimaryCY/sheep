@@ -57,7 +57,7 @@
 						<el-col :span="3">
 							<el-button
 											@click="post.content_type=post.content_type===1?2:1">
-								{{post.content_type===1?'切换markdown模式':'切换为富文本模式'}}
+								{{post.content_type===1?'切换markdown模式':'切换富文本模式'}}
 							</el-button>
 						</el-col>
 					</el-row>

@@ -13,12 +13,12 @@ body
 
 input, textarea
 {
-    font-size: 11pt;
+    font-size: 9pt;
 }
 
 body
 {
-    font-size: 12pt;
+    font-size: 10pt;
 }
 
 /*********************************************************************************/
@@ -31,8 +31,8 @@ body
 
 .is-post h2
 {
-    font-size: 3.25em;
-    line-height: 1.25em;
+    font-size: 3em;
+    line-height: 1.0em;
 }
 
 .is-post header
@@ -43,7 +43,7 @@ body
 
 .is-post .byline
 {
-    font-size: 2.25em;
+    font-size: 1.75em;
     line-height: 1.5em;
     position: relative;
     top: -0.65em;
@@ -53,10 +53,10 @@ body
 .is-post .info
 {
     position: absolute;
-    width: 5.5em;
+    width: 5.0em;
     overflow: hidden;
     background-color: #fff;
-    left: -10.5em;
+    left: -10em;
     top: 0;
     padding: 1.5em 1em 1.5em 1em;
     border-top-left-radius: 0.4em;
@@ -86,7 +86,7 @@ body
     font-weight: 400;
     text-align: center;
     display: block;
-    font-size: 1.5em;
+    font-size: 1em;
     color: #999;
     border-bottom: solid 1px #ddd;
     padding: 0 0 1em 0;
@@ -103,7 +103,7 @@ body
 {
     display: block;
     margin: 0.25em 0 0 0;
-    font-size: 1.5em;
+    font-size: 1.75em;
     font-weight: 700;
     color: #1b252a;
 }
@@ -137,7 +137,7 @@ body
 
 body.left-sidebar #content
 {
-    margin-left: 21em; /* = sidebar width + 7 */
+    margin-left: 19em; /* = sidebar width + 7 */
 }
 
 body.right-sidebar #content

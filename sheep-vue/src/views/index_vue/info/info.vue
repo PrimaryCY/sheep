@@ -22,8 +22,8 @@
 						</el-avatar>
 					</el-col>
 					<el-col :span="2">
-						<el-avatar :size="40" :src="edit.portrait" >
-							<img :src="edit.portrait" />
+						<el-avatar :size="40" :src="reader_portrait" >
+							<img :src="reader_portrait" />
 						</el-avatar>
 					</el-col>
 					<el-col :span="3" :offset="3">
@@ -50,15 +50,13 @@
 <!--			用户资料-->
 				<el-main class="user">
 					<el-row :gutter="1">
-						<el-col :span="1">
+						<el-col :span="22">
 							<svg v-if="user.gender===0" class="icon-min" aria-hidden="true">
 								<use xlink:href="#icon-xingbienv-copy"></use>
 							</svg>
 							<svg v-else class="icon-min" aria-hidden="true">
 								<use xlink:href="#icon-xingbienan-copy"></use>
 							</svg>:
-						</el-col>
-						<el-col :span="22">
 							<span class="name">{{user.username}}</span>
 						</el-col>
 					</el-row>
@@ -85,7 +83,7 @@
 
 		<div class="info">
 <!--			我的积分-->
-			<el-tabs class="space">
+			<el-tabs class="space" type="card" :stretch="true">
 				<el-tab-pane>
 					<span slot="label"><i class="el-icon-date"></i> 我的积分</span>
 					<tbe :img_src="require('../../../../public/static/img/tbe.gif')"></tbe>
@@ -344,7 +342,7 @@
 		.user{
 			margin-top: 20px;
 			.name{
-				font-size: 18px;
+				font-size: 16px;
 				font-weight: 700;
 				color: #222;
 			}

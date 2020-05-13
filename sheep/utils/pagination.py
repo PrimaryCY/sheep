@@ -6,7 +6,7 @@ from rest_framework.pagination import LimitOffsetPagination as DRF_LimitoffsetPa
 
 class LimitOffsetPagination(DRF_LimitoffsetPagination):
     #默认显示的个数
-    default_limit = 2
+    default_limit = 15
     #当前的位置
     offset_query_param = "offset"
     #通过limit改变默认显示的个数

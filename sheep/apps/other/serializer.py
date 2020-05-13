@@ -7,6 +7,8 @@ from rest_framework import serializers
 from django.conf import settings
 
 from apps.other.models import UploadHistoryModel
+from apps.post.models import Category
+from apps.post.serializer import PostCategorySerializer
 from utils.extra_fields import CurrentUserIdDefault, RangeField
 from utils.tools import random_filename
 
@@ -49,3 +51,11 @@ class UploadSerializer(serializers.ModelSerializer):
         model = UploadHistoryModel
         exclude = ('is_active',)
 
+
+class OptionSerializer(serializers.Serializer):
+    post_category = serializers.SerializerMethodField(label='帖子类别')
+
+    def get_post_category(self, obj):
+        return PostCategorySerializer(Category.objects.filter(level=0),
+                                      many=True,
+                                      context=self._context).data

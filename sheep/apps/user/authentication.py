@@ -54,7 +54,7 @@ class UserModelBackend(ModelBackend):
             return False, ex.detail
         else:
             # 用户登录成功后的操作
-            user.after_login()
+            user.after_login(user)
             return True, user
 
 
@@ -100,7 +100,9 @@ class TokenAuthentication(BaseAuthentication):
         user, flag = User.objects.get_or_create(username=remote_addr, is_anonymity=True, is_active=True)
         # 匿名用户每次访问接口都会增加一次访问记录
         user.login_num += 1
-        user.save()
+        user.last_login = datetime.datetime.now()
+        User.objects.filter(id=user.id).update(login_num=user.login_num,
+                                               last_login=user.last_login)
         return user, flag
 
     @staticmethod

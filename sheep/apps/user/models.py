@@ -66,15 +66,17 @@ class User(BaseModel, AbstractBaseUser):
             self.set_password(self.password)
         super().save(force_insert, force_update, using, update_fields)
 
-    def after_login(self):
+    @classmethod
+    def after_login(cls, user):
         """
         用户成功登录后的操作
         :return:
         """
-        self.login_num += 1
-        self.last_login = datetime.datetime.now()
-        self.save()
-        return self
+        user.login_num += 1
+        user.last_login = datetime.datetime.now()
+        cls.objects.filter(id=user.id).update(login_num=user.login_num,
+                                              last_login=datetime.datetime.now())
+        return user
 
     @staticmethod
     def generate_token_data(user) -> dict:

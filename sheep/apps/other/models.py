@@ -13,3 +13,4 @@ class UploadHistoryModel(BaseModel):
 
     class Meta:
         verbose_name_plural = verbose_name = '上传文件历史表'
+        ordering = ('-created_time',)

@@ -28,7 +28,7 @@
             }
         },
         computed:{
-            ...mapState(['user'])
+            ...mapState(['user','option'])
         },
         methods: {
             blank_push(name, query){
@@ -54,27 +54,38 @@
                 }
                 this.$router.push(url)
             },
-            async _get_user_info(){
+            _get_user_info(){
                 // 获取token中保存的登录信息
                 if(this.$cookies.get(setting.TOKEN_NAME)&&!this.user.username){
                     let loading = this.openLoading({
-                        text:'自动登录中..'
+                        text:'自动登录中..',
                     })
                     this.$store.dispatch('receive_userinfo',()=>{
                         loading.close()
                     })
                 }
             },
+						_get_option(){
+							// 远程获取公共配置
+							if(!this.option.post_category){
+								this.$store.dispatch('receive_option')
+							}
+						},
             _debugger(){
                 // 全局设置vue实例
                 if(setting.DEBUG){
                     window._v=this
                 }
-            }
+            },
+					init_data(){
+						// 初始化数据
+						this._get_user_info()
+						this._get_option()
+					}
         },
         created(){
-          this._get_user_info()
-          this._debugger()
+					this.init_data()
+					this._debugger()
           console.log(this.$route)
         },
 			components:{

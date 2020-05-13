@@ -18,17 +18,20 @@
 		</div>
 		<div class="article-list">
 			<!--增加tabindex属性  使focus对div起作用-->
-			<div class="article-list-item-mp" tabindex="0" v-for="i in 15">
+			<div class="article-list-item-mp" tabindex="0" v-for="post in posts.results">
 				<el-row class="article-title">
 					<el-col :span="18">
 						<div>
-							<a class="article-title-text">我是文章的大标题</a>
+							<a class="article-title-text">{{post.name}}</a>
 						</div>
 					</el-col>
 				</el-row>
 				<el-row class="article-info" type="flex">
 					<el-col :span="5">
-						2019年06月17日 11:19:36
+						发表时间:{{post.created_time}}
+					</el-col>
+					<el-col :span="5">
+						更新时间:{{post.update_time}}
 					</el-col>
 					<el-col :span="2">
 						点赞:138
@@ -39,7 +42,7 @@
 					<el-col :span="2">
 						收藏:138
 					</el-col>
-					<el-col :span="9">
+					<el-col :span="4">
 
 					</el-col>
 					<el-col :span="2" class="article-btn">
@@ -67,6 +70,8 @@
 </template>
 
 <script>
+	import {get_user_post} from "../../../api"
+
 	export default {
 		data() {
 			return {
@@ -86,7 +91,29 @@
 					date: '2016-05-03',
 					name: '王小虎',
 					address: '上海市普陀区金沙江路 1516 弄'
-				}]
+				}],
+				posts:{
+					results:[]
+				}
+			}
+		},
+		mounted() {
+			this._get_user_posts()
+		},
+		methods:{
+			async _get_user_posts(){
+				// 获取用户个人帖子
+				let loading = this.openLoading({
+					target:'.article-list'
+				})
+				let res = await get_user_post()
+				if(res.code!==2000){
+					this.$message(res.msg)
+					loading.close()
+					return
+				}
+				this.posts=res.data
+				loading.close()
 			}
 		}
 	}
@@ -100,6 +127,7 @@
 			margin: 0 0 2em 0;
 		}
 		.article-list{
+			min-height: 80vh;
 			/*帖子列表*/
 			.article-list-item-mp{
 				display: -webkit-box;

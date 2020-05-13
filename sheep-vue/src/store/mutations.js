@@ -1,5 +1,6 @@
 import {
   RECEIVE_USERINFO,
+  RECEIVE_OPTION
 } from './mutations-types'
 
 export default {
@@ -7,4 +8,8 @@ export default {
   [RECEIVE_USERINFO](state,user){
     state.user=user
   },
+  //保存远端公共配置
+  [RECEIVE_OPTION](state,option){
+    state.option=option
+  }
 }

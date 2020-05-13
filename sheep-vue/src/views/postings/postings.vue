@@ -98,6 +98,8 @@
 </template>
 
 <script>
+	import {mapState} from 'vuex'
+
 	import tinymceEditor from '../../components/Tinymce/tinymce-editor'
 	import mavon_editor from '../../components/mavonEditor/mavon-editor'
 	import {get_post_category,upload,create_user_post} from '../../api/index'
@@ -241,14 +243,26 @@
 			},
 		},
 		async created(){
-			await this._get_category_data()
-			this._get_default_category()
+			// await this._get_category_data()
+			// this._get_default_category()
 		},
 		components:{
 			Backtop,
 			tinymceEditor,
 			mavon_editor
 		},
+		computed:{
+			...mapState(['option'])
+		},
+		watch:{
+			'option.post_category':{
+				deep:true,
+				handler:function (n) {
+					this.cascader_data.category_data=n
+					this._get_default_category()
+				}
+			}
+		}
 	}
 </script>
 <style scoped lang="scss">

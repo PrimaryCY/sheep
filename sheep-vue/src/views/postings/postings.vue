@@ -162,9 +162,11 @@
 					}
 					this.post.category=this.cascader_data.category
 					let res = await create_user_post(this.post)
-					if(res.code===2000){
-						this.$message.success('发布成功!')
+					if(res.code!==2000){
+						this.$message(res.msg)
+						return
 					}
+					this.$message.success('发布成功!')
 					}
 				)
 			},

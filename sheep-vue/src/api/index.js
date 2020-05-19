@@ -1,4 +1,5 @@
 import axios from './ajax'
+import common_crud from './common-crud'
 
 /*
 登录
@@ -33,7 +34,8 @@ export const create_user_post=(data)=>axios.post('/v1/web/user_post/',data)
 /*
 个人所有帖子
  */
-export const get_user_post=()=>axios.get('/v1/web/user_post/')
+export const user_post = common_crud('/v1/web/user_post/')
+
 
 /*
 获取远端公共配置

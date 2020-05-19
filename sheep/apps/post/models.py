@@ -152,6 +152,7 @@ class Post(BaseModel):
     class Meta:
         verbose_name_plural = verbose_name = '帖子表'
         unique_together = ('name', 'is_active',)
+        ordering = ('-created_time',)
 
     def __str__(self):
         return self.name

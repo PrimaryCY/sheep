@@ -2,14 +2,14 @@
 	<div class="my_post">
 		<div class="header-filter">
 			<el-form :inline="true" class="demo-form-inline">
-				<el-form-item label="审批人">
-					<el-input placeholder="审批人"></el-input>
+				<el-form-item label="关键字">
+					<el-input placeholder="文章名称" v-model="form.key_word"></el-input>
 				</el-form-item>
 				<el-form-item label="活动区域">
-					<el-select placeholder="活动区域">
-						<el-option label="区域一" value="shanghai"></el-option>
-						<el-option label="区域二" value="beijing"></el-option>
-					</el-select>
+<!--					<el-select placeholder="活动区域">-->
+<!--						<el-option label="区域一" value="shanghai"></el-option>-->
+<!--						<el-option label="区域二" value="beijing"></el-option>-->
+<!--					</el-select>-->
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary">查询</el-button>
@@ -18,7 +18,7 @@
 		</div>
 		<div class="article-list">
 			<!--增加tabindex属性  使focus对div起作用-->
-			<div class="article-list-item-mp" tabindex="0" v-for="post in posts.results">
+			<div class="article-list-item-mp" tabindex="0" v-for="post in posts.results" :key="post.id">
 				<el-row class="article-title">
 					<el-col :span="18">
 						<div>
@@ -34,13 +34,13 @@
 						更新时间:{{post.update_time}}
 					</el-col>
 					<el-col :span="2">
-						点赞:138
+						浏览:{{post.read_num}}
 					</el-col>
 					<el-col :span="2">
-						收藏:138
+						点赞:{{post.praise_num}}
 					</el-col>
 					<el-col :span="2">
-						收藏:138
+						收藏:{{post.post_num}}
 					</el-col>
 					<el-col :span="4">
 
@@ -59,40 +59,32 @@
 			</div>
 		</div>
 		<div class="footer-pagination">
-			<el-pagination
-							background
-							layout="prev, pager, next"
-							:total="1000">
-			</el-pagination>
+				<pagination
+								@change="_get_user_posts"
+								:pagination_config="{layout:'total, sizes, prev, pager, next',background:true}"
+								:pager="posts"></pagination>
 		</div>
 
 	</div>
 </template>
 
 <script>
-	import {get_user_post} from "../../../api"
+	import {user_post} from "../../../api"
+	import pagination from '../../../components/pagination'
 
 	export default {
 		data() {
 			return {
-				tableData: [{
-					date: '2016-05-02',
-					name: '王小虎',
-					address: '上海市普陀区金沙江路 1518 弄'
-				}, {
-					date: '2016-05-04',
-					name: '王小虎',
-					address: '上海市普陀区金沙江路 1517 弄'
-				}, {
-					date: '2016-05-01',
-					name: '王小虎',
-					address: '上海市普陀区金沙江路 1519 弄'
-				}, {
-					date: '2016-05-03',
-					name: '王小虎',
-					address: '上海市普陀区金沙江路 1516 弄'
-				}],
+				form:{
+					key_word:'',
+
+				},
+				pagination:{
+					limit:0,
+					offset:15,
+				},
 				posts:{
+					total:0,
 					results:[]
 				}
 			}
@@ -104,9 +96,9 @@
 			async _get_user_posts(){
 				// 获取用户个人帖子
 				let loading = this.openLoading({
-					target:'.article-list'
+					target:'.my_post'
 				})
-				let res = await get_user_post()
+				let res = await user_post.get()
 				if(res.code!==2000){
 					this.$message(res.msg)
 					loading.close()
@@ -115,6 +107,9 @@
 				this.posts=res.data
 				loading.close()
 			}
+		},
+		components:{
+			pagination
 		}
 	}
 </script>

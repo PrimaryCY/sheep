@@ -50,12 +50,12 @@ service.interceptors.response.use(
         case '4101':
           VueCookies.remove('tk')
           console.log('用户令牌失效!')
-          // router.replace({
-          //   path: '/login',
-          //   query: {
-          //     redirect: router.currentRoute.fullPath
-          //   }
-          // })
+          vue.$router.push({
+            path: '/login',
+            query: {
+              redirect: vue.$router.currentRoute.fullPath
+            }
+          })
           break
       }
       return response.data;

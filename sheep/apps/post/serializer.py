@@ -5,6 +5,7 @@ from typing import Any
 
 from django.contrib.auth import get_user_model
 from django.core.validators import URLValidator
+from django.forms import model_to_dict
 from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.validators import UniqueValidator
@@ -52,7 +53,7 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
     image = serializers.CharField(validators=[
         URLValidator(message='图片地址不正确!')
         ], label='封面', required=False, allow_null=True)
-    category = SerializerMethodAndWriteField(label='帖子分类')
+    category = serializers.ListField(label='帖子分类', write_only=True)
     content_type = RangeField(iterable=list(dict(Post.content_type_choices)),
                         label='文章类型',
                         required=True,
@@ -65,10 +66,6 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
             raise serializers.ValidationError({'code': RET.PARAMERR,'msg': '类别必须选择'})
         c = category.pop()
         return c
-
-    def get_category(self, category_id):
-        obj = Category.objects.filter(id=category_id).first()
-        return obj.get_ancestors(include_self=True).values_list('id', flat=True)
 
     author_info = serializers.SerializerMethodField(label='创建人信息')
     is_like = serializers.SerializerMethodField(label='是否收藏')
@@ -86,6 +83,9 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_author_info(self, obj):
         """帖子创建人信息"""
+        if obj.author_id == self.context['request'].user.id:
+            user = self.context['request'].user
+            return dict(id=user.id, username=user.username)
         user = User.objects.filter(id=obj.author_id).values('id', 'username').first()
         if user:
             return dict(user)

@@ -2,17 +2,56 @@
 	<div class="my_post">
 		<div class="header-filter">
 			<el-form :inline="true" class="demo-form-inline">
-				<el-form-item label="关键字">
-					<el-input placeholder="文章名称" v-model="form.key_word"></el-input>
+				<el-form-item label="关键字:">
+					<el-input placeholder="文章名称" v-model="params.name"></el-input>
 				</el-form-item>
-				<el-form-item label="活动区域">
-<!--					<el-select placeholder="活动区域">-->
-<!--						<el-option label="区域一" value="shanghai"></el-option>-->
-<!--						<el-option label="区域二" value="beijing"></el-option>-->
-<!--					</el-select>-->
+				<el-form-item label="类别:">
+					<el-cascader
+									ref="cascader"
+									:options="option.post_category"
+									v-model="post_category"
+									:props="{value:'id',label:'name',children:'child'}"
+									:show-all-levels="false">
+						<template slot-scope="{ node, data }">
+							<span>{{ data.name }}</span>
+							<span v-if="!node.isLeaf"> ({{ data.child.length }}) </span>
+						</template>
+					</el-cascader>
+				</el-form-item>
+				<el-form-item label="创建日期:">
+					<el-date-picker
+									v-model="created_time_range"
+									type="daterange"
+									align="right"
+									unlink-panels
+									range-separator="至"
+									start-placeholder="开始日期"
+									end-placeholder="结束日期"
+									:picker-options="pickerOptions">
+					</el-date-picker>
+				</el-form-item>
+				<el-form-item label="排序方式">
+					<el-select v-model="params.order" placeholder="请选择">
+						<el-option
+										label="点赞"
+										value="praise_num"
+						></el-option>
+						<el-option
+										label="阅读"
+										value="read_num"
+						></el-option>
+						<el-option
+										label="收藏"
+										value="like_num"
+						></el-option>
+						<el-option
+										label="评论"
+										value="post_num"
+						></el-option>
+					</el-select>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary">查询</el-button>
+					<el-button type="primary">搜索</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
@@ -40,7 +79,10 @@
 						点赞:{{post.praise_num}}
 					</el-col>
 					<el-col :span="2">
-						收藏:{{post.post_num}}
+						收藏:{{post.like_num}}
+					</el-col>
+					<el-col :span="2">
+						评论:{{post.post_num}}
 					</el-col>
 					<el-col :span="4">
 
@@ -62,6 +104,7 @@
 				<pagination
 								@change="_get_user_posts"
 								:pagination_config="{layout:'total, sizes, prev, pager, next',background:true}"
+								:params="params"
 								:pager="posts"></pagination>
 		</div>
 
@@ -69,19 +112,51 @@
 </template>
 
 <script>
+	import {mapState} from 'vuex'
+
 	import {user_post} from "../../../api"
 	import pagination from '../../../components/pagination'
 
 	export default {
 		data() {
 			return {
-				form:{
-					key_word:'',
-
+				pickerOptions: {
+					shortcuts: [{
+						text: '最近一周',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '最近一个月',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '最近三个月',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+							picker.$emit('pick', [start, end]);
+						}
+					}]
 				},
-				pagination:{
-					limit:0,
-					offset:15,
+				created_time_range:[],	//筛选日期范围
+				post_category:[],				//筛选类别
+				params:{
+					limit:10,
+					offset:0,
+					name:null,
+					start_created_time:null,
+					end_created_time:null,
+					category:null,
+					order:null,
 				},
 				posts:{
 					total:0,
@@ -98,7 +173,7 @@
 				let loading = this.openLoading({
 					target:'.my_post'
 				})
-				let res = await user_post.get()
+				let res = await user_post.get(this.params)
 				if(res.code!==2000){
 					this.$message(res.msg)
 					loading.close()
@@ -106,7 +181,28 @@
 				}
 				this.posts=res.data
 				loading.close()
+			},
+			change(){
+				this._get_user_posts()
 			}
+		},
+		watch:{
+			created_time_range:{
+				deep:true,
+				handler:function(new_val){
+					this.params.start_created_time=new_val[0]
+					this.params.end_created_time=new_val[1]
+				}
+			},
+			post_category:{
+				deep:true,
+				handler:function (new_val) {
+					this.params.category=new_val[new_val.length-1]
+				}
+			}
+		},
+		computed:{
+			...mapState(['option'])
 		},
 		components:{
 			pagination
@@ -119,7 +215,7 @@
 		text-align: left;
 		.header-filter{
 			padding: 0 20px;
-			margin: 0 0 2em 0;
+			margin: 0 0 1em 0;
 		}
 		.article-list{
 			min-height: 80vh;

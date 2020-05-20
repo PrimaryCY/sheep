@@ -76,6 +76,8 @@ class UserPostViewSet(ModelViewSet):
         return self.retrieve_serializer_class
 
     def get_queryset(self):
+        if self.action == 'list':
+            return Post.raw_objects.filter(author_id=self.request.user.id).all()
         return Post.objects.filter(author_id=self.request.user.id).all()
 
     def retrieve(self, request, *args, **kwargs):

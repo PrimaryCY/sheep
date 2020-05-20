@@ -6,7 +6,7 @@
 						:layout="pagination.layout"
 						:total="pager.count"
 						:current-page.sync="currentPage"
-						:page-size="pager.rows"
+						:page-size="params.limit"
 						:page-sizes="pagination.page_sizes"
 						prev-text="上一页"
 						next-text="下一页"
@@ -29,7 +29,13 @@
 			}
 		},
 		props: {
+			// 每页返回数据
 			'pager':{
+				type:Object,
+				required:true
+			},
+			// 查询参数
+			'params':{
 				type:Object,
 				required:true
 			},
@@ -39,36 +45,35 @@
 			},
 		},
 		computed: {
-			total() {
-				return this.pager.total;
-			},
 			pagination(){
 				return Object.assign(this.pagination_default_config, this.pagination_config)
 			},
-			// 检测是否获取到无数据
-			initBack() {
-				return this.pager.total / this.pager.offset < this.pager.page;
-			},
+			// // 检测是否获取到无数据
+			// initBack() {
+			// 	return this.pager.total / this.pager.offset < this.pager.page;
+			// },
 		},
 		watch: {
-			total() {
-				// 存在记录但未获取到数据时, 重新请求
-				if (this.initBack) {
-					this.pager.page -= 1;
-					this.$emit('change');
-				}
-			},
+			// total() {
+			// 	// 存在记录但未获取到数据时, 重新请求
+			// 	if (this.initBack) {
+			// 		this.params.offset -= 1;
+			// 		this.$emit('change');
+			// 	}
+			// },
 		},
 		mounted() {},
 		methods: {
 			// 每页条数
 			onChangeSize(rows) {
-				this.pager.offset = rows;
+				this.currentPage = 1
+				this.params.offset = 0
+				this.params.limit = rows;
 				this.$emit('change');
 			},
 			// 翻页
 			onChangePage(page) {
-				this.pager.page = page;
+				this.params.offset = (this.params.limit*page)-this.params.limit;
 				this.$emit('change');
 			}
 		}

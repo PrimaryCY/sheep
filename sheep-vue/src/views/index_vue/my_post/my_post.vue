@@ -1,15 +1,22 @@
 <template>
 	<div class="my_post">
 		<div class="header-filter">
-			<el-form :inline="true" class="demo-form-inline">
+			<el-form :inline="true">
 				<el-form-item label="关键字:">
-					<el-input placeholder="文章名称" v-model="params.name"></el-input>
+					<el-input placeholder="文章名称"
+										clearable
+										size="small"
+										maxlength="100"
+										show-word-limit
+										v-model="form.search"></el-input>
 				</el-form-item>
 				<el-form-item label="类别:">
 					<el-cascader
 									ref="cascader"
+									clearable
+									size="small"
 									:options="option.post_category"
-									v-model="post_category"
+									v-model="form.post_category"
 									:props="{value:'id',label:'name',children:'child'}"
 									:show-all-levels="false">
 						<template slot-scope="{ node, data }">
@@ -20,38 +27,60 @@
 				</el-form-item>
 				<el-form-item label="创建日期:">
 					<el-date-picker
-									v-model="created_time_range"
+									v-model="form.created_time_range"
 									type="daterange"
 									align="right"
 									unlink-panels
 									range-separator="至"
 									start-placeholder="开始日期"
+									value-format="yyyy-MM-dd"
 									end-placeholder="结束日期"
+									size="small"
 									:picker-options="pickerOptions">
 					</el-date-picker>
 				</el-form-item>
 				<el-form-item label="排序方式">
-					<el-select v-model="params.order" placeholder="请选择">
+					<el-select	v-model="form.order"
+											clearable
+											size="small"
+											placeholder="请选择">
 						<el-option
-										label="点赞"
+										label="点赞(正排序)"
 										value="praise_num"
 						></el-option>
 						<el-option
-										label="阅读"
+										label="点赞(倒排序)"
+										value="praise_num"
+						></el-option>
+						<el-option
+										label="阅读(正排序)"
 										value="read_num"
 						></el-option>
 						<el-option
-										label="收藏"
+										label="阅读(倒排序)"
+										value="read_num"
+						></el-option>
+						<el-option
+										label="收藏(正排序)"
 										value="like_num"
 						></el-option>
 						<el-option
-										label="评论"
+										label="收藏(倒排序)"
+										value="like_num"
+						></el-option>
+						<el-option
+										label="评论(正排序)"
+										value="post_num"
+						></el-option>
+						<el-option
+										label="评论(倒排序)"
 										value="post_num"
 						></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary">搜索</el-button>
+					<el-button type="primary" @click="filter_post" size="small">查询</el-button>
+					<el-button type="danger" @click="filter_post" size="small">重置</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
@@ -99,6 +128,7 @@
 					</el-col>
 				</el-row>
 			</div>
+			<not_data :list="posts.results"></not_data>
 		</div>
 		<div class="footer-pagination">
 				<pagination
@@ -116,6 +146,7 @@
 
 	import {user_post} from "../../../api"
 	import pagination from '../../../components/pagination'
+	import not_data from '../../../components/not_data'
 
 	export default {
 		data() {
@@ -147,8 +178,12 @@
 						}
 					}]
 				},
-				created_time_range:[],	//筛选日期范围
-				post_category:[],				//筛选类别
+				form:{
+					order:null,
+					search:null,
+					post_category:null,
+					created_time_range:[],
+				},
 				params:{
 					limit:10,
 					offset:0,
@@ -160,7 +195,7 @@
 				},
 				posts:{
 					total:0,
-					results:[]
+					results:null
 				}
 			}
 		},
@@ -168,6 +203,24 @@
 			this._get_user_posts()
 		},
 		methods:{
+			filter_post(){
+				// 点击查询
+				if(this.form.created_time_range){
+					this.params.start_created_time=this.form.created_time_range[0]
+					this.params.end_created_time=this.form.created_time_range[1]
+				}else{
+					this.params.start_created_time=null
+					this.params.end_created_time=null
+				}
+				if(this.form.post_category){
+					this.params.category=this.form.post_category[this.form.post_category.length-1]
+				}else {
+					this.params.category=null
+				}
+				this.params.order = this.form.order
+				this.params.search = this.form.search
+				this._get_user_posts()
+			},
 			async _get_user_posts(){
 				// 获取用户个人帖子
 				let loading = this.openLoading({
@@ -186,26 +239,12 @@
 				this._get_user_posts()
 			}
 		},
-		watch:{
-			created_time_range:{
-				deep:true,
-				handler:function(new_val){
-					this.params.start_created_time=new_val[0]
-					this.params.end_created_time=new_val[1]
-				}
-			},
-			post_category:{
-				deep:true,
-				handler:function (new_val) {
-					this.params.category=new_val[new_val.length-1]
-				}
-			}
-		},
 		computed:{
 			...mapState(['option'])
 		},
 		components:{
-			pagination
+			pagination,
+			not_data
 		}
 	}
 </script>

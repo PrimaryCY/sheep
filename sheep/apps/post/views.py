@@ -7,6 +7,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.response import Response
 
 from apps.post.models import Category, Post, PostReply
+from apps.post.filters import PostFilter
 from utils.viewsets import ModelViewSet, CreateModelMixin, DestroyModelMixin
 from utils.pagination import LimitOffsetPagination
 from apps.post.serializer import PostCategorySerializer, PostSerializer, PostReplySerializer, RetrievePostSerializer, RetrievePostReplySerializer
@@ -44,7 +45,7 @@ class AllPostViewSet(ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     filter_fields = ('category', 'author_id')
     search_fields = ('@name',)
-    ordering_fields = ('create_time',)
+    ordering_fields = '__all__'
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -67,8 +68,9 @@ class UserPostViewSet(ModelViewSet):
     pagination_class = LimitOffsetPagination
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     filter_fields = ('category',)
+    filter_class = PostFilter
     search_fields = ('name',)
-    ordering_fields = ('create_time',)
+    ordering_fields = "__all__"
 
     def get_serializer_class(self):
         if self.action == 'list':

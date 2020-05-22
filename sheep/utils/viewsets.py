@@ -2,6 +2,9 @@ from __future__ import unicode_literals
 
 from typing import Mapping
 
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
+
 from utils.mixins import RetrieveModelMixin, UpdateModelMixin, CreateModelMixin, DestroyModelMixin
 from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins

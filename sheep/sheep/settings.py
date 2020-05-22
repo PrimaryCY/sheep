@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'channels',
     'rest_framework',
     'django_filters',
-    'debug_toolbar',
     'mptt',
     'corsheaders',
     'commands.apps.CommandsConfig',
@@ -68,7 +67,6 @@ MIDDLEWARE = [
     # 'django.contrib.auth.middleware.AuthenticationMiddleware',
     # 'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'utils.middleware.DRFCodeMiddleware'
 ]
 
@@ -231,6 +229,9 @@ REST_FRAMEWORK = \
         'DEFAULT_AUTHENTICATION_CLASSES': (
             'apps.user.authentication.TokenAuthentication',
         ),
+        'DEFAULT_FILTER_BACKENDS': (
+            'django_filters.rest_framework.DjangoFilterBackend',
+        ),
         # 'UNAUTHENTICATED_USER':lambda :'匿名用户'
         # 'DEFAULT_THROTTLE_CLASSES': (
         # 'rest_framework.throttling.AnonRateThrottle',
@@ -319,6 +320,18 @@ LOGGING = {
         },
     }
 }
+
+
+if DEBUG:
+    EXTRA_MIDDLEWARE = [
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    ]
+    EXTRA_INSTALL_APPS = [
+        'debug_toolbar',
+    ]
+    MIDDLEWARE.extend(EXTRA_MIDDLEWARE)
+    INSTALLED_APPS.extend(EXTRA_INSTALL_APPS)
+
 
 try:
     from .local_setting import *

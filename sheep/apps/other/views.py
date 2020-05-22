@@ -1,3 +1,5 @@
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin
@@ -14,6 +16,9 @@ class UploadViewSet(GenericViewSet,
     pagination_class = LimitOffsetPagination
     serializer_class = UploadSerializer
     permission_classes = ()
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    filter_fields = ('user_id', "url")
+    ordering_fields = "__all__"
     queryset = UploadHistoryModel.objects.all()
 
 

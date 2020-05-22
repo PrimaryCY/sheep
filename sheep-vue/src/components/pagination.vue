@@ -10,6 +10,7 @@
 						:page-sizes="pagination.page_sizes"
 						prev-text="上一页"
 						next-text="下一页"
+						:hide-on-single-page="pagination.hide_on_single_page"
 						@size-change="onChangeSize"
 						@current-change="onChangePage">
 		</el-pagination>
@@ -25,6 +26,7 @@
 					layout:"total, sizes, prev, pager, next, jumper",
 					page_sizes:[5,10,15,20],
 					background:false,
+					hide_on_single_page:true,
 				}
 			}
 		},

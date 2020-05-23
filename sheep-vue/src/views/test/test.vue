@@ -1,94 +1,50 @@
 <template>
 	<div>
-		<el-form ref="rule_post"
-							:model="post" :rules="post_rules" label-width="70px" label-position="'left">
-			<el-form-item label="标题:" prop="name">
-				<el-input
-								type="text"
-								placeholder="请输入帖子标题"
-								v-model="post.name"
-								maxlength="100"
-								show-word-limit
-				>
-				</el-input>
-			</el-form-item>
-		</el-form>
-		<tinymce-editor v-model="post.content"
-										@input="input"
-										:height="700"
-										ref="editor"
-			></tinymce-editor>
-<!--		<mavon_editor v-model="post.content"/>-->
-		<!--		<el-input-->
-		<!--						type="text"-->
-		<!--						placeholder="请输入帖子标题"-->
-		<!--						v-model="post.content"-->
-		<!--						maxlength="100"-->
-		<!--						show-word-limit-->
-		<!--		>-->
-		<!--		</el-input>-->
-		<!--		<error_message :message="post_error.content"></error_message>-->
-		<el-button type="primary" v-show="post_error.flag">提交</el-button>
-		<div style="position: fixed;bottom: 0;background-color: red;width: 100px;height: 100px"></div>
+		<button v-on:click="add">Add</button>
+		<button v-on:click="remove">Remove</button>
+		<transition-group name="list" >
+    <div v-for="item in items" v-bind:key="item" class="list-item">
+      {{ item }}
+    </div>
+		</transition-group>
 	</div>
 </template>
 
 <script>
-	import tinymceEditor from '../../components/Tinymce/tinymce-editor'
-	import mavon_editor from '../../components/mavonEditor/mavon-editor'
 
 	export default {
-		name: "postings",
+		el: '#list-demo',
 		data(){
 			return {
-				post_error:{
-					flag:false,
-				},
-				post:{
-					name:'',
-					content:'',
-				},
-				post_rules:{
-					'name':[
-						{required:true,message:'请输入标题!',trigger:'change'},
-						{
-							validator:(r,v,c)=>{
-								if(!v.trim()){
-									c(new Error('请输入标题!'))
-								}else {
-									c()
-								}
-							}, trigger: 'change'
-						}
-					]
+				items: [1,2,3,4,5,6,7,8,9],
+				nextNum: 10
 				}
-			}
-		},
-		methods:{
-			input(){
-				console.log('用户在输入了!')
-			}
-		},
-		components:{
-			tinymceEditor,
-			mavon_editor
-		},
-		watch: {
-			'post.name': function () {
-				console.log(this.$refs['rule_post'])
-				this.$refs['rule_post'].validate((valid) => {
-						if (!valid) {
-							this.post_error.flag = false
-							return false;
-						}
-						this.post_error.flag=true
-					}
-				)
-			}
+			},
+		methods: {
+			randomIndex: function () {
+				return Math.floor(Math.random() * this.items.length)
+			},
+			add: function () {
+				this.items.splice(this.randomIndex(), 0, this.nextNum++)
+			},
+			remove: function () {
+				this.items.splice(this.randomIndex(), 1)
+			},
 		}
 	}
 </script>
 
 <style scoped lang="scss">
+	.list-enter-active, .list-leave-active {
+		transition: all 1s;
+	}
+	.list-enter, .list-leave-to
+		/* .list-leave-active for below version 2.1.8 */ {
+		opacity: 0;
+		transform: translateY(30px);
+	}
 
+	.list-item{
+		width: 100%;
+	}
 </style>

@@ -1,7 +1,8 @@
 import axios from 'axios'
 import VueCookies from 'vue-cookies'
-import vue from '../main'
 
+import NProgress from '../plugins/nprogress'
+import vue from '../main'
 import settings from '../conf/settings'
 
 
@@ -13,26 +14,10 @@ let service=axios.create({
   },
 })
 
-// let cancel ,promiseArr = {}
-
-//http-请求拦截
-// service.interceptors.request.use(
-//   config => {
-//     if (promiseArr[config.url]) {//发起请求时，取消掉当前正在进行的相同请求
-//       promiseArr[config.url]('操作取消')
-//       promiseArr[config.url] = cancel
-//     }else{
-//       promiseArr[config.url] = cancel
-//     }
-//     return config
-//   },
-//   error => {
-//     return Promise.reject(err)
-//   }
-// );
 
 service.interceptors.request.use(
   request => {
+    NProgress.start()
     if (VueCookies.get(settings.TOKEN_NAME)) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
       request.headers.tk = VueCookies.get(settings.TOKEN_NAME);
     }
@@ -58,6 +43,7 @@ service.interceptors.response.use(
           })
           break
       }
+      NProgress.done()
       return response.data;
   },
   error => {

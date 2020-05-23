@@ -31,12 +31,9 @@
             ...mapState(['user','option'])
         },
         methods: {
-            blank_push(name, query){
+            blank_push(push_params){
                 // 新窗口打开页面
-                let routeData = this.$router.resolve({
-                    name: name,
-                    query: query
-                });
+                let routeData = this.$router.resolve(push_params);
                 window.open(routeData.href, '_blank');
             },
             reload () {
@@ -112,6 +109,11 @@
     [v-cloak] {
         display: none;
     }
+
+		/*修改顶部加载条颜色*/
+		#nprogress .bar {
+			background: #b53c57 !important;
+		}
 
     /*修改element的默认样式*/
     .el-message-box__wrapper .message{

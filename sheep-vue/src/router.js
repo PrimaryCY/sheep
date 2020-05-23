@@ -68,8 +68,18 @@ const routes = [
   },
   {
     // 创建帖子
-    path:'/postings',
+    path:'/postings/',
     name:'postings',
+    component:postings,
+    meta:{
+      no_back_top:true,
+      // is_login:true
+    }
+  },
+  {
+    // 修改帖子
+    path:'/postings/:id',
+    name:'postings_detail',
     component:postings,
     meta:{
       no_back_top:true,

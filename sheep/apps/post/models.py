@@ -103,6 +103,7 @@ class Post(BaseModel):
     author_id = models.IntegerField(null=False, verbose_name='创建人', db_index=True)
     category = models.IntegerField(null=False, default=1, verbose_name='帖子分类', db_index=True)
     # desc = models.CharField(max_length=512, null=True, verbose_name='帖子简介')
+    html_content = models.TextField(null=False, verbose_name='html帖子内容')
     content = models.TextField(null=False, verbose_name='帖子内容')
     image = models.URLField(null=True, verbose_name='帖子封面')
     post_num = models.IntegerField(null=False, default=0, verbose_name='评论数量')

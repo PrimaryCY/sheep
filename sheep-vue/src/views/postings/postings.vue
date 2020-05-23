@@ -52,7 +52,7 @@
 											class="sumbit"
 											type="primary"
 											@click="sumbit"
-							>{{post.type?'保存修改':'发表文章'}}</el-button>
+							>{{schema==='update'?'保存修改':'发表文章'}}</el-button>
 						</el-col>
 						<el-col :span="3">
 							<el-button
@@ -102,7 +102,7 @@
 
 	import tinymceEditor from '../../components/Tinymce/tinymce-editor'
 	import mavon_editor from '../../components/mavonEditor/mavon-editor'
-	import {get_post_category,upload,create_user_post} from '../../api/index'
+	import {get_post_category, upload, create_user_post, user_post} from '../../api/index'
 	import Backtop from "../../components/backtop"
 
 	export default {
@@ -112,13 +112,14 @@
 					name:'',
 					category:'',
 					image:null,
+					html_content:'',
 					content:'',
 					tiny_content:'',
 					mavon_content:'',
 					content_type:1, //true为富文本,false为markdown
-					type:false, //true为发表文章,false为编辑文章
 			}
 			return {
+				schema: 'create', //当前模式
 				post,
 				reader_image:post.image,
 				cascader_data:{		//帖子类别
@@ -156,18 +157,42 @@
 					if (!valid) {
 						return false;
 						}
-					this.post.content=this.post.content_type===1?this.post.tiny_content:this.$refs['mavon'] .d_render
-					if(!this.post.content){
+					let loading = this.openLoading({
+						'text':'发布中...'
+					})
+					// 根据编辑器不同,获取不同的原始数据
+					if(this.post.content_type===1){
+						this.post.html_content = this.post.tiny_content
+						this.post.content = this.$refs['tinymce'].get_content()
+					}else {
+						this.post.html_content = this.$refs['mavon'].d_render
+						this.post.content = this.post.mavon_content
+					}
+					if(!this.post.html_content){
 						return this.$message('文章内容不能为空!')
 					}
 					this.post.category=this.cascader_data.category
-					let res = await create_user_post(this.post)
-					if(res.code!==2000){
-						this.$message(res.msg)
-						return
+					if(this.schema==='create'){
+						let res = await create_user_post(this.post)
+						if(res.code!==2000){
+							this.$message(res.msg)
+							loading.close()
+							return
+						}
+						loading.close()
+						this.$message.success('发布成功!')
 					}
-					this.$message.success('发布成功!')
+					else {
+						let res = await user_post.update(this.$route.params.id, this.post)
+						if(res.code!==2000){
+							this.$message(res.msg)
+							loading.close()
+							return
+						}
+						loading.close()
+						this.$message.success('修改成功!')
 					}
+				}
 				)
 			},
 			async _get_category_data(){
@@ -243,8 +268,36 @@
 				this.$message.success('上传成功!')
 				this.upload_image.flag=false
 			},
+			async _select_schema(){
+				// 选择当前模式
+				let id = this.$route.params.id
+				if(id){
+					let loading = this.openLoading({
+						'text':'加载中...'
+					})
+					let res = await user_post.retrieve(id)
+					if(res.code!==2000) {
+						this.$message(res.msg)
+						loading.close()
+						return
+					}
+					this.post = res.data
+					if(res.data.content_type===1){
+						this.post.tiny_content = this.post.parse_content
+					}else {
+						this.post.mavon_content = this.post.parse_content
+					}
+					this.reader_image = this.post.image
+					this.cascader_data.category = this.post.category_list
+					this.schema = 'update'
+					loading.close()
+				}else {
+					this.schema = 'create'
+				}
+			}
 		},
 		async created(){
+			this._select_schema()
 			// await this._get_category_data()
 			// this._get_default_category()
 		},
@@ -264,7 +317,7 @@
 					this._get_default_category()
 				}
 			}
-		}
+		},
 	}
 </script>
 <style scoped lang="scss">

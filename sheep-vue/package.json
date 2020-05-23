@@ -13,6 +13,7 @@
     "core-js": "^3.4.3",
     "element-ui": "^2.4.5",
     "mavon-editor": "^2.8.3",
+    "nprogress": "^0.2.0",
     "particles.js": "^2.0.0",
     "tinymce": "^5.2.1",
     "vue": "^2.6.10",

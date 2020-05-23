@@ -167,6 +167,13 @@
 				if (tinymce) {
 					tinymce.destroy()
 				}
+			},
+			get_content(){
+				// 获取tinymce纯文本内容
+				let activeEditor = tinymce.activeEditor;
+				let editBody = activeEditor.getBody();
+				activeEditor.selection.select(editBody);
+				return activeEditor.selection.getContent( { format : 'text' } )
 			}
 		},
 		watch: {

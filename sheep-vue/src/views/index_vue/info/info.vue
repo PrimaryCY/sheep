@@ -32,12 +32,14 @@
 										action=""
 										:before-upload="before_avatar_upload">
 							<el-button	plain
+													type="info"
 													size="mini"
 													round>
 								更换头像
 							</el-button>
 						</el-upload>
 						<el-button	plain
+												type="primary"
 												v-if="uploadData.flag"
 												size="mini"
 												round
@@ -92,7 +94,7 @@
 				<el-tab-pane label="个人资料" class="data">
 					<el-row type="flex">
 						<el-col :span="3" :offset="21">
-							<el-button	plain	size="small" type="warning" @click="edit.flag=!edit.flag">
+							<el-button	plain	size="small" type="info" @click="edit.flag=!edit.flag">
 								修改资料
 								<svg class="icon-min" aria-hidden="true">
 									<use xlink:href="#icon-shezhi"></use>

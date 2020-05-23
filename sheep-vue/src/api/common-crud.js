@@ -1,7 +1,8 @@
 import axios from 'axios'
 import VueCookies from 'vue-cookies'
-import vue from '../main'
+import NProgress from '../plugins/nprogress'
 
+import vue from '../main'
 import settings from '../conf/settings'
 
 
@@ -15,6 +16,7 @@ let service=axios.create({
 
 service.interceptors.request.use(
 	request => {
+		NProgress.start()
 		if (VueCookies.get(settings.TOKEN_NAME)) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
 			request.headers.tk = VueCookies.get(settings.TOKEN_NAME);
 		}
@@ -40,6 +42,7 @@ service.interceptors.response.use(
 				// })
 				break
 		}
+		NProgress.done()
 		return response.data;
 	},
 	error => {
@@ -61,8 +64,18 @@ service.interceptors.response.use(
 
 
 export default function(url){
+	if(url.charAt(url.length-1)!=='/'){
+		url = url+ '/'
+	}
+	function url_append_id(id, url) {
+		// 详情页面增加id
+		if(id){
+			url = `${url}${id}/`
+		}
+		return url
+	}
 	return {
-		get: (param = {}) => {//get请求
+		list: (param = {}) => {//get请求
 			return new Promise((resolve,) => {
 				service({
 					method: 'get',
@@ -73,34 +86,61 @@ export default function(url){
 				})
 			})
 		},
-		post:(param)=>{//post请求
+		retrieve: (id=null, param = {}) => {//详情页请求
+			let u = url_append_id(id, url)
+			return new Promise((resolve,) => {
+				service({
+					method: 'get',
+					url:u,
+					params: param,
+				}).then(res => {
+					resolve(res)
+				})
+			})
+		},
+		created:(data)=>{//post请求
 			return new Promise((resolve, ) => {
 				service({
 					method: 'post',
 					url,
-					data: param,
+					data: data,
 				}).then(res => {
 					resolve(res)
 				})
 			})
 		},
-		patch:(param)=>{//patch请求
+		update:(id=null,data)=>{//put请求
+			let u = url_append_id(id, url)
+			return new Promise((resolve, ) => {
+				service({
+					method: 'put',
+					url:u,
+					data: data,
+				}).then(res => {
+					resolve(res)
+				})
+			})
+		},
+		partial_update:(id=null, data)=>{//patch请求
+			let u = url_append_id(id, url)
 			return new Promise((resolve, ) => {
 				service({
 					method: 'patch',
-					url,
-					data: param,
+					url:u,
+					data: data,
 				}).then(res => {
 					resolve(res)
 				})
 			})
 		},
-		delete:(param) =>{//delete请求
+		destory:(id=null,data={})=>{//delete请求
+			let u = url_append_id(id, url)
+			console.log(u)
 			return new Promise((resolve, ) => {
 				service({
 					method: 'delete',
-					url,
-					data: param,
+					url:u,
+					data: data,
 				}).then(res => {
 					resolve(res)
 				})

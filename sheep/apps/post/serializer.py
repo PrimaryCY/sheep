@@ -92,7 +92,7 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Post
-        exclude = ("content",)
+        exclude = ("content", "html_content")
         extra_kwargs = {
             'url': {'view_name': 'v1:web:all_post-detail', 'lookup_field': 'pk'},
         }
@@ -101,6 +101,28 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
 
 class RetrievePostSerializer(PostSerializer):
     """retrieve方法的帖子序列化器"""
+
+    class Meta(PostSerializer.Meta):
+        model = Post
+        fields = "__all__"
+        extra_kwargs = {
+            'url': {'view_name': 'v1:web:all_post-detail', 'lookup_field': 'pk'},
+        }
+
+
+class UpdateRetrievePostSerializer(PostSerializer):
+    """retrieve方法的帖子序列化器"""
+    html_content = serializers.CharField(write_only=True, label='html内容')
+    content = serializers.CharField(write_only=True, label='文字内容')
+    parse_content = serializers.SerializerMethodField(label='帖子编辑内容')
+    category_list = serializers.SerializerMethodField(label='类别列表')
+
+    def get_category_list(self, obj):
+        category = Category.objects.filter(id=obj.category).first()
+        return category.get_ancestors(include_self=True).values_list('id', flat=True)
+
+    def get_parse_content(self, obj):
+        return obj.content if obj.content_type == 2 else obj.html_content
 
     class Meta:
         model = Post

@@ -10,7 +10,7 @@ from apps.post.models import Category, Post, PostReply
 from apps.post.filters import PostFilter
 from utils.viewsets import ModelViewSet, CreateModelMixin, DestroyModelMixin
 from utils.pagination import LimitOffsetPagination
-from apps.post.serializer import PostCategorySerializer, PostSerializer, PostReplySerializer, RetrievePostSerializer, RetrievePostReplySerializer
+from apps.post.serializer import PostCategorySerializer, PostSerializer, PostReplySerializer, RetrievePostSerializer, RetrievePostReplySerializer, UpdateRetrievePostSerializer
 from apps.user.permission import IsAdminUser, IsLoginUser
 
 
@@ -63,7 +63,7 @@ class AllPostViewSet(ReadOnlyModelViewSet):
 class UserPostViewSet(ModelViewSet):
     """个人帖子视图"""
     serializer_class = PostSerializer
-    retrieve_serializer_class = RetrievePostSerializer
+    retrieve_serializer_class = UpdateRetrievePostSerializer
     permission_classes = (IsLoginUser,)
     pagination_class = LimitOffsetPagination
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)

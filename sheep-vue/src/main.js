@@ -30,7 +30,6 @@ import './plugins/vue-particles'
 // import './plugins/mavon-editor'
 
 
-
 import './utils/util'
 
 export default new Vue({

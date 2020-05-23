@@ -10,7 +10,10 @@ from sheep.constant import RET
 
 
 class DRFCodeMiddleware(MiddlewareMixin):
-    """处理drf响应middleware"""
+    """
+    处理drf响应middleware
+        使用此中间件会造成所有status_code为200状态(500错误除外)
+    """
 
     def process_template_response(self, request, response):
         response = self.process_response(request, response)
@@ -27,7 +30,6 @@ class DRFCodeMiddleware(MiddlewareMixin):
             return response
         # 正常返回的情况
         if exc is False:
-            # ...
             self.success_response_handle(response)
         # 预料中的异常的异常情况
         else:
@@ -37,13 +39,15 @@ class DRFCodeMiddleware(MiddlewareMixin):
     @staticmethod
     def success_response_handle(response):
         """无异常正常返回时"""
-        if isinstance(response.data, list)\
-                or {'code', 'data'} - set(response.data.keys()):
-            response.data = {
-                'success': True,
-                'code': RET.OK,
-                'data': response.data
-            }
+        if isinstance(response.data, Mapping)\
+                and not {'code', 'data'} - set(response.data.keys()):
+            return response
+        response.data = {
+            'success': True,
+            'code': RET.OK,
+            'data': response.data
+        }
+        response.status_code = 200
         return response
 
     def error_response_handle(self, request, response):

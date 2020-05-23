@@ -105,8 +105,8 @@
 		},
 		computed:{
 			d_render(){
-				return this.$refs['md'].d_render
-			}
+					return this.$refs['md'].d_render
+				}
 		},
 		watch:{
 			value(n){

@@ -2,7 +2,7 @@
 	<div class="home">
 		<mavon-editor
 						ref="md"
-						placeholder="请输入文章内容..."
+						placeholder="请输入内容..."
 						:boxShadow="false"
 						:style="{height: this.height}"
 						style="z-index:1;border: 1px solid #d9d9d9;"

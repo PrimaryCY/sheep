@@ -9,13 +9,13 @@
 							status-icon
 							label-position="'left">
 
-					<el-row type="flex">
+					<el-row type="flex" :gutter="2">
 
 						<el-col :span="19">
 							<el-form-item label="标题:" prop="name">
 								<el-input
 												type="text"
-												placeholder="请输入文章标题"
+												:placeholder="name_placeholder"
 												v-model="post.name"
 												width="1200px"
 												maxlength="100"
@@ -39,20 +39,24 @@
 								</el-cascader>
 							</el-form-item>
 						</el-col>
-						<el-col :span="2">
-							<el-button
-											class="sumbit"
-											type="info"
-											plain
-											@click="upload_image.flag = true"
-							>文章封面</el-button>
+						<el-col :span="2" >
+							<div class="post_type_select">
+								<el-form-item label-width="0" prop="post_type">
+									<el-radio-group
+													size="mini"
+													v-model="post.post_type">
+										<el-radio	:label="1">文章</el-radio>
+										<el-radio :label="2">提问</el-radio>
+									</el-radio-group>
+								</el-form-item>
+							</div>
 						</el-col>
 						<el-col :span="2">
 							<el-button
 											class="sumbit"
 											type="primary"
 											@click="sumbit"
-							>{{schema==='update'?'保存修改':'发表文章'}}</el-button>
+							>{{schema==='update'?'保存':'发表'}}</el-button>
 						</el-col>
 						<el-col :span="3">
 							<el-button
@@ -75,25 +79,11 @@
 					<mavon_editor
 									ref="mavon"
 									v-model="post.mavon_content"
-									height="90vh"
+									height="91vh"
 					/>
 			<backtop target=".v-show-content" @click="mavon_backtop_click"></backtop>
 		</div>
 
-		<el-dialog title="文章封面" :visible.sync="upload_image.flag">
-			<el-upload
-							class="image image-full"
-							action=""
-							:show-file-list="false"
-							:before-upload="before_image_upload">
-				<img v-if="reader_image" :src="reader_image" alt="" />
-				<i v-else class="el-icon-plus avatar-uploader-icon">上传...</i>
-			</el-upload>
-			<div slot="footer" class="dialog-footer">
-				<el-button @click="upload_image.flag = false">取 消</el-button>
-				<el-button type="primary" @click="upload">保 存</el-button>
-			</div>
-		</el-dialog>
 	</div>
 </template>
 
@@ -102,7 +92,7 @@
 
 	import tinymceEditor from '../../components/Tinymce/tinymce-editor'
 	import mavon_editor from '../../components/mavonEditor/mavon-editor'
-	import {get_post_category, upload, create_user_post, user_post} from '../../api/index'
+	import {get_post_category, create_user_post, user_post} from '../../api/index'
 	import Backtop from "../../components/backtop"
 
 	export default {
@@ -117,19 +107,14 @@
 					tiny_content:'',
 					mavon_content:'',
 					content_type:1, //true为富文本,false为markdown
+					post_type:1, //1为文章,2为提问
 			}
 			return {
 				schema: 'create', //当前模式
 				post,
-				reader_image:post.image,
 				cascader_data:{		//帖子类别
 					category_data:[],
 					category:[],
-				},
-				upload_image:{		//上传封面
-					file:post.image,
-					upload_path:'post_image',
-					flag:false,
 				},
 				post_rules:{
 					'name':[
@@ -169,7 +154,7 @@
 						this.post.content = this.post.mavon_content
 					}
 					if(!this.post.html_content){
-						return this.$message('文章内容不能为空!')
+						return this.$message('内容不能为空!')
 					}
 					this.post.category=this.cascader_data.category
 					if(this.schema==='create'){
@@ -222,52 +207,6 @@
 					this.cascader_data.category=this.post.category
 					}
 				},
-			before_image_upload(file){
-					const isJPG = file.type === "image/jpeg";
-					const isPNG = file.type === "image/png";
-
-					if (!isJPG && !isPNG) {
-						this.$message.error("上传头像图片只能是 JPG 或 PNG 格式!");
-					} else {
-						this.upload_image.file=file
-						this._image_preview(file);
-					}
-					return false;
-			},
-			_image_preview: function(file) {
-				// 图片预览
-				var self = this;
-				//定义一个文件阅读器
-				var reader = new FileReader();
-				//文件装载后将其显示在图片预览里
-				reader.onload = function(e) {
-					//将bade64位图片保存至数组里供上面图片显示
-					self.reader_image = e.target.result;
-				};
-				reader.readAsDataURL(file);
-			},
-			async upload(){
-				if(!this.upload_image.file){
-					this.$message('请上传图片!')
-					return null
-				}
-				// 上传修改头像
-				let loading = this.openLoading({
-					text:'上传中...',
-					target:'#el-dialog'
-				})
-				let res = await upload(this.upload_image)
-				if(res.code!==2000){
-					this.$message(res.msg)
-					loading.close()
-					return null
-				}
-				loading.close()
-				this.post.image=res.data.url
-				this.upload_image.file=null
-				this.$message.success('上传成功!')
-				this.upload_image.flag=false
-			},
 			async _select_schema(){
 				// 选择当前模式
 				let id = this.$route.params.id
@@ -287,7 +226,6 @@
 					}else {
 						this.post.mavon_content = this.post.parse_content
 					}
-					this.reader_image = this.post.image
 					this.cascader_data.category = this.post.category_list
 					this.schema = 'update'
 					loading.close()
@@ -307,7 +245,10 @@
 			mavon_editor
 		},
 		computed:{
-			...mapState(['option'])
+			...mapState(['option']),
+			name_placeholder(){
+				return this.post.post_type===1?'请输入标题...':'请填写提问...'
+			}
 		},
 		watch:{
 			'option.post_category':{
@@ -316,7 +257,7 @@
 					this.cascader_data.category_data=n
 					this._get_default_category()
 				}
-			}
+			},
 		},
 	}
 </script>
@@ -330,6 +271,12 @@
 	.post_content{
 		/*height: 100%;*/
 		background-color: white;
+		.post_type_select{
+			text-align: center;
+		}
+	}
+	.el-radio{
+		margin-right: 0!important;
 	}
 	.el-form-item__content{
 		margin-left: 0!important;

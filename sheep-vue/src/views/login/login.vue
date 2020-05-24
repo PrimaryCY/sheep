@@ -40,6 +40,7 @@
 									placeholder="请输入密码"
 									@keyup="login_watch(2)" maxlength="20"/>
 					<p v-if="loginError.password" class="error-msg"><a href="javascript:">{{loginError.password}}</a></p>
+					<el-checkbox v-model="loginData.remember_me">记住账号</el-checkbox>
 				</label>
 				<br>
 <!--				<p class="forgot-pass"><a href="javascript:">忘记密码？</a></p>-->
@@ -48,6 +49,7 @@
 								:class="{'submit_disable':loginError.flag}"
 								:disabled="loginError.flag"
 				>登 录</button>
+
 				<button type="button" class="fb-btn">使用 <span>facebook</span> 帐号登录</button>
 			</div>
 			<!--			注册-->
@@ -136,6 +138,7 @@
 				loginData:{
 					email_or_phone:'',
 					password:'',
+					remember_me:false,
 				},
 				loginError:{
 					email_or_phone:'',
@@ -161,18 +164,19 @@
 		methods:{
 			async login(){
 				let data = this.loginData
-				console.log('login')
 				const loading = this.openLoading({
 					'text':'登陆中',
 					'target':'.form'
 				})
 				let res = await post_login(data)
 				if(res.code===2000){
-					this.$cookies.set(setting.TOKEN_NAME,res.data.token, setting.TOKEN_EXPIRE)
-					console.log(this.$cookies.get('tk'))
+					this.$cookies.secure_set(setting.TOKEN_NAME,res.data.token, setting.TOKEN_EXPIRE)
 					// 如果之前已经登录其它账号,先清空再获取新用户信息
 					this.$store.dispatch('modify_userinfo',{})
 					this.$store.dispatch('receive_userinfo')
+					if(this.loginData.remember_me){
+						this.$cookies.secure_set('un',data.email_or_phone,this.$settings.REMEMBER_ME_EXPIRE)
+					}
 					this.$router.replace('/index')
 				}else if(res.msg.indexOf('邮箱') !== -1) {
 					this.loginError.email_or_phone=res.msg
@@ -214,7 +218,6 @@
 
 			// 注册相关
 			async register(){
-				console.log('register')
 				const loading = this.openLoading({
 					'text':'注册中',
 					'target':'.form.sign-up'
@@ -228,6 +231,7 @@
 						type: 'success'
 					});
 					this.reload()
+					this.loginData.email_or_phone=data.email
 				}else if(res.msg.indexOf('用户') !== -1) {
 					this.registerError.username=res.msg
 				}else if(res.msg.indexOf('密码') !== -1){
@@ -290,7 +294,14 @@
 		// components: {
 		// 	remote_js
     // }
-  }
+		created() {
+			// 打开页面读取记住用户数据
+			this.loginData.email_or_phone = this.$cookies.secure_get('un')
+			if(this.loginData.email_or_phone){
+				this.loginData.remember_me = true
+			}
+		}
+	}
 </script>
 
 <style scoped lang="scss">

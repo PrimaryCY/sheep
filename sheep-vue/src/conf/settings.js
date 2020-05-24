@@ -21,4 +21,6 @@ settings.TOKEN_EXPIRE="7d"
 
 settings.DEFAULT_PORTRAIT='https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png'
 
+settings.REMEMBER_ME_EXPIRE='7d'
+
 export default settings

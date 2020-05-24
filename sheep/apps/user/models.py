@@ -31,8 +31,8 @@ class User(BaseModel, AbstractBaseUser):
     USERNAME_FIELD = 'username'
 
     # 用户默认数据
-    defautl_man_portrait = '123'
-    defautl_women_portrait = '321'
+    defautl_man_portrait = 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2519824424,1132423651&fm=26&gp=0.jpg'
+    defautl_women_portrait = 'https://dss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=283284588,2796778480&fm=26&gp=0.jpg'
 
     class Meta:
         verbose_name_plural = verbose_name = '用户表'

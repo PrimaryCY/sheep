@@ -94,9 +94,13 @@ class Category(BaseModel, MPTTModel):
 
 class Post(BaseModel):
     """帖子表"""
-    content_type_choices=(
+    content_type_choices = (
         (1, '富文本'),
         (2, 'markdown')
+    )
+    post_type_choices = (
+        (1, '文章'),
+        (2, '问题')
     )
 
     name = models.CharField(max_length=128, null=False, verbose_name='帖子标题')
@@ -105,7 +109,8 @@ class Post(BaseModel):
     # desc = models.CharField(max_length=512, null=True, verbose_name='帖子简介')
     html_content = models.TextField(null=False, verbose_name='html帖子内容')
     content = models.TextField(null=False, verbose_name='帖子内容')
-    image = models.URLField(null=True, verbose_name='帖子封面')
+    post_type = models.SmallIntegerField(choices=post_type_choices, default=1, verbose_name='文章类型')
+    # image = models.URLField(null=True, verbose_name='帖子封面')
     post_num = models.IntegerField(null=False, default=0, verbose_name='评论数量')
     read_num = models.IntegerField(default=0, verbose_name='阅读数量')
     like_num = models.IntegerField(default=0, verbose_name='收藏数量')
@@ -120,7 +125,7 @@ class Post(BaseModel):
         :param post_id:
         :return:
         """
-        return cls.objects.filter(id=post_id).values(*cls.exclude('content'))
+        return cls.objects.filter(id=post_id).values(*cls.exclude(['content']))
 
     @classmethod
     def add_post_num(cls, post_id: int):

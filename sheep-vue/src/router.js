@@ -14,6 +14,7 @@ import postings from './views/postings/postings'
 import index from './views/index_vue/index/index'
 import info from './views/index_vue/info/info'
 import my_post from './views/index_vue/my_post/my_post'
+import my_question from './views/index_vue/my_question/my_question'
 
 import NotFound from './views/notFound/notFound'
 import test from './views/test/test'
@@ -56,6 +57,14 @@ const routes = [
         path:'my_post',
         name:'my_post',
         component:my_post,
+        meta:{
+          is_login:true
+        }
+      },
+      {
+        path:'my_question',
+        name:'my_question',
+        component:my_question,
         meta:{
           is_login:true
         }

@@ -9,3 +9,4 @@ class PostFilter(FilterSet):
     start_created_time = django_filters.DateFilter(field_name='created_time', lookup_expr='gte', label='开始创建')
     end_created_time = django_filters.DateFilter(field_name='created_time', lookup_expr='lte', label='结束创建')
     category = django_filters.NumberFilter(field_name='category')
+    post_type = django_filters.NumberFilter(field_name='post_type')

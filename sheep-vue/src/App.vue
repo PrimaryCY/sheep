@@ -12,9 +12,13 @@
 
 		import backtop from './components/backtop'
     import setting from './conf/settings'
+		import browser_mixin from '../src/mixins/browser_mixin'
 
     export default {
         name: 'app',
+				mixins:[
+					browser_mixin
+				],
         provide () {
             return {
                 reload: this.reload,
@@ -53,7 +57,7 @@
             },
             _get_user_info(){
                 // 获取token中保存的登录信息
-                if(this.$cookies.get(setting.TOKEN_NAME)&&!this.user.username){
+                if(this.$cookies.secure_get(setting.TOKEN_NAME)&&!this.user.username){
                     let loading = this.openLoading({
                         text:'自动登录中..',
                     })
@@ -83,7 +87,6 @@
         created(){
 					this.init_data()
 					this._debugger()
-          console.log(this.$route)
         },
 			components:{
 				backtop

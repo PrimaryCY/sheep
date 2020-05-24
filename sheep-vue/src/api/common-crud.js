@@ -18,7 +18,7 @@ service.interceptors.request.use(
 	request => {
 		NProgress.start()
 		if (VueCookies.get(settings.TOKEN_NAME)) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
-			request.headers.tk = VueCookies.get(settings.TOKEN_NAME);
+			request.headers.tk = VueCookies.secure_get(settings.TOKEN_NAME);
 		}
 		return request;
 	},
@@ -32,7 +32,7 @@ service.interceptors.response.use(
 		console.log(response)
 		switch(response.data.code) {
 			case '4101':
-				VueCookies.remove('tk')
+				VueCookies.remove(settings.TOKEN_NAME)
 				console.log('用户令牌失效!')
 				// router.replace({
 				//   path: '/login',

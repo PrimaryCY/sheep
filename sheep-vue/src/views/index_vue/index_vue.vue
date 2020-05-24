@@ -15,6 +15,7 @@
 									v-model="pack_up"
 									:width="20"
 									active-color="#7d7d83"
+									@change="click_pack_up"
 									inactive-color="#b53c57">
 					</el-switch>
 				</div>
@@ -58,7 +59,7 @@
 						<!-- logo -->
 						<div class="user" @click="push('/info',2)">
 							<el-avatar :size="60" :src="user.portrait" >
-								<img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>
+								<img :src="user.portrait"/>
 							</el-avatar>
 							<p class="username">
 								<svg v-if="user.gender===0" class="icon-min" aria-hidden="true">
@@ -88,7 +89,7 @@
 								><svg class="icon-min" aria-hidden="true">
 									<use xlink:href="#icon-fabu"></use>
 								</svg>
-									发表文章
+									发布/提问
 								</el-button>
 							</div>
 						</section>
@@ -100,19 +101,25 @@
 									<svg class="icon-min" aria-hidden="true">
 										<use xlink:href="#icon-shiyongwendang"></use>
 									</svg>
-									所有文章
-								</a></li>
-								<li :class="{current_page_item:active==='/info'}" @click.prevent="push('/info')"><a href="#">
-									<svg class="icon-min" aria-hidden="true">
-										<use xlink:href="#icon-icon_zhanghao"></use>
-									</svg>
-									个人中心
+									首页
 								</a></li>
 								<li :class="{current_page_item:active==='/my_post'}" @click.prevent="push('/my_post')"><a href="#">
 									<svg class="icon-min" aria-hidden="true">
 										<use xlink:href="#icon-chuangzuo"></use>
 									</svg>
 									我的文章
+								</a></li>
+								<li :class="{current_page_item:active==='/my_question'}" @click.prevent="push('/my_question')"><a href="#">
+									<svg class="icon-min" aria-hidden="true">
+										<use xlink:href="#icon-wenti--copy"></use>
+									</svg>
+									我的提问
+								</a></li>
+								<li :class="{current_page_item:active==='/info'}" @click.prevent="push('/info')"><a href="#">
+									<svg class="icon-min" aria-hidden="true">
+										<use xlink:href="#icon-icon_zhanghao"></use>
+									</svg>
+									个人中心
 								</a></li>
 								<li><a href="#">
 									<svg class="icon-min" aria-hidden="true">
@@ -124,7 +131,7 @@
 									<svg class="icon-min" aria-hidden="true">
 										<use xlink:href="#icon-icon_community_line"></use>
 									</svg>
-									我的评论
+									我的回复
 								</a></li>
 								<li><a href="#">
 									<svg class="icon-min" aria-hidden="true">
@@ -327,6 +334,9 @@
   export default {
     name: "index",
 		inject:['push','blank_push'],
+		created(){
+			this.pack_up = this.$cookies.secure_get('pack_up')
+		},
 		data(){
       return {
 				pack_up:false, // 是否展开收起
@@ -342,6 +352,10 @@
 			}
 		},
 		methods:{
+			click_pack_up(val){
+				// 点击收起时存入cookie中
+				this.$cookies.secure_set('pack_up',val,'7d')
+			},
       async login(){
 				console.log('login')
 				this.loginBtn.loading = true
@@ -395,7 +409,7 @@
 						white-space: pre;
 						letter-spacing: 18px;
 						overflow: hidden;
-						padding: 30%;
+						padding: 37%;
 					}
 
 				}
@@ -493,7 +507,7 @@
 			width: 100%;
 			height: 70px;
 			border: 0;
-			font-size: 20px;
+			font-size: 18px;
 			margin: 0;
 			padding: 0;
 		}
@@ -509,7 +523,7 @@
 			width: 100%;
 			height: 50px;
 			border: 0;
-			font-size: 16px;
+			font-size: 12px;
 			margin: 0;
 		}
 		.login-btn:active{

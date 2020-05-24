@@ -50,16 +50,20 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
         )
     ])
 
-    image = serializers.CharField(validators=[
-        URLValidator(message='图片地址不正确!')
-        ], label='封面', required=False, allow_null=True)
     category = serializers.ListField(label='帖子分类', write_only=True)
     content_type = RangeField(iterable=list(dict(Post.content_type_choices)),
-                        label='文章类型',
+                        label='文章书写类型',
                         required=True,
-                        error_messages='文章类型传递错误!',
+                        error_messages='文章书写类型传递错误!',
                         data_type=int
                         )
+
+    post_type = RangeField(iterable=list(dict(Post.post_type_choices)),
+                           label='文章类型',
+                           required=True,
+                           error_messages='文章类型传递错误!',
+                           data_type=int
+                           )
 
     def validate_category(self, category):
         if not category:

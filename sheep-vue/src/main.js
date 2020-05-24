@@ -4,9 +4,7 @@ import router from './router'
 import store from './store/store'
 
 import settings from './conf/settings'
-import VueCookies from 'vue-cookies';
 Vue.prototype.$settings=settings
-Vue.use(VueCookies)
 
 if(settings.DEBUG){
   Vue.config.productionTip = true
@@ -27,6 +25,7 @@ import '../public/static/css/style-1200px.css'
 
 import './plugins/element/element'
 import './plugins/vue-particles'
+import './plugins/vue-cookies'
 // import './plugins/mavon-editor'
 
 

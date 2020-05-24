@@ -130,7 +130,6 @@
 								text:'上传中...',
 								target:'div'
 							})
-							console.log(self)
 							self.upload_data.file= this.files[0]
 							let res = await upload(self.upload_data)
 							if (res.code !== 2000) {
@@ -181,7 +180,6 @@
 				this.myValue = newValue
 			},
 			myValue (newValue) {
-				console.log('tinymce的用户输入了!')
 				this.$emit('input', newValue)
 			}
 		},

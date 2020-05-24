@@ -7,7 +7,7 @@
 						<el-form-item
 										label-width="60px"
 										label="关键字:">
-							<el-input placeholder="文章名称"
+							<el-input placeholder="问题名称"
 												clearable
 												size="small"
 												maxlength="100"
@@ -121,7 +121,7 @@
 					</el-row>
 					<el-row class="article-info" type="flex">
 						<el-col :span="5">
-							发表时间:{{post.created_time}}
+							提问时间:{{post.created_time}}
 						</el-col>
 						<el-col :span="5">
 							更新时间:{{post.update_time}}
@@ -181,7 +181,7 @@
 							<!--占位使用-->
 						</el-col>
 						<el-col :span="3" v-if="!post.is_active" class="article-btn delete_msg">
-								已删除!
+								问题已删除!
 						</el-col>
 					</el-row>
 			</div>
@@ -251,7 +251,7 @@
 					end_created_time:null,
 					category:null,
 					ordering:null,
-					post_type:1,
+					post_type:2,
 				},
 				posts:{
 					total:0,

@@ -67,7 +67,6 @@ class UserPostViewSet(ModelViewSet):
     permission_classes = (IsLoginUser,)
     pagination_class = LimitOffsetPagination
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
-    filter_fields = ('category',)
     filter_class = PostFilter
     search_fields = ('name',)
     ordering_fields = "__all__"

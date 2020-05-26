@@ -69,7 +69,11 @@ class Category(BaseModel, MPTTModel):
             {'name': 'elasticSearch'},
             {'name': '其它'}
         ]
-        author_id = User.objects.filter(phone__in=settings.ADMIN_PHONE).only('id').first().id
+        author = User.objects.filter(phone__in=settings.ADMIN_PHONE).only('id').first()
+        if not author:
+            return
+        author_id = author.id
+
         def _execute(c_list, parent_id=None):
             for category in c_list:
                 if cls.objects.filter(name=category['name']).first():

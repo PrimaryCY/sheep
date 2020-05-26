@@ -11,7 +11,7 @@
 
 					<el-row type="flex" :gutter="2">
 
-						<el-col :span="19">
+						<el-col :span="19" >
 							<el-form-item label="标题:" prop="name">
 								<el-input
 												type="text"

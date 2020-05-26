@@ -77,6 +77,7 @@
     - vue-cli3
     - axios
     - nprogres
+    - crypto-js
 
 ---
 

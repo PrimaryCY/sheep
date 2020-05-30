@@ -14,12 +14,14 @@ from sheep.constant import RET
 
 User = get_user_model()
 
+from django.db import transaction
 
 class LoginViewSet(CreateModelMixin, GenericViewSet):
     """登录视图"""
     serializer_class = LoginSerializer
     permission_classes = ()
 
+    @transaction.atomic()
     def create(self, request, *args, **kwargs):
         """登录"""
         serializer = self.get_serializer(data=request.data)

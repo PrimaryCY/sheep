@@ -171,6 +171,7 @@ CORS_ORIGIN_WHITELIST = (
     'http://127.0.0.1:*',
     'https://127.0.0.1:*',
     'http://*:*',
+    'http://localhost:*'
 )
 CORS_ALLOW_METHODS = (
     'DELETE',

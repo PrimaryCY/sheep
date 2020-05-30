@@ -97,6 +97,7 @@ class TokenAuthentication(BaseAuthentication):
     def anonymity_authenticate(request):
         """匿名用户"""
         remote_addr = request.META['REMOTE_ADDR']
+        print(remote_addr)
         user, flag = User.objects.get_or_create(username=remote_addr, is_anonymity=True, is_active=True)
         # 匿名用户每次访问接口都会增加一次访问记录
         user.login_num += 1

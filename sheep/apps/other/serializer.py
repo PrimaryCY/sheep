@@ -3,6 +3,7 @@
 # datetime:2020/4/14 10:52
 import os
 
+from rest_framework.request import Request
 from rest_framework import serializers
 from django.conf import settings
 

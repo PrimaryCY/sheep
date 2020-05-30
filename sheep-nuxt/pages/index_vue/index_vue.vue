@@ -369,7 +369,6 @@
 					type: 'warning',
 					roundButton:true,
 					customClass:'message'
-				}).catch(()=>{
 				})
 				if (res==='confirm'){
 					await this.$store.dispatch('clear_userinfo')

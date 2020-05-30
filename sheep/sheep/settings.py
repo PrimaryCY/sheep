@@ -31,10 +31,9 @@ SECRET_KEY = 'nog-m-%lwpued&hxe6v^c9+m_b=dfe!7atv@^vmq&_*-980h=n'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 # 是否为测试环境
-DEVELOP = False
+DEVELOP = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -171,7 +170,8 @@ CORS_ORIGIN_WHITELIST = (
     'http://127.0.0.1:*',
     'https://127.0.0.1:*',
     'http://*:*',
-    'http://localhost:*'
+    'http://localhost:*',
+    'https://*:*'
 )
 CORS_ALLOW_METHODS = (
     'DELETE',
@@ -193,7 +193,8 @@ CORS_ALLOW_HEADERS = (
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
-    'tk'
+    'tk',
+    'u-host'
 )
 
 AUTH_USER_MODEL = 'user.User'

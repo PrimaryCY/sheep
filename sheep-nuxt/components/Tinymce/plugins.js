@@ -4,7 +4,6 @@
 
 // const static23 = 'print preview searchreplace autolink directionality visualblocks visualchars fullscreen image link media template code codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount imagetools textpattern help emoticons autosave bdmap indent2em autoresize lineheight  axupimgs'
 if(process.client){
-  console.log('123')
   require("tinymce/plugins/print")
   require("tinymce/plugins/preview")
   require("tinymce/plugins/searchreplace")

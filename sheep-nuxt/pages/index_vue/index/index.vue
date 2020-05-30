@@ -15,7 +15,7 @@
 										<li><a href="#" class="link-icon24 link-icon24-4">128</a></li>
 									</ul>
 								</div>
-								<a href="#" class="image image-full"><img src="../../../static/img/n33-robot-invader.jpg" alt="" /></a>
+<!--								<a href="#" class="image image-full"><img src="../../../static/img/n33-robot-invader.jpg" alt="" /></a>-->
 								<p>
 									<strong>Hello!</strong> You're looking at <a href="#striped/">Striped</a>, a fully responsive HTML5 site template designed by AJ
 									for <a href="http://sc.chinaz.com/" title="站长素材">站长素材</a> It features a clean, minimalistic design, styling for all basic page elements (including blockquotes, tables and lists), a
@@ -43,7 +43,7 @@
 										<li><a href="#" class="link-icon24 link-icon24-4">96</a></li>
 									</ul>
 								</div>
-								<a href="#" class="image image-full"><img src="../../../static/img/fotogrph-dark-stairwell.jpg" alt="" /></a>
+<!--								<a href="#" class="image image-full"><img src="../../../static/img/fotogrph-dark-stairwell.jpg" alt="" /></a>-->
 								<p>
 									Quisque vel sapien sit amet tellus elementum ultricies. Nunc vel orci turpis. Donec id malesuada metus.
 									Nunc nulla velit, fermentum quis interdum quis, tate etiam commodo lorem ipsum dolor sit amet dolore.

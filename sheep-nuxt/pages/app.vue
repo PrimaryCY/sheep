@@ -37,11 +37,15 @@
         && !context.store.user){
         await context.store.dispatch('receive_userinfo')
       }
+      // 远程获取公共配置
+      if(!context.store.option){
+        await context.store.dispatch('receive_option')
+      }
     },
-    async created(){
-      // await this._get_user_info()
-      await this._get_option()
-    },
+    // async created(){
+    //   // await this._get_user_info()
+    //   await this._get_option()
+    // },
     components:{
       backtop
     },

@@ -56,7 +56,7 @@
 											class="sumbit"
 											type="primary"
 											@click="sumbit"
-							>{{schema==='update'?'保存':'发表'}}</el-button>
+							>{{submit_btn_text}}</el-button>
 						</el-col>
 						<el-col :span="3">
 							<el-button
@@ -255,7 +255,18 @@
 			...mapState(['option']),
 			name_placeholder(){
 				return this.post.post_type===1?'请输入标题...':'请填写提问...'
-			}
+			},
+      submit_btn_text(){
+        if(this.schema==='create'){
+          if(this.post.post_type===1){
+            return '发表'
+          }else {
+            return '提问'
+          }
+        }else {
+          return '保存'
+        }
+      }
 		},
 		watch:{
 			'option.post_category':{

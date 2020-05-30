@@ -72,7 +72,6 @@ export default function(url){
 		},
 		destory:(id=null,data={})=>{//delete请求
 			let u = url_append_id(id, url)
-			console.log(u)
 			return new Promise((resolve, ) => {
 				service({
 					method: 'delete',

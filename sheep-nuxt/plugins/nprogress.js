@@ -14,4 +14,5 @@ NProgress.configure({
 	speed: 500,
 	showSpinner: false
 })
+NProgress.done()
 export default NProgress

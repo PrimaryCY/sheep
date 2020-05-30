@@ -1,6 +1,5 @@
 import {service} from '@/plugins/axios'
 
-// console.log(service)
 export default function(url){
 	if(url.charAt(url.length-1)!=='/'){
 		url = url+ '/'

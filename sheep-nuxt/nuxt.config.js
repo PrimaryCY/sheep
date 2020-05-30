@@ -51,7 +51,6 @@ module.exports = {
     {src:'~/plugins/element/element',ssr:true},
     {src:'~/plugins/axios',ssr:true},
     {src:'@/plugins/util',ssr:true},
-    // {src:'@/plugins/mavon-editor',ssr:false}
   ],
   router: {
     // middleware: 'user_auth'    // 是js文件名字

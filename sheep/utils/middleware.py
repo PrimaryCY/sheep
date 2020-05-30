@@ -69,7 +69,7 @@ class DRFCodeMiddleware(MiddlewareMixin):
                 'code': response.status_code,
                 'msg': response.data.get('detail', '没有报错提示!')
             }
-        
+
         response.data['code'] = int(response.data['code'])
         response.data['status'] = response.status_code
         response.status_code = 200

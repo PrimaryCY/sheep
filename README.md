@@ -1,6 +1,6 @@
-# <font color=#ca0c16> Sheep 博客系统
+# <font color=#ca0c16> Sheep 博客提问系统
 
-**django+vue+channels 实时在线聊天博客系统**
+**django+nuxt-vue+channels 实时在线聊天博客提问系统**
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;这是新开的一个开源项目,欢迎有兴趣加入的人可以通过下面我的联系方式联系本人,sheep 项目主要功能是发表博客,实时在线聊天,对感兴趣的博客进行收藏点赞,对喜欢的人进行关注.
 <br>
@@ -15,6 +15,7 @@
 
 **_已完成:_**
 
+- 全站改为ssr
 - 登录注册
 - 发表文章(支持富文本+markdown)
 - 个人资料修改
@@ -66,14 +67,17 @@
 
 ### <font color=#ca0c16>前端技术使用
 
+    - nuxt
+    - koa
     - vue
     - vuex
     - tinymce
     - mavon-editor
-    - vue-cookies
+    - cookie-universal-nuxt
+    - cookieparser
     - element-ui
     - VueParticles
-    - vue-router
+    - nuxtjs/router
     - vue-cli3
     - axios
     - nprogres
@@ -119,15 +123,23 @@ python manage.py migrate
 # 测试环境运行
 python manage.py runserver
 
-# 有什么自定义覆盖的配置在settings.py文件旁新建local_settings.py文件进行重新变量定义就ok
+# 有什么自定义覆盖的配置在settings.py文件旁新建local_setting.py文件进行重新变量定义就ok
+# settings.py同级目录下有local_setting_example.py文件作为样板,本地配置参考这里
 ```
 
 _前端部分:_
 
 ```
-cd c_chat
+# 开发环境:
+cd sheep-nuxt
 npm install
-npm run serve
+npm run dev
+
+# 正式环境:
+cd sheep-nuxt
+npm install
+npm run build
+npm run start
 ```
 
 #

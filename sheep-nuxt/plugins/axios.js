@@ -47,6 +47,7 @@ export default function (context) {
           break
       }
       NProgress.done()
+      // 此处返回不可修改,要不然程序打包之后会递归拿上次请求的key
       return response;
     },
     error => {

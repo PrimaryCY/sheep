@@ -5,4 +5,13 @@
 const toolbar = [`code undo redo restoredraft | cut copy paste pastetext | forecolor backcolor bold italic underline strikethrough link anchor | alignleft aligncenter alignright alignjustify outdent indent |
     styleselect formatselect fontselect fontsizeselect | bullist numlist | blockquote subscript superscript removeformat |
     table image media charmap emoticons hr pagebreak insertdatetime print preview | fullscreen | bdmap indent2em lineheight formatpainter axupimgs`]
-export default toolbar
+
+const simple_toolbar = [`undo redo restoredraft | cut copy paste pastetext | forecolor backcolor bold italic underline link | alignleft aligncenter alignright outdent indent |
+    formatselect fontselect fontsizeselect | bullist numlist | removeformat image media emoticons hr pagebreak insertdatetime preview | fullscreen |  indent2em lineheight formatpainter axupimgs`]
+
+
+export default {
+  toolbar,
+  simple_toolbar
+}
+

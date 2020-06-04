@@ -2,7 +2,7 @@ import CryptoJS from "crypto-js";
 
 
 let secure_key = 'sadkladlkadjasjldsajkld'
-export default({app})=> {
+export default({app}, inject)=> {
   let Nuxt_cookies = app.$cookies
   Nuxt_cookies.secure_set = function (keyName, value, expireTimes, path, domain, secure) {
     let data = {
@@ -30,5 +30,6 @@ export default({app})=> {
       return cipherText
     }
   }
+  inject('cookies', Nuxt_cookies)
   process.$cookies = Nuxt_cookies
 }

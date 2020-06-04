@@ -4,7 +4,7 @@
 from django.conf.urls import url, include
 
 from utils.routes import CustomRouter
-from apps.other.views import UploadViewSet
+from apps.other.views import UploadViewSet, FeedbackCategoryViewSet, FeedbackViewSet
 from apps.other.views import OptionViewSet
 
 router = CustomRouter()
@@ -12,6 +12,10 @@ router = CustomRouter()
 router.register('upload', UploadViewSet, base_name='upload')
 # 公共配置
 router.register('option', OptionViewSet, base_name='option')
+# 意见反馈类别
+router.register('feedback_category', FeedbackCategoryViewSet, base_name='feedback_category')
+# 意见反馈
+router.register('feedback', FeedbackViewSet, base_name='feedback')
 
 urlpatterns = [
     url(r'web/', include(('api.v1.web', 'api.v1.v1.web'), namespace='web')),

@@ -7,10 +7,11 @@ from rest_framework.request import Request
 from rest_framework import serializers
 from django.conf import settings
 
-from apps.other.models import UploadHistoryModel
+from apps.other.models import UploadHistoryModel, FeedbackCategory, Feedback
 from apps.post.models import Category
 from apps.post.serializer import PostCategorySerializer
-from utils.extra_fields import CurrentUserIdDefault, RangeField
+from sheep.constant import RET
+from utils.extra_fields import CurrentUserIdDefault, RangeField, SerializerMethodAndWriteField
 from utils.tools import random_filename
 
 
@@ -60,3 +61,43 @@ class OptionSerializer(serializers.Serializer):
         return PostCategorySerializer(Category.objects.filter(level=0),
                                       many=True,
                                       context=self._context).data
+
+
+class FeedbackCategorySerializer(serializers.ModelSerializer):
+    """查看反馈类别"""
+    author_id = serializers.HiddenField(default=CurrentUserIdDefault())
+
+    class Meta:
+        model = FeedbackCategory
+        fields = "__all__"
+
+
+class ListFeedbackSerializer(serializers.ModelSerializer):
+    """查看反馈列表"""
+    class Meta:
+        model = Feedback
+        fields = "__all__"
+
+
+class CreateFeedbackSerializer(serializers.ModelSerializer):
+    """提交反馈"""
+    author_id = serializers.HiddenField(default=CurrentUserIdDefault(), label='创建人')
+    category_id = serializers.IntegerField(label='类别')
+
+    def validate_category_id(self, category_id):
+        f_c = FeedbackCategory.objects.filter(id=category_id).only('id').first()
+        if not f_c:
+            raise serializers.ValidationError({'code': RET.PARAMERR, 'msg': '不存在此类别!'})
+        return category_id
+
+    class Meta:
+        model = Feedback
+        exclude = ('reply', 'reply_author_id', 'is_active')
+
+
+class UpdateFeedbackSerializer(serializers.ModelSerializer):
+    reply_author_id = serializers.HiddenField(default=CurrentUserIdDefault())
+
+    class Meta:
+        model = Feedback
+        fields = ('reply_author_id', 'reply')

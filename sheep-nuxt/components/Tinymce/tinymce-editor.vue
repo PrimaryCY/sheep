@@ -4,6 +4,7 @@
 						:id="id"
 						:init="init"
 						:disabled="disabled"
+            :placeholder="placeholder"
 						@onClick="onClick">
 		</editor>
 	</div>
@@ -50,9 +51,9 @@
 				default: false
 			},
 			toolbar: {
-				type: Array,
+				type: String,
 				default(){
-					return toolbar
+					return 'toolbar'
 				}
 			},
 			height: {
@@ -69,7 +70,12 @@
 				type:Boolean,
 				required:false,
 				default:true
-			}
+			},
+      placeholder:{
+        type:String,
+        required:false,
+        default:'请输入内容...'
+      }
 		},
 		data(){
 			return{
@@ -94,8 +100,8 @@
 					// max_height: this.max_height||this.height,
 					width:this.width,
 					plugins: plugins,
-					toolbar: this.toolbar,
-					menubar: true,
+					toolbar: toolbar[this.toolbar],
+					menubar: this.menubar,
 					draggable_modal: false, // 模态窗口允许拖动
 					browser_spellcheck: true, // 拼写检查
 					branding: false, // 不去水印
@@ -203,7 +209,7 @@
 		},
 		destroyed() {
 			this.destroy_tinymce()
-		}
+		},
 	}
 
 </script>
@@ -213,8 +219,8 @@
 		width: 100%!important;
 		height: 100%!important;
 	}
-	.tox .tox-editor-header{
-		height: 20vh;
-	}
+	/*.tox .tox-editor-header{*/
+	/*	height: 20vh;*/
+	/*}*/
 
 </style>

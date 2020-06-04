@@ -30,6 +30,7 @@
           // this.reload()
           return
         }
+        this.move_to_top()
         this.$router.push(url)
       },
 		}

@@ -9,6 +9,7 @@ import {
   api_option
 } from "../api/index"
 import settings from '@/conf/settings'
+import { Message } from 'element-ui'
 
 
 export default {
@@ -25,6 +26,8 @@ export default {
     if(res.data.code===2000){
       let user_info=res.data.data
       commit(RECEIVE_USERINFO,user_info)
+    }else {
+      Message('用户登录失效!')
     }
     callback && callback(res)
   },
@@ -41,8 +44,6 @@ export default {
     if (user.code === 2000) {
       process.$cookies.remove(settings.TOKEN_NAME)
       commit(RECEIVE_USERINFO, {})
-    }else {
-      this._vm.$message(user.msg);
     }
   },
   async receive_option({commit},callback){

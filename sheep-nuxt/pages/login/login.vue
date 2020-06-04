@@ -186,8 +186,6 @@
 					this.loginError.email_or_phone=res.msg
 				}else if(res.msg.indexOf('密码') !== -1){
 					this.loginError.password=res.msg
-				}else {
-					this.$message(res.msg)
 				}
 				this.loginError.flag=true
 				loading.close()

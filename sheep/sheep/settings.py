@@ -31,7 +31,7 @@ SECRET_KEY = 'nog-m-%lwpued&hxe6v^c9+m_b=dfe!7atv@^vmq&_*-980h=n'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 # 是否为测试环境
-DEVELOP = True
+DEVELOP = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -162,15 +162,15 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'www')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-#设置可以跨域访问
+# 设置可以跨域访问
 CORS_ORIGIN_ALLOW_ALL = True
-
+# 允许携带cookie
+CORS_ALLOW_CREDENTIALS = True
 # 跨域所能请求的域名
 CORS_ORIGIN_WHITELIST = (
-    'http://127.0.0.1:*',
-    'https://127.0.0.1:*',
+    'http://127.0.0.1:3000',
     'http://*:*',
-    'http://localhost:*',
+    'http://localhost:3000',
     'https://*:*'
 )
 CORS_ALLOW_METHODS = (
@@ -305,23 +305,23 @@ DEBUG_TOOLBAR_PANELS = [
 ]
 
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console':{
-            'level':'DEBUG',
-            'class':'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django.db.backends': {
-            'handlers': ['console'],
-            'propagate': True,
-            'level':'DEBUG',
-        },
-    }
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console':{
+#             'level':'DEBUG',
+#             'class':'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django.db.backends': {
+#             'handlers': ['console'],
+#             'propagate': True,
+#             'level':'DEBUG',
+#         },
+#     }
+# }
 
 
 if DEBUG:

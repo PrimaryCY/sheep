@@ -13,9 +13,10 @@ import index from './pages/index_vue/index/index'
 import info from './pages/index_vue/info/info'
 import my_post from './pages/index_vue/my_post/my_post'
 import my_question from './pages/index_vue/my_question/my_question'
+import feedback from './pages/index_vue/feedback/feedback'
 
 // import NotFound from './views/notFound/notFound'
-// import test from './views/test/test'
+import test from './pages/test'
 
 // import setting from './conf/settings'
 
@@ -52,23 +53,30 @@ const routes = [
               is_login:true
             }
           },
-              {
-                // 我的文章
-                path:'my_post',
-                name:'my_post',
-                component:my_post,
-                meta:{
-                  is_login:true
-                }
-              },
-              {
-                path:'my_question',
-                name:'my_question',
-                component:my_question,
-                meta:{
-                  is_login:true
-                }
-              },
+          {
+            // 我的文章
+            path:'my_post',
+            name:'my_post',
+            component:my_post,
+            meta:{
+              is_login:true
+            }
+          },
+          {
+            path:'my_question',
+            name:'my_question',
+            component:my_question,
+            meta:{
+              is_login:true
+            }
+          },
+          {
+            path:'feedback',
+            name:'feedback',
+            component:feedback,
+            meta:{
+            }
+          },
           {
             path:'',
             redirect:'index'
@@ -111,9 +119,12 @@ const routes = [
       //   path:'*',
       //   component:NotFound
       // }
-    ]
+    ],
   },
-
+  {
+    path:'/test',
+    component:test
+  }
 ]
 
 export function createRouter () {

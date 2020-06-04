@@ -16,9 +16,10 @@ class DRFCodeMiddleware(MiddlewareMixin):
     """
 
     def process_template_response(self, request, response):
+        # print('321')
         response = self.process_response(request, response)
         # 解决filter组件在drf可视化页面分页的情况下显示不出来的问题
-        paginator = response.renderer_context['view'].paginator
+        paginator = getattr(response.renderer_context['view'], "paginator", None)
         if paginator:
             paginator.get_results = (lambda x: x['data']['results'])
         return response
@@ -30,6 +31,7 @@ class DRFCodeMiddleware(MiddlewareMixin):
             return response
         # 正常返回的情况
         if exc is False:
+            print(response.data)
             self.success_response_handle(response)
         # 预料中的异常的异常情况
         else:

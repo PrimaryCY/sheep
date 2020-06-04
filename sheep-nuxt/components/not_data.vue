@@ -1,5 +1,5 @@
 <template>
-	<div class="zwsj" v-if="list&&list.length===0">
+	<div class="zwsj" v-if="!list||list.length===0">
 		<img :src="img" :width="width" :height="height"/>
 		<div style="color: #999;font-size: 12px;margin-top: 5px">{{text}}</div>
 	</div>

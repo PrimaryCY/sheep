@@ -1,6 +1,6 @@
 <template>
   <div>
-    <nuxt v-if="isRouterAlive" ></nuxt>
+    <nuxt></nuxt>
 
     <backtop v-show="!$route.no_back_top"></backtop>
   </div>
@@ -24,30 +24,20 @@
         isRouterAlive: true,
       }
     },
-    methods: {
-      async _get_option(){
-        // 远程获取公共配置
-        if(process.client&&!this.option.post_category){
-          await this.$store.dispatch('receive_option')
-        }
-      },
-    },
     async asyncData(context){
+      let word_list = []
       if(context.app.$cookies.secure_get(setting.TOKEN_NAME)
         && !context.store.user){
-        await context.store.dispatch('receive_userinfo')
+        word_list.push(context.store.dispatch('receive_userinfo'))
       }
       // 远程获取公共配置
       if(!context.store.option){
-        await context.store.dispatch('receive_option')
+        word_list.push(context.store.dispatch('receive_option'))
       }
+      await Promise.all(word_list)
     },
-    // async created(){
-    //   // await this._get_user_info()
-    //   await this._get_option()
-    // },
     components:{
-      backtop
+      backtop,
     },
     computed:{
       ...mapState(['user','option'])

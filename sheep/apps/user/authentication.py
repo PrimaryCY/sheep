@@ -64,8 +64,15 @@ class TokenAuthentication(BaseAuthentication):
     """
     # token在客户端存储的key名
     token_name = settings.TOKEN.get('TOKEN_NAME')
+    # web 服务端地址
+    web_host = '192.168.3.5'
 
     def authenticate(self, request):
+        # 获取用户的ua
+        self.set_user_agent(request)
+        # 获取用户真实ip, 由于ssr渲染原因, 有时拿到的是web服务端的ip地址, 需要新增请求头判断
+        self.set_u_host(request)
+
         token = self.get_token(request)
         if not token:
             # 匿名用户处理
@@ -73,21 +80,25 @@ class TokenAuthentication(BaseAuthentication):
         else:
             # 登陆后用户处理
             user, t = self.user_authenticate(token, request)
-        # 获取用户的ua
-        user.ua = self.get_user_agent(request)
         return user, t
 
+    def set_u_host(self, request):
+        remote_addr = request.META['REMOTE_ADDR']
+        if remote_addr == self.web_host:
+            request.u_host = request.headers.get('u_host', remote_addr)
+        else:
+            request.u_host = remote_addr
+
     @staticmethod
-    def get_user_agent(request):
+    def set_user_agent(request):
         """获取用户的ua"""
         ua = request.META.get('HTTP_USER_AGENT')
         if 'android'in ua or 'Linux' in ua:
-            _user_agent = 'android'
+            request.ua = 'android'
         elif 'iphone' in ua:
-            _user_agent = 'ios'
+            request.ua = 'ios'
         else:
-            _user_agent = 'pc'
-        return _user_agent
+            request.ua = 'pc'
 
     def get_token(self, request):
         """获取token"""
@@ -96,9 +107,7 @@ class TokenAuthentication(BaseAuthentication):
     @staticmethod
     def anonymity_authenticate(request):
         """匿名用户"""
-        hearder = request.headers
-        remote_addr = request.headers.get('u-host') or request.META['REMOTE_ADDR']
-        user, flag = User.objects.get_or_create(username=remote_addr, is_anonymity=True, is_active=True)
+        user, flag = User.objects.get_or_create(username=request.u_host, is_anonymity=True, is_active=True)
         # 匿名用户每次访问接口都会增加一次访问记录
         user.login_num += 1
         user.last_login = datetime.datetime.now()
@@ -111,7 +120,7 @@ class TokenAuthentication(BaseAuthentication):
         """登录用户"""
         # 后门
         if token == '1234567890' and settings.DEVELOP:
-            return User.objects.filter(id=1).first(), token
+            return User.objects.filter(is_admin=True).first(), token
 
         user_info = Token.unpackTk(settings.TOKEN, request, token)
 

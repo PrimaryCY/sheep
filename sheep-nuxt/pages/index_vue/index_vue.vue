@@ -46,7 +46,7 @@
 									</svg>
 									所有文章
 								</a></li>
-								<li><a href="#">
+								<li :class="{current_page_item:active==='/feedback'}" @click.prevent="push('/feedback')"><a href="#">
 									<svg class="icon-min" aria-hidden="true">
 										<use xlink:href="#icon-yijianfankui"></use>
 									</svg>
@@ -68,7 +68,6 @@
 								<svg v-else class="icon-min" aria-hidden="true">
 									<use xlink:href="#icon-xingbienan"></use>
 								</svg>
-								&nbsp;
 								<b>{{user.username}}</b>
 							</p>
 						</div>
@@ -139,7 +138,7 @@
 									</svg>
 									我的浏览
 								</a></li>
-								<li><a href="#">
+								<li :class="{current_page_item:active==='/feedback'}" @click.prevent="push('/feedback')"><a href="#">
 									<svg class="icon-min" aria-hidden="true">
 										<use xlink:href="#icon-yijianfankui"></use>
 									</svg>
@@ -472,6 +471,7 @@
 			}
 		}
 	}
+
 	/*去掉火狐动画效果*/
 	@-moz-document url-prefix() {
 		#content{
@@ -482,7 +482,7 @@
 		}
 	}
 	#content{
-		min-height: 106em;
+		min-height: 100em;
 		transition: margin-left 0.25s ease-in-out;
 	}
 

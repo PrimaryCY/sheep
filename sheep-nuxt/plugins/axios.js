@@ -3,36 +3,34 @@ import {Message} from 'element-ui'
 import settings from '@/conf/settings'
 import axios from 'axios'
 
-let NProgress = require('nprogress')
-if(process.server){
-  NProgress = {
-    start:()=>{},
-    done:()=>{}
-  }
-}
-let service=axios.create({
-  baseURL:settings.SERVER_URL,
-  timeout:10000,
-  headers:{
-    'content-type':'application/json',//转换为key=value的格式必须增加content-type
-  },
-})
+import NProgress from 'nprogress'
 
+let service = {}
 
-export default function (context) {
-  // console.log(context.req)
-  // 为了解决ssr渲染后端还能查询到匿名用户,新增header:u-host
-  if(process.server){
-    service.defaults.headers['u-host'] = context.req.socket.remoteAddress
-  }
-  context.$axios = service
+export default function (context, inject) {
+  service= axios.create({
+    baseURL:settings.SERVER_URL,
+    timeout:10000,
+    // withCredentials: true,
+    headers:{
+      'content-type':'application/json',
+    },
+  })
+
+  inject('axios', service)
+
   service.interceptors.request.use(
     request => {
-      NProgress.start()
-      // if(process.server){
-      //   request.headers['u-host'] = context.req.socket.remoteAddress
-      // }
-      if (context.app.$cookies.get(settings.TOKEN_NAME)) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
+      console.log('start request')
+      if(process.client){
+        NProgress.start()
+      }
+      if(process.server){
+        // 为了解决ssr渲染后端还能查询到匿名用户,新增header:u-host
+        request.headers['u-host'] = context.req.socket.remoteAddress
+      }
+      if (context.app.$cookies.get(settings.TOKEN_NAME)) {
+        // 判断是否存在token，如果存在的话，则每个http header都加上token
         request.headers.tk = context.app.$cookies.secure_get(settings.TOKEN_NAME);
       }
       return request;
@@ -41,33 +39,39 @@ export default function (context) {
       return Promise.reject(err);
     });
 
-//http-响应拦截
+  //http-响应拦截
   service.interceptors.response.use(
-    function (response){
-      // console.log(response.data)
+    function (response) {
+      console.log(response.data.code)
       switch(response.data.code) {
-        case 4101||4104||4105:
+        case 4101:
           context.app.$cookies.remove(settings.TOKEN_NAME)
-          console.log('用户令牌失效或无权限!')
+          console.log('用户登录失效!')
           context.redirect('/login')
-          // Message(response.data.msg)
+          break
+        case 4105:
+          console.log('用户无权限!')
           break
       }
-      NProgress.done()
-      // 此处返回不可修改,要不然程序打包之后会递归拿上次请求的key
+      if(process.client) {
+        NProgress.done()
+      }
       return response;
     },
     error => {
-      if(!error.response){
-        console.log(error.response)
+      if (!error.response) {
+        // console.log(error.response)
         Message('网络连接错误,请检查网络!')
-      }else {
+      } else {
         switch (error.response.status) {
           case 404:
-            Message('网络错误:'+error.response.status)
+            Message('网络错误:' + error.response.status)
             break
           case 500:
-            Message('500 internal server error');
+            context.error({
+              statusCode: error.response.status,
+              message: '500 internal server error'
+            })
             break
         }
       }

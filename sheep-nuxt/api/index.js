@@ -17,6 +17,14 @@ export const api_post_category=common_crud('/v1/web/post_category/')
 个人创建帖子,个人所有帖子
  */
 export const api_user_post=common_crud('/v1/web/user_post/')
+/*
+获取反馈类别
+ */
+export const api_feedback_category=common_crud('/v1/feedback_category/')
+/*
+提交反馈相关
+ */
+export const api_feedback=common_crud('/v1/feedback/')
 
 /*
 获取远端公共配置

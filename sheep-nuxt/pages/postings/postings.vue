@@ -72,7 +72,7 @@
 		<div v-show="post.content_type===1">
         <tinymce-editor v-model="post.tiny_content"
                         ref="tinymce"
-                        :height="515"
+                        :height="516"
         ></tinymce-editor>
 			<backtop></backtop>
 		</div>

@@ -15,5 +15,8 @@ application = ProtocolTypeRouter({
 
 
 from apps.post.models import Category
+from apps.other.models import FeedbackCategory
 
 Category.create_default_category()
+FeedbackCategory.create_default_category()
+

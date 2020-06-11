@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'channels',
     'rest_framework',
     'django_filters',
+    'django_extensions',
     'mptt',
     'corsheaders',
     'commands.apps.CommandsConfig',
@@ -88,9 +89,6 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = 'sheep.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -217,10 +215,11 @@ CHANNEL_LAYERS = {
         "CONFIG": {
             "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
         },
-        "ROUTING": "api.routing.channel_routing",
+        "ROUTING": "sheep.routing.application",
     },
 }
-ASGI_APPLICATION = 'sheep.asgi.application'
+ASGI_APPLICATION = 'sheep.routing.application'
+WSGI_APPLICATION = 'sheep.wsgi.application'
 
 # rest framework 配置
 REST_FRAMEWORK = \
@@ -243,7 +242,7 @@ REST_FRAMEWORK = \
         # 'anon': '1/minute',
         # 'user': '1/minute'        },
         'DATETIME_FORMAT': "%Y-%m-%d %H:%M",
-        'HTML_SELECT_CUTOFF': 10000,
+        'HTML_SELECT_CUTOFF': 200,
         'HTML_SELECT_CUTOFF_TEXT': '太多了,我加载不出来了',
         # 'EXCEPTION_HANDLER': 'utils.exceptions.main'
     }
@@ -272,13 +271,15 @@ CACHES = {
         }
     },
 }
+from django_redis import get_redis_connection
+USER_REDIS = get_redis_connection('user')
 
 # Token配置
 TOKEN = {
     'FRAME': 'django',
     'TOKEN_SECURITY_KEY': b'pBy0j5_m6qqTOXElHSs0OlfV5qiYhqHkEvwLtdrXZ5o=',
     'TOKEN_EXPIRES': 7*24*3600,
-    'TOKEN_REDIS': get_redis_connection('user'),
+    'TOKEN_REDIS': USER_REDIS,
     'TOKEN_NAME': 'tk'
 }
 
@@ -305,23 +306,23 @@ DEBUG_TOOLBAR_PANELS = [
 ]
 
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'console':{
-#             'level':'DEBUG',
-#             'class':'logging.StreamHandler',
-#         },
-#     },
-#     'loggers': {
-#         'django.db.backends': {
-#             'handlers': ['console'],
-#             'propagate': True,
-#             'level':'DEBUG',
-#         },
-#     }
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        # 'django.db.backends': {
+        #     'handlers': ['console'],
+        #     'propagate': True,
+        #     'level': 'DEBUG',
+        # },
+    }
+}
 
 
 if DEBUG:

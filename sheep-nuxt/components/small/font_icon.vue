@@ -1,16 +1,28 @@
 <template>
-		<a v-if="type===2" class="article-question-type" >
+		<a v-if="type===2" class="base article-question-type" >
 			<svg class="icon-min" aria-hidden="true">
 				<use xlink:href="#icon-wenti--copy"></use>
 			</svg>
-			问题
+      <span>问题</span>
 		</a>
-		<a v-else-if="type===1" class="article-post-type">
+		<a v-else-if="type===1" class="base article-post-type">
 			<svg class="icon-min" aria-hidden="true">
 				<use xlink:href="#icon-shiyongwendang"></use>
 			</svg>
-			文章
+			<span>文章</span>
 		</a>
+    <a v-else-if="type===3" class="base feedback-replied">
+      <svg class="icon-min" aria-hidden="true">
+        <use xlink:href="#icon-shiyongwendang"></use>
+      </svg>
+      <span>已回复</span>
+    </a>
+    <a v-else-if="type===4" class="base feedback-no-reply">
+      <svg class="icon-min" aria-hidden="true">
+        <use xlink:href="#icon-shiyongwendang"></use>
+      </svg>
+      <span>未回复</span>
+    </a>
 </template>
 
 <script>
@@ -26,26 +38,33 @@
 </script>
 
 <style scoped lang="scss">
+    .base{
+      display: inline;
+      border-radius: 25%;
+      width: 7%;
+      height: 7%;
+      text-align: center;
+      font-size: 10px;
+      color: white;
+      opacity: .7;
+      margin: 0 5px 0 0;
+      padding: 4px;
+    }
 		.article-question-type{
-			display: inline;
-			border-radius: 25%;
-			width: 7%;
-			text-align: center;
-			font-size: x-small;
-			color: white;
-			opacity: .7;
 			background-color: #b02727;
-			margin: 0 5px 0 0;
 		}
 		.article-post-type{
-			display: inline;
-			border-radius: 25%;
-			width: 7%;
-			opacity: .7;
-			text-align: center;
-			font-size: x-small;
-			color: white;
 			background-color: #795548;
-			margin: 0 5px 0 0;
 		}
+
+    .feedback-replied{
+      background-color: #364050;
+      font-size: 10.5px;
+    }
+    .feedback-no-reply{
+      background-color: #b02727;
+      font-size: 10.5px;
+    }
+
+
 </style>

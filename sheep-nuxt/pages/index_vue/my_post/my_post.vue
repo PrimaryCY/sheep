@@ -375,9 +375,6 @@
 						-webkit-box-flex: 1;
 						-ms-flex-positive: 1;
 						flex-grow: 1;
-						display: -webkit-box;
-						display: -ms-flexbox;
-						display: flex;
 					}
 				}
 				.article-info{

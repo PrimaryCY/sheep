@@ -11,30 +11,30 @@ from apps.operate.views import UserCollectCategoryViewSet, CollectCategoryViewSe
 
 router = CustomRouter()
 # 用户crud
-router.register('user', UserViewSet, base_name='user')
+router.register('user', UserViewSet, basename='user')
 # 用户登录退出
-router.register('login', LoginViewSet, base_name='login')
+router.register('login', LoginViewSet, basename='login')
 # 帖子分类crud
-router.register('post_category', PostCategoryViewSet, base_name='post_category')
+router.register('post_category', PostCategoryViewSet, basename='post_category')
 # 所有帖子
-router.register('all_post', AllPostViewSet, base_name='all_post')
+router.register('all_post', AllPostViewSet, basename='all_post')
 # 个人帖子crud
-router.register('user_post', UserPostViewSet, base_name='user_post')
+router.register('user_post', UserPostViewSet, basename='user_post')
 # 个人回复展示
-router.register('user_reply', UserReplyViewSet, base_name='user_reply')
+router.register('user_reply', UserReplyViewSet, basename='user_reply')
 # 个人收藏分类
-router.register('user_collect_category', UserCollectCategoryViewSet, base_name='user_collect_category')
+router.register('user_collect_category', UserCollectCategoryViewSet, basename='user_collect_category')
 # 个人收藏帖子
-router.register('user_collect', CollectViewSet, base_name='user_collect')
+router.register('user_collect', CollectViewSet, basename='user_collect')
 # 个人点赞
-router.register('user_praise', PraiseViewSet, base_name='user_praise')
+router.register('user_praise', PraiseViewSet, basename='user_praise')
 # 个人关注
-router.register('user_focus', FocusViewSet, base_name='user_focus')
+router.register('user_focus', FocusViewSet, basename='user_focus')
 
 # 所有帖子回复
-router.register('post_reply', PostReplyViewSet, base_name='post_reply')
+router.register('post_reply', PostReplyViewSet, basename='post_reply')
 # 所有用户收藏分类
-router.register('collect_category', CollectCategoryViewSet, base_name='collect_category')
+router.register('collect_category', CollectCategoryViewSet, basename='collect_category')
 # 所有用户基本信息
 
 

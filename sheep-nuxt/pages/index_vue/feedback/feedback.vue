@@ -1,4 +1,4 @@
-<template>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <div class="feedback">
     <div class="feedback-header">
       <p class="header-img">
@@ -15,8 +15,8 @@
 
     </div>
     <div class="feedback-content">
-      <el-tabs type="card">
-        <el-tab-pane label="🔨提出意见" >
+      <el-tabs type="card" v-model="schema" @tab-click="change_schema">
+        <el-tab-pane label="🔨提出意见" name="form">
           <el-form  label-width="80px" :model="form"
                     ref="fb_form"
                     :rules="rules"
@@ -55,16 +55,31 @@
             </el-form-item>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane label="📃历史反馈">
-          <div class="feedback-list">
-            <!--增加tabindex属性  使focus对div起作用-->
-            <transition-group tag="div">
-              <div class="feedback-list-item-mp" tabindex="0" v-for="fb in feedbacks.results" :key="fb.id">
-              </div>
-            </transition-group>
-            <not_data text='空空如也😭'
-                      :list="feedbacks.results"></not_data>
+        <el-tab-pane label="📃历史反馈" name="history">
+          <div class="check-box">
+            <el-checkbox v-model="params.has_reply" @change="_get_history_fb(false)">只看已回复</el-checkbox>
           </div>
+          <list :list="feedbacks.results">
+            <template v-slot:item-content="data">
+              <div @click="open_dialog(data.item)">
+                <el-row>
+                  <el-col :span="10">
+                    <div class="history-title">
+                      <font_icon :type="data.item.reply_author_id?3:4"></font_icon>
+                      &nbsp;&nbsp;&nbsp;问题类别:{{_fb_category(data.item.category_id)}}
+                    </div>
+                  </el-col>
+                </el-row>
+                <el-row >
+                  <el-col :span="22">
+                    <div class="three-line-ellipsis">
+                      {{data.item.content}}
+                    </div>
+                  </el-col>
+                </el-row>
+              </div>
+            </template>
+          </list>
           <div class="footer-pagination">
             <pagination
               @change="_get_history_fb"
@@ -75,14 +90,38 @@
         </el-tab-pane>
       </el-tabs>
     </div>
+
+    <el-dialog title="反馈详情" :visible.sync="history_fb.flag"
+               :modal-append-to-body=false>
+      <div class="dialog">
+        <div class="dialog_title">
+          问题类别:{{_fb_category(history_fb.now_fb.category_id)}}
+        </div>
+        <div v-html="history_fb.now_fb.html_content"></div>
+        <bubble_text
+          v-if="history_fb.now_fb.reply_author_id"
+          :text="history_fb.now_fb.reply"
+          :time="`回复时间:${history_fb.now_fb.reply_time}`"
+          position="right">
+          <template v-slot:user>
+            <div class="dialog_reply">
+              <img src="@/static/img/admin_portrait.jpg">
+              <span>{{`admin0${history_fb.now_fb.reply_author_id}`}}</span>
+            </div>
+          </template>
+        </bubble_text>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
   import {mapState} from 'vuex'
 
+  import list from '@/components/list'
+  import bubble_text from '@/components/common/bubble_text'
   import pagination from '@/components/pagination'
-  import not_data from '@/components/not_data'
+  import font_icon from '@/components/small/font_icon'
   import tinymceEditor from '../../../components/Tinymce/tinymce-editor'
   import {api_feedback_category,api_feedback} from '../../../api'
 
@@ -90,6 +129,12 @@
     name: 'feedback',
     data(){
       return {
+        visable:true,
+        history_fb:{
+          now_fb:{}, //当前查看的feedback详情
+          flag:false,
+        },
+        schema:'form',
         feedback_category:[],
         form:{
           html_content:'',
@@ -105,6 +150,7 @@
         params:{
           limit:10,
           offset:0,
+          has_reply:false,
         },
         feedbacks:{
           total:0,
@@ -113,6 +159,22 @@
       }
     },
     methods:{
+      open_dialog(item){
+        this.history_fb.now_fb=item
+        this.history_fb.flag=!this.history_fb.flag
+      },
+      change_schema(){
+        if(this.schema==='history'){
+          this._get_history_fb(false)
+        }
+      },
+      _fb_category(id){
+        for (let c of this.feedback_category){
+          if(c.id===id){
+            return c.name
+          }
+        }
+      },
       async _get_category() {
         if (process.client) {
           let res = await api_feedback_category.list()
@@ -145,10 +207,25 @@
           }
           loading.close()
           this.$message.success('提交成功,之后注意查看回复哦!')
+          this.schema='history'
+          this._get_history_fb()
         })
       },
-      async _get_history_fb(){
-
+      async _get_history_fb(move_to_top=true){
+        if(move_to_top){
+          this.move_to_top()
+        }
+        let loading = this.openLoading({
+          target:'.el-tabs__content'
+        })
+        let res = await api_feedback.list(this.params)
+        res = res.data
+        loading.close()
+        if(res.code !== 2000){
+          this.$message(res.msg)
+          return  null
+        }
+        this.feedbacks = res.data
       }
     },
     async created(){
@@ -160,8 +237,12 @@
     components:{
       tinymceEditor,
       pagination,
-      not_data
-    }
+      list,
+      font_icon,
+      bubble_text
+      // textComponents
+    },
+    inject:['move_to_top']
   }
 </script>
 
@@ -193,6 +274,31 @@
       padding: 0;
       text-align: initial;
       font-size: 18px;
+    }
+  }
+
+
+  .check-box{
+    text-align: right;
+  }
+  .history-title{
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  .dialog{
+    .dialog_title{
+      text-align: left;
+      padding: 0 8px;
+      font-weight: bold;
+    }
+    .dialog_reply{
+      img{
+        display: block;
+      }
+      span{
+        font-size: 12px;
+      }
     }
   }
 </style>

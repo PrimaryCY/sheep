@@ -7,7 +7,7 @@ from mptt.fields import TreeForeignKey
 
 from utils.models import BaseModel
 from sheep import settings
-
+from utils.tools import stdout
 
 User = get_user_model()
 
@@ -84,6 +84,7 @@ class Category(BaseModel, MPTTModel):
                 parent = cls.objects.filter(name=category['name']).first().id
                 _execute(category['child'], parent_id=parent)
         _execute(categorys)
+        stdout('post category finish')
 
     class Meta:
         verbose_name_plural = verbose_name = '帖子分类表'

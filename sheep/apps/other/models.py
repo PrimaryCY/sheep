@@ -5,6 +5,7 @@ from apps.post.models import User
 from utils.models import BaseModel
 from sheep import settings
 # Create your models here.
+from utils.tools import stdout
 
 
 class UploadHistoryModel(BaseModel):
@@ -46,7 +47,7 @@ class FeedbackCategory(BaseModel):
                 continue
             data_list.append(cls(name=cat['name'], author_id=author_id, order=cat['order']))
         cls.objects.bulk_create(data_list)
-        print('feedback category finish'.center(30, '*'))
+        stdout('feedback category finish')
 
     class Meta:
         verbose_name_plural = verbose_name = '反馈类别表'
@@ -66,6 +67,7 @@ class Feedback(BaseModel):
     author_id = models.IntegerField(null=False, verbose_name='创建人', db_index=True)
     reply = models.CharField(max_length=256, null=True, verbose_name='回复内容')
     reply_author_id = models.IntegerField(null=True, verbose_name='回复人id', db_index=True)
+    reply_time = models.DateTimeField(null=True, verbose_name='回复时间')
 
     class Meta:
         verbose_name_plural = verbose_name = '意见反馈表'

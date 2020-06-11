@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
 # author:CY
 # datetime:2019/11/15 11:13
-from channels.auth import AuthMiddlewareStack
-from channels.routing import ProtocolTypeRouter, URLRouter
-import api.routing
+import os
+import django
+from channels.routing import get_default_application
 
-application = ProtocolTypeRouter({
-    'websocket': AuthMiddlewareStack(
-        URLRouter(
-            api.routing.websocket_urlpatterns# 指明路由文件是api/routing.py
-        )
-    ),
-})
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sheep.settings')
+django.setup()
+application = get_default_application()
 
 
 from apps.post.models import Category
@@ -19,4 +15,5 @@ from apps.other.models import FeedbackCategory
 
 Category.create_default_category()
 FeedbackCategory.create_default_category()
+
 

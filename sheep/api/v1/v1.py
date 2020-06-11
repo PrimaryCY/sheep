@@ -9,13 +9,13 @@ from apps.other.views import OptionViewSet
 
 router = CustomRouter()
 # 上传接口
-router.register('upload', UploadViewSet, base_name='upload')
+router.register('upload', UploadViewSet, basename='upload')
 # 公共配置
-router.register('option', OptionViewSet, base_name='option')
+router.register('option', OptionViewSet, basename='option')
 # 意见反馈类别
-router.register('feedback_category', FeedbackCategoryViewSet, base_name='feedback_category')
+router.register('feedback_category', FeedbackCategoryViewSet, basename='feedback_category')
 # 意见反馈
-router.register('feedback', FeedbackViewSet, base_name='feedback')
+router.register('feedback', FeedbackViewSet, basename='feedback')
 
 urlpatterns = [
     url(r'web/', include(('api.v1.web', 'api.v1.v1.web'), namespace='web')),

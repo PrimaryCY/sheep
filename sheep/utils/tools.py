@@ -64,6 +64,14 @@ def sort_pinyin(queryset:Iterable)->dict:
     return dict(sorted(dic.items(),key=lambda x:x[0]))
 
 
+def stdout(s: str):
+    """
+    输出
+    :param s: 字符串
+    :return:
+    """
+    print(s.center(50, '*'))
+
 
 if __name__ == '__main__':
     now=datetime.datetime.now()

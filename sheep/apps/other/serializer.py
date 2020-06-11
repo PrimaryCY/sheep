@@ -2,6 +2,7 @@
 # author:CY
 # datetime:2020/4/14 10:52
 import os
+import datetime
 
 from rest_framework.request import Request
 from rest_framework import serializers
@@ -96,8 +97,13 @@ class CreateFeedbackSerializer(serializers.ModelSerializer):
 
 
 class UpdateFeedbackSerializer(serializers.ModelSerializer):
-    reply_author_id = serializers.HiddenField(default=CurrentUserIdDefault())
+    reply_author_id = serializers.HiddenField(default=CurrentUserIdDefault(), label='回复人id')
+    reply_time = serializers.DateTimeField(read_only=True, label='回复时间')
+
+    def validate(self, attrs):
+        attrs['reply_time'] = datetime.datetime.now()
+        return attrs
 
     class Meta:
         model = Feedback
-        fields = ('reply_author_id', 'reply')
+        fields = ('reply_author_id', 'reply', 'reply_time')

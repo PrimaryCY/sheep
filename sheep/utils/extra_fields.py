@@ -11,12 +11,10 @@ from rest_framework.serializers import SerializerMethodField
 
 
 class CurrentUserIdDefault:
+    requires_context = True
 
-    def set_context(self, serializer_field):
-        self.user = serializer_field.context['request'].user
-
-    def __call__(self):
-        return self.user.id
+    def __call__(self, serializer_field):
+        return serializer_field.context['request'].user.id
 
     def __repr__(self):
         return '%s()' % self.__class__.__name__
@@ -76,3 +74,4 @@ class SerializerMethodAndWriteField(SerializerMethodField):
 
     def to_internal_value(self, data: Any):
         return data
+

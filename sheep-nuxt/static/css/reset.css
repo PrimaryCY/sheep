@@ -104,6 +104,11 @@ body {
   -webkit-box-orient: vertical;
 }
 
+/*有小手*/
+.pointer{
+  cursor: pointer;
+}
+
 [v-cloak]{
     display: none;
 }

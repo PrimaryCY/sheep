@@ -32,6 +32,7 @@
       }
       // 远程获取公共配置
       if(!context.store.option){
+        // await context.store.dispatch('receive_option')
         word_list.push(context.store.dispatch('receive_option'))
       }
       await Promise.all(word_list)

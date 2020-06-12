@@ -72,7 +72,7 @@
                 </el-row>
                 <el-row >
                   <el-col :span="22">
-                    <div class="three-line-ellipsis">
+                    <div class="three-line-ellipsis pointer">
                       {{data.item.content}}
                     </div>
                   </el-col>

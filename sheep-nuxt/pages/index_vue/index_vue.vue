@@ -57,7 +57,7 @@
 					</div>
 				<div v-else>
 						<!-- logo -->
-						<div class="user" @click="push('/info',2)">
+						<div class="user pointer" @click="push('/info',2)">
 							<el-avatar :size="60" :src="user.portrait" >
 								<img :src="user.portrait"/>
 							</el-avatar>
@@ -244,7 +244,7 @@
 					<ul>
 						<!--						<li><a href="#">关于本站</a></li>-->
 						<li><a href="#">技术支持</a></li>
-						<li><a href="#">github 地址</a></li>
+						<li><a href="https://github.com/PrimaryCY/sheep" target="_blank">github 地址</a></li>
 					</ul>
 				</section>
 

@@ -183,15 +183,16 @@
 				}
 				)
 			},
-			async _get_category_data(){
+			_get_category_data(){
 				// 远程获取类别数据
-				let res = await api_post_category.list()
-        res = res.data
-				if(res.code===2000){
-					this.cascader_data.category_data=res.data
-				}else {
-					this.$message(res.msg)
-				}
+				// let res = await api_post_category.list()
+        // res = res.data
+				// if(res.code===2000){
+				// 	this.cascader_data.category_data=res.data
+				// }else {
+				// 	this.$message(res.msg)
+				// }
+        this.cascader_data.category_data = this.option.post_category
 			},
 			_get_default_category(){
 				function _get_first_cascader_node(data,res=[]) {
@@ -242,10 +243,10 @@
 		async created(){
       if(process.client){
         await this._select_schema()
+        this._get_category_data()
+        this._get_default_category()
       }
-			// await this._get_category_data()
-			// this._get_default_category()
-		},
+    },
 		components:{
 			Backtop,
 			tinymceEditor,
@@ -267,15 +268,6 @@
           return '保存'
         }
       }
-		},
-		watch:{
-			'option.post_category':{
-				deep:true,
-				handler:function (n) {
-					this.cascader_data.category_data=n
-					this._get_default_category()
-				}
-			},
 		},
 	}
 </script>

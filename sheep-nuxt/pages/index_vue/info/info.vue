@@ -117,7 +117,7 @@
 						</el-form-item>
 						<el-form-item label="手机号:" prop="phone">
 							<el-input v-if="user.is_phone"
-												placeholder="请输入手机号"
+                        v-model="edit.phone"
 												disabled></el-input>
 							<el-input v-else
 												v-model="edit.phone"

@@ -68,14 +68,19 @@ export default function (context, inject) {
             Message('网络错误:' + error.response.status)
             break
           case 500:
-            context.error({
-              statusCode: error.response.status,
-              message: '500 internal server error'
-            })
+            Message('500 internal server error')
+            // context.error({
+            //   statusCode: error.response.status,
+            //   message: '500 internal server error'
+            // })
             break
         }
       }
-      return Promise.reject(error)
+      if(process.client) {
+        NProgress.done()
+      }
+
+      // return Promise.reject(error)
     }
   )
 }

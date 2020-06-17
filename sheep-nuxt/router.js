@@ -14,6 +14,7 @@ import info from './pages/index_vue/info/info'
 import my_post from './pages/index_vue/my_post/my_post'
 import my_question from './pages/index_vue/my_question/my_question'
 import feedback from './pages/index_vue/feedback/feedback'
+import not_found from './pages/index_vue/not_found/not_found'
 
 // import NotFound from './views/notFound/notFound'
 import test from './pages/test'
@@ -80,6 +81,11 @@ const routes = [
           {
             path:'',
             redirect:'index'
+          },
+          {
+            path:'index/404',
+            name:"not_found",
+            component:not_found
           }
         ]
       },

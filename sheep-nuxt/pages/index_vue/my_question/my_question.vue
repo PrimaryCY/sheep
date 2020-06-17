@@ -112,14 +112,21 @@
 							tag="div">
 			<div class="article-list-item-mp" tabindex="0" v-for="post in posts.results" :key="post.id">
 					<el-row class="article-title">
+            <el-col :span="3">
+              <div v-if="post.image" class="article-image">
+                <img :src="post.image">
+              </div>
+            </el-col>
 						<el-col :span="18">
 								<div class="article-title-text">
-									<font_icon :type="post.post_type"></font_icon>
 									{{post.name}}
 								</div>
 						</el-col>
 					</el-row>
 					<el-row class="article-info" type="flex">
+            <el-col :span="2">
+              <font_icon :type="post.post_type"></font_icon>
+            </el-col>
 						<el-col :span="5">
 							提问时间:{{post.created_time}}
 						</el-col>
@@ -169,7 +176,7 @@
 											icon="el-icon-info"
 											iconColor="red"
 											@onConfirm="delete_post(post)"
-											title="您确定删除这篇文章/提问吗？"
+											title="您确定删除这篇提问吗？"
 							>
 								<el-button
 												size="mini"
@@ -372,6 +379,12 @@
 					-webkit-box-pack: start;
 					-ms-flex-pack: start;
 					justify-content: flex-start;
+          .article-image{
+            img{
+              width: 100px;
+              height: 100px;
+            }
+          }
 					.article-title-text{
 						font-size: 16px;
 						color: #4d4d4d;

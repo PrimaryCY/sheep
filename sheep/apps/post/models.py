@@ -115,7 +115,7 @@ class Post(BaseModel):
     html_content = models.TextField(null=False, verbose_name='html帖子内容')
     content = models.TextField(null=False, verbose_name='帖子内容')
     post_type = models.SmallIntegerField(choices=post_type_choices, default=1, verbose_name='文章类型')
-    # image = models.URLField(null=True, verbose_name='帖子封面')
+    image = models.URLField(null=True, verbose_name='帖子封面')
     post_num = models.IntegerField(null=False, default=0, verbose_name='评论数量')
     read_num = models.IntegerField(default=0, verbose_name='阅读数量')
     like_num = models.IntegerField(default=0, verbose_name='收藏数量')

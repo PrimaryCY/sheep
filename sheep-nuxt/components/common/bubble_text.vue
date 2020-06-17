@@ -8,7 +8,7 @@
     </div>
       <div style="max-width: 80%" class="receiver_content">
         <div class="right_triangle"></div>
-        <span> {{text}}{{text}} </span>
+        <span> {{text}} </span>
         <p v-if="time" class="bottom">
           {{time}}
         </p>

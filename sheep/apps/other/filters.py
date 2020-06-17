@@ -2,9 +2,10 @@
 # author:CY
 # datetime:2020/6/2 20:37
 import django_filters
+from django.db import models
 from django_filters import FilterSet
 
-from apps.other.models import Feedback
+from apps.other.models import Feedback, UploadHistoryModel
 
 
 class FeedbackFilter(FilterSet):
@@ -23,3 +24,17 @@ class FeedbackFilter(FilterSet):
         model = Feedback
         fields = ('category_id', 'author_id', 'start_created_time', 'end_created_time', 'has_reply')
 
+
+class UploadHistoryFilter(FilterSet):
+
+    class Meta:
+        model = UploadHistoryModel
+        fields = ['user_id', 'url']
+        filter_overrides = {
+            models.FileField: {
+                'filter_class': django_filters.CharFilter,
+                'extra': lambda f: {
+                    'lookup_expr': 'icontains',
+                },
+            },
+        }

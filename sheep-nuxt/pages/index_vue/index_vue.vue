@@ -31,12 +31,12 @@
 											@click.prevent="login"
 							>{{ loginBtn.loading ? '登陆中...' : '登录' }}</el-button>
 						</div>
-						<!-- Search -->
-						<section class="is-search is-first">
-							<form method="post" action="#">
-								<input type="text" class="text" name="search" placeholder="Search" />
-							</form>
-						</section>
+<!--						&lt;!&ndash; Search &ndash;&gt;-->
+<!--						<section class="is-search is-first">-->
+<!--							<form method="post" action="#">-->
+<!--								<input type="text" class="text" name="search" placeholder="Search" />-->
+<!--							</form>-->
+<!--						</section>-->
 						<!-- Nav -->
 						<nav id="nav" class="mobileUI-site-nav">
 							<ul>
@@ -72,12 +72,7 @@
 							</p>
 						</div>
 
-						<!-- Search -->
-						<section class="is-search is-first">
-							<form method="post" action="#">
-								<input type="text" class="text" name="search" placeholder="Search" />
-							</form>
-						</section>
+
 						<!--postings-->
 						<section class="is-search postings">
 							<div id="postings">

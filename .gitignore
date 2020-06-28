@@ -12,10 +12,7 @@ __pycache__/
 node_modules/
 sheep-vue/
 local_setting.py
-media/portrait/
-media/post_image/
-media/post_mavon/
-media/post_tinymce/
+media/
 package-lock.json
 .idea
 

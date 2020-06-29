@@ -70,7 +70,7 @@ class FeedbackCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FeedbackCategory
-        fields = "__all__"
+        exclude = ("created_time", 'update_time', 'is_active')
 
 
 class ListFeedbackSerializer(serializers.ModelSerializer):

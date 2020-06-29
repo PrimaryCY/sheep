@@ -108,3 +108,5 @@ class DRFCodeMiddleware(MiddlewareMixin):
     @staticmethod
     def error_401_handle(response):
         response.delete_cookie(TokenAuthentication.token_name)
+
+

@@ -68,7 +68,8 @@ MIDDLEWARE = [
     # 'django.contrib.auth.middleware.AuthenticationMiddleware',
     # 'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'utils.middleware.DRFCodeMiddleware'
+    'middleware.drf_code.DRFCodeMiddleware',
+    'middleware.record_logging.RecordLoggingMiddleware'
 ]
 
 
@@ -338,7 +339,7 @@ LOGGING = {
         # 默认记录所有日志
         'default': {
             'level': 'INFO',
-            'class': 'logging.handlers.RotatingFileHandler',
+            'class': 'concurrent_log_handler.ConcurrentRotatingFileHandler',
             'filename': os.path.join(LOG_DIR, 'all-{}.log'.format(time.strftime('%Y-%m-%d'))),
             'maxBytes': 1024 * 1024 * 5,  # 文件大小
             'backupCount': 5,  # 备份数
@@ -348,7 +349,7 @@ LOGGING = {
         # 输出错误日志
         'error': {
             'level': 'ERROR',
-            'class': 'logging.handlers.RotatingFileHandler',
+            'class': 'concurrent_log_handler.ConcurrentRotatingFileHandler',
             'filename': os.path.join(LOG_DIR, 'error-{}.log'.format(time.strftime('%Y-%m-%d'))),
             'maxBytes': 1024 * 1024 * 5,  # 文件大小
             'backupCount': 5,  # 备份数
@@ -358,7 +359,7 @@ LOGGING = {
         # 输出info日志
         'info': {
             'level': 'INFO',
-            'class': 'logging.handlers.RotatingFileHandler',
+            'class': 'concurrent_log_handler.ConcurrentRotatingFileHandler',
             'filename': os.path.join(LOG_DIR, 'info-{}.log'.format(time.strftime('%Y-%m-%d'))),
             'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,
@@ -367,7 +368,7 @@ LOGGING = {
         },
         'script': {
             'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
+            'class': 'concurrent_log_handler.ConcurrentRotatingFileHandler',
             'filename': os.path.join(LOG_DIR, "script-{}.log".format(time.strftime('%Y-%m-%d'))),
             'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,

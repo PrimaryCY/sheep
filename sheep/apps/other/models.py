@@ -6,6 +6,7 @@ from utils.models import BaseModel
 from sheep import settings
 # Create your models here.
 from utils.tools import stdout
+from sheep.init_server import init_stdout
 
 
 class UploadHistoryModel(BaseModel):
@@ -28,6 +29,7 @@ class FeedbackCategory(BaseModel):
     order = models.SmallIntegerField(null=False, verbose_name='顺序', db_index=True)
 
     @classmethod
+    @init_stdout('feedback category')
     def create_default_category(cls):
         """创建默认反馈类别"""
         categorys = [
@@ -47,7 +49,6 @@ class FeedbackCategory(BaseModel):
                 continue
             data_list.append(cls(name=cat['name'], author_id=author_id, order=cat['order']))
         cls.objects.bulk_create(data_list)
-        stdout('feedback category finish')
 
     class Meta:
         verbose_name_plural = verbose_name = '反馈类别表'

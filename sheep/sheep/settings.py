@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import sys
+import time
 
 from django_redis import get_redis_connection
 
@@ -159,6 +160,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'www')
 # 用户上传得静态资源
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_DIRS = ['portrait', 'post_image', 'post_mavon', 'post_tinymce']
 
 # 设置可以跨域访问
 CORS_ORIGIN_ALLOW_ALL = True
@@ -252,7 +254,7 @@ CACHES = {
     'default': {
         'BACKEND': "django_redis.cache.RedisCache",
         "LOCATION": "redis://127.0.0.1:6379/1",
-        'TIMEOUT': 600,
+        'TIMEOUT': 2000,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
@@ -263,7 +265,7 @@ CACHES = {
     'user': {
         'BACKEND': "django_redis.cache.RedisCache",
         "LOCATION": "redis://127.0.0.1:6379/10",
-        'TIMEOUT': 600,
+        'TIMEOUT': 2000,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
@@ -305,22 +307,93 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.redirects.RedirectsPanel',
 ]
 
-
+# 日志配置
+LOG_DIR = os.path.join(BASE_DIR, 'logs')
+if not os.path.isdir(LOG_DIR):
+    os.makedirs(LOG_DIR)
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
+    'disable_existing_loggers': False if DEBUG else True,
+    'formatters': {
+        'verbose': {
+            'format':  # '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+                '%(asctime)s %(levelname)s %(thread)d %(process)d %(funcName)s %(lineno)d - %(message)s'
+        },
+        'simple': {
+            'format': '%(asctime)s %(levelname)s %(message)s'
         },
     },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        # 默认记录所有日志
+        'default': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, 'all-{}.log'.format(time.strftime('%Y-%m-%d'))),
+            'maxBytes': 1024 * 1024 * 5,  # 文件大小
+            'backupCount': 5,  # 备份数
+            'formatter': 'simple',  # 输出格式
+            'encoding': 'utf-8',  # 设置默认编码，否则打印出来汉字乱码
+        },
+        # 输出错误日志
+        'error': {
+            'level': 'ERROR',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, 'error-{}.log'.format(time.strftime('%Y-%m-%d'))),
+            'maxBytes': 1024 * 1024 * 5,  # 文件大小
+            'backupCount': 5,  # 备份数
+            'formatter': 'verbose',  # 输出格式
+            'encoding': 'utf-8',  # 设置默认编码
+        },
+        # 输出info日志
+        'info': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, 'info-{}.log'.format(time.strftime('%Y-%m-%d'))),
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 5,
+            'formatter': 'verbose',
+            'encoding': 'utf-8',  # 设置默认编码
+        },
+        'script': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, "script-{}.log".format(time.strftime('%Y-%m-%d'))),
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 5,
+            'formatter': 'simple',
+        }
+    },
     'loggers': {
-        # 'django.db.backends': {
-        #     'handlers': ['console'],
-        #     'propagate': True,
-        #     'level': 'DEBUG',
-        # },
+        'django': {
+            'handlers': ['console', 'default', 'info', 'error'],
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': [],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        '': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False
+        },
+        'script': {
+            'handlers': ['script'],
+            'level': 'INFO',
+            'propagate': False
+        },
     }
 }
 

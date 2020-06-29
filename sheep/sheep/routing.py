@@ -6,6 +6,7 @@ from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.http import AsgiHandler
 
+from sheep.init_server import server
 import api.routing
 
 application = ProtocolTypeRouter({
@@ -16,5 +17,7 @@ application = ProtocolTypeRouter({
         )
     ),
 })
+
+server.init()
 
 

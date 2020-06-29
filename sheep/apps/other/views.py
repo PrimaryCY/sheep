@@ -3,11 +3,13 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin
+from rest_framework_extensions.cache.mixins import BaseCacheResponseMixin
 
 from apps.other.serializer import UploadSerializer, OptionSerializer, FeedbackCategorySerializer, ListFeedbackSerializer, CreateFeedbackSerializer, UpdateFeedbackSerializer
 from apps.other.filters import FeedbackFilter, UploadHistoryFilter
 from apps.other.models import UploadHistoryModel, Feedback, FeedbackCategory
 from apps.user.permission import IsLoginUser, IsAdminUser
+from utils.drf_extensions.decorators import only_data_cache_response
 from utils.viewsets import ModelViewSet
 from utils.pagination import LimitOffsetPagination
 
@@ -32,8 +34,8 @@ class OptionViewSet(GenericViewSet):
     permission_classes = ()
     queryset = ' '
 
+    @only_data_cache_response()
     def list(self, request, *args, **kwargs):
-        # raise 2/0
         serializer = self.get_serializer(self.queryset)
         return Response(serializer.data)
 

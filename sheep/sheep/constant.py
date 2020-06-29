@@ -2,7 +2,8 @@
 # author:CY
 # datetime:2019/6/18 15:16
 RdAllot = {
-    1-5: '私享',
+    1: '默认',
+    2: 'restframework-extengsions',
     10: '存储token',
 }
 

@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'apps.post.apps.PostConfig',
     'apps.operate.apps.OperateConfig',
     'apps.other.apps.OtherConfig'
+    'apps.index.apps.IndexConfig'
 ]
 
 MIDDLEWARE = [
@@ -250,6 +251,11 @@ REST_FRAMEWORK = \
         # 'EXCEPTION_HANDLER': 'utils.exceptions.main'
     }
 
+# REST_FRAMEWORK_EXTENSIONS 设置
+REST_FRAMEWORK_EXTENSIONS = {
+    "DEFAULT_USE_CACHE": "restframework_extensions",
+    "DEFAULT_CACHE_RESPONSE_TIMEOUT": 60*30
+}
 
 CACHES = {
     'default': {
@@ -259,8 +265,17 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
-            #默认解码
             'CONNECTION_POOL_KWARGS': {'decode_responses': True},
+        }
+    },
+    'restframework_extensions': {
+        # 不用decode_response
+        'BACKEND': "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/2",
+        'TIMEOUT': 2000,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
         }
     },
     'user': {
@@ -276,6 +291,7 @@ CACHES = {
 }
 from django_redis import get_redis_connection
 USER_REDIS = get_redis_connection('user')
+
 
 # Token配置
 TOKEN = {

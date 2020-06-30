@@ -81,6 +81,7 @@
 
   .receiver{
     clear:both;
+    margin-bottom: 5px;
   }
   .receiver div:nth-child(1){
     float: right;

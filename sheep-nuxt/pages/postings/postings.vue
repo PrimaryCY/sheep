@@ -39,7 +39,7 @@
 								</el-cascader>
 							</el-form-item>
 						</el-col>
-						<el-col :span="2" >
+						<el-col :span="3" >
 							<div class="post_type_select">
 								<el-form-item label-width="0" prop="post_type">
 									<el-radio-group
@@ -51,11 +51,15 @@
 								</el-form-item>
 							</div>
 						</el-col>
+
             <el-col :span="2">
-              <el-button @click="dialog=true">
+              <el-button
+                class="fullwidth"
+                @click="dialog=true">
                 {{image_text}}
               </el-button>
             </el-col>
+
 						<el-col :span="2">
 							<el-button
 											class="sumbit"
@@ -66,6 +70,7 @@
 
 						<el-col :span="3">
 							<el-button
+                      class="fullwidth"
 											@click="post.content_type=post.content_type===1?2:1">
 								{{post.content_type===1?'切换markdown模式':'切换富文本模式'}}
 							</el-button>
@@ -85,6 +90,10 @@
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
         <bubble_text
+          text="建议上传580*263的图片哟👍"
+          position="right">
+        </bubble_text>
+        <bubble_text
           text="上传图片,你的文章/提问才能上轮播推荐和栏目推荐哦👍"
           position="right">
         </bubble_text>
@@ -99,7 +108,7 @@
 		<div v-show="post.content_type===1">
         <tinymce-editor v-model="post.tiny_content"
                         ref="tinymce"
-                        :height="516"
+                        :height="getClientHeight()*0.93"
         ></tinymce-editor>
 			<backtop></backtop>
 		</div>
@@ -243,7 +252,7 @@
 					this.post.category=this.cascader_data.category
 
 					if(this.schema==='create'){
-						let res = await api_user_post.created(this.post)
+						let res = await api_user_post.create(this.post)
             res = res.data
 						if(res.code!==2000){
 							this.$message(res.msg)
@@ -356,7 +365,7 @@
       },
       image_text(){
         return this.post.post_type===1?'文章封面':'问题封面'
-      }
+      },
 		},
 	}
 </script>
@@ -406,8 +415,8 @@
 		text-align: center;
 	}
 	.avatar {
-		width: 178px;
-		height: 178px;
+		width: 580px;
+		height: 263px;
 		display: block;
 	}
 

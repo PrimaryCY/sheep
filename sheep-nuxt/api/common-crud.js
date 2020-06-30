@@ -37,7 +37,7 @@ export default function (url) {
           })
         })
       },
-      created: (data) => {//post请求
+      create: (data) => {//post请求
         return new Promise((resolve,) => {
           service({
             method: 'post',

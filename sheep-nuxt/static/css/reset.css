@@ -137,3 +137,11 @@ body {
 .page-enter, .page-leave-active {
   opacity: 0;
 }
+
+.radius{
+  border-radius: 5%;
+}
+
+.fullwidth{
+  width: 100%;
+}

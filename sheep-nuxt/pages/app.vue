@@ -1,7 +1,11 @@
 <template>
   <div>
-    <nuxt v-if="!upgrade"></nuxt>
-    <upgrade v-else></upgrade>
+    <!--  系统页面升级  -->
+    <upgrade v-if="upgrade"></upgrade>
+    <div v-else>
+      <!-- 用于页面刷新 -->
+      <nuxt v-if="isRouterAlive"></nuxt>
+    </div>
     <backtop v-show="!$route.no_back_top"></backtop>
   </div>
 </template>
@@ -22,7 +26,6 @@
     ],
     data () {
       return {
-        isRouterAlive: true,
         upgrade:false
       }
     },

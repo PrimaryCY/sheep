@@ -198,7 +198,7 @@
             }
           )
           this.form.content = this.$refs['tinymce'].get_content()
-          let res = await api_feedback.created(this.form)
+          let res = await api_feedback.create(this.form)
           res = res.data
           if(res.code!==2000){
             loading.close()

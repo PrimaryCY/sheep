@@ -381,8 +381,9 @@
 					justify-content: flex-start;
           .article-image{
             img{
-              width: 100px;
-              height: 100px;
+              min-width: 20vh;
+              height: 9vh;
+              object-fit: cover
             }
           }
 					.article-title-text{

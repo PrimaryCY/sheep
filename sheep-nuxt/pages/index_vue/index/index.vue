@@ -1,15 +1,20 @@
 <template>
 	<div>
     <div class="top">
-      <el-carousel :interval="4000" type="card" height="200px" arrow="never">
-        <el-carousel-item v-for="item in 6" :key="item">
-          <h3 class="medium">{{ item }}</h3>
-        </el-carousel-item>
-      </el-carousel>
       <div class="container">
         <input type="text" placeholder="Search...">
         <div class="search"></div>
       </div>
+      <el-carousel :interval="4000" type="card" height="38vh" arrow="never">
+        <el-carousel-item v-for="item in index.banner" :key="item.id" class="radius">
+          <div class="banner-wrap">
+            <img :src="item.image" class="banner-image">
+            <div class="banner-text">
+              {{item.name}}
+            </div>
+          </div>
+        </el-carousel-item>
+      </el-carousel>
     </div>
     <div class="content">
       <div class="first">
@@ -90,12 +95,29 @@
 </template>
 
 <script>
+  import {api_index} from '../../../api'
 
   export default {
     name: "index",
     data(){
       return {
-        input:''
+        input:'',
+        index:{}
+      }
+    },
+    async asyncData(context){
+      try {
+        let [index] = await Promise.all([
+          api_index.list()
+        ])
+        index = index.data.data
+        return {
+          // 首页接口所有数据
+          index
+        }
+      }catch(e)
+      {
+        context.error({statusCode:500,message:'ssr internal server error'})
       }
     },
     methods: {
@@ -108,6 +130,29 @@
   .S:before{content: ''; display: block;border:10px solid transparent;border-top-color:red;border-right-color:red; width:50px;height: 50px; border-radius:40px;background:transparent;transform:rotateZ(-45deg);position: absolute;}
   .S:after{content: ''; display: block;border:10px solid transparent;border-bottom-color:red;border-right-color:red; width:50px;height: 50px; border-radius:40px;background:transparent;transform:rotateZ(45deg);position: absolute;top:-5px;left:60px}
 
+  .banner-wrap{
+    position: relative;
+    height: 100%;
+    .banner-image{
+      width: 100%;
+      height: 100%;
+      border-radius: 25px;
+      object-fit: cover;
+    }
+    .banner-text{
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      padding: 30px 0 12px 15px;
+      font-family: PingFangSC-Medium;
+      font-weight: 500;
+      font-size: 18px;
+      color: #fff;
+      width: 100%;
+      text-align: left;
+      background: url('/img/banner_layer.png') no-repeat
+    }
+  }
 
   .top{
     .container {

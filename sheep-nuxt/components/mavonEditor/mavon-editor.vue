@@ -22,6 +22,8 @@
   if(process.client) {
   let mavonEditor = require('mavon-editor')
     require('mavon-editor/dist/css/index.css')
+    // require("mavon-editor/dist/highlightjs/highlight.min.js")
+    // require('mavon-editor/dist/katex/katex')
     Vue.use(mavonEditor)
   }
 

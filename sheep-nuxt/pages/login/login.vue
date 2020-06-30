@@ -171,7 +171,7 @@
 					'target':'.form'
 				})
 				// let res = await post_login(data)
-        let res = await api_login.created(data)
+        let res = await api_login.create(data)
         res = res.data
 				if(res.code===2000){
 					this.$cookies.secure_set(setting.TOKEN_NAME,res.data.token, setting.TOKEN_EXPIRE)

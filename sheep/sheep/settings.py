@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'apps.user.apps.UserConfig',
     'apps.post.apps.PostConfig',
     'apps.operate.apps.OperateConfig',
-    'apps.other.apps.OtherConfig'
+    'apps.other.apps.OtherConfig',
     'apps.index.apps.IndexConfig'
 ]
 

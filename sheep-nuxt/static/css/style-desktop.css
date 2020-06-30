@@ -272,7 +272,7 @@
 			to the width of the sample post images, but you can change it to
 			whatever you like (or remote it entirely).
 		*/
-		max-width: 1038px;
+		max-width: 100%;
 	}
 
 /*********************************************************************************/

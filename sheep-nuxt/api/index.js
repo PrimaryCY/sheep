@@ -1,5 +1,9 @@
 import common_crud from './common-crud'
 /*
+首页
+ */
+export const api_index=common_crud('/v1/web/index/')
+/*
 登录相关
  */
 export const api_login=common_crud('/v1/web/login/')

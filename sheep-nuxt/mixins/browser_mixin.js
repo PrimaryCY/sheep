@@ -8,6 +8,11 @@
         blank_push:this.blank_push,
 			}
 		},
+    data(){
+      return {
+        isRouterAlive:true,
+      }
+    },
 		methods:{
 			move_to_top(){
 				document.body.scrollIntoView({behavior:'smooth'})

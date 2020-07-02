@@ -5,7 +5,7 @@
         <input type="text" placeholder="Search...">
         <div class="search"></div>
       </div>
-      <el-carousel :interval="4000" type="card" height="38vh" arrow="never">
+      <el-carousel :interval="4000" type="card" height="263px" arrow="never">
         <el-carousel-item v-for="item in index.banner" :key="item.id" class="radius">
           <div class="banner-wrap">
             <img :src="item.image" class="banner-image">
@@ -25,57 +25,57 @@
       </div>
     </div>
 
-							<!-- Post -->
-							<article class="is-post is-post-excerpt">
-								<header>
-									<h2><a href="#">Welcome to Striped</a></h2>
-									<span class="byline">A free, fully responsive HTML5 site template by AJ for HTML5 Up!</span>
-								</header>
-								<div class="info">
-									<span class="date"><span class="month">Jan<span>uary</span></span> <span class="day">14</span><span class="year">, 2013</span></span>
-									<ul class="stats">
-										<li><a href="#" class="link-icon24 link-icon24-1">16</a></li>
-										<li><a href="#" class="link-icon24 link-icon24-2">32</a></li>
-										<li><a href="#" class="link-icon24 link-icon24-3">64</a></li>
-										<li><a href="#" class="link-icon24 link-icon24-4">128</a></li>
-									</ul>
-								</div>
-<!--								<a href="#" class="image image-full"><img src="../../../static/img/n33-robot-invader.jpg" alt="" /></a>-->
-								<p>
-									<strong>Hello!</strong> You're looking at <a href="#striped/">Striped</a>, a fully responsive HTML5 site template designed by AJ
-									for <a href="http://sc.chinaz.com/" title="站长素材">站长素材</a> It features a clean, minimalistic design, styling for all basic page elements (including blockquotes, tables and lists), a
-									repositionable sidebar (left or right), and HTML5/CSS3 code designed for quick and easy customization (see code comments for details).
-								</p>
-								<p>
-									Striped is released for free under the <a href="#">Creative Commons Attribution license</a> so feel free to use it for personal projects
-									or even commercial ones &ndash; just be sure to credit <a href="http://sc.chinaz.com/" title="站长素材">站长素材</a> for the design. If you like what you see here, be sure to check out
-									<a href="http://sc.chinaz.com/" title="站长素材">站长素材</a> for more cool designs or follow me on <a href="#">Twitter</a> for new releases and updates.
-								</p>
-							</article>
+<!--							&lt;!&ndash; Post &ndash;&gt;-->
+<!--							<article class="is-post is-post-excerpt">-->
+<!--								<header>-->
+<!--									<h2><a href="#">Welcome to Striped</a></h2>-->
+<!--									<span class="byline">A free, fully responsive HTML5 site template by AJ for HTML5 Up!</span>-->
+<!--								</header>-->
+<!--								<div class="info">-->
+<!--									<span class="date"><span class="month">Jan<span>uary</span></span> <span class="day">14</span><span class="year">, 2013</span></span>-->
+<!--									<ul class="stats">-->
+<!--										<li><a href="#" class="link-icon24 link-icon24-1">16</a></li>-->
+<!--										<li><a href="#" class="link-icon24 link-icon24-2">32</a></li>-->
+<!--										<li><a href="#" class="link-icon24 link-icon24-3">64</a></li>-->
+<!--										<li><a href="#" class="link-icon24 link-icon24-4">128</a></li>-->
+<!--									</ul>-->
+<!--								</div>-->
+<!--&lt;!&ndash;								<a href="#" class="image image-full"><img src="../../../static/img/n33-robot-invader.jpg" alt="" /></a>&ndash;&gt;-->
+<!--								<p>-->
+<!--									<strong>Hello!</strong> You're looking at <a href="#striped/">Striped</a>, a fully responsive HTML5 site template designed by AJ-->
+<!--									for <a href="http://sc.chinaz.com/" title="站长素材">站长素材</a> It features a clean, minimalistic design, styling for all basic page elements (including blockquotes, tables and lists), a-->
+<!--									repositionable sidebar (left or right), and HTML5/CSS3 code designed for quick and easy customization (see code comments for details).-->
+<!--								</p>-->
+<!--								<p>-->
+<!--									Striped is released for free under the <a href="#">Creative Commons Attribution license</a> so feel free to use it for personal projects-->
+<!--									or even commercial ones &ndash; just be sure to credit <a href="http://sc.chinaz.com/" title="站长素材">站长素材</a> for the design. If you like what you see here, be sure to check out-->
+<!--									<a href="http://sc.chinaz.com/" title="站长素材">站长素材</a> for more cool designs or follow me on <a href="#">Twitter</a> for new releases and updates.-->
+<!--								</p>-->
+<!--							</article>-->
 
-							<!-- Post -->
-							<article class="is-post is-post-excerpt">
-								<header>
-									<h2><a href="#">Lorem ipsum dolor sit amet</a></h2>
-									<span class="byline">Feugiat interdum sed commodo ipsum consequat dolor nullam metus</span>
-								</header>
-								<div class="info">
-									<span class="date"><span class="month">Jan<span>uary</span></span> <span class="day">8</span><span class="year">, 2013</span></span>
-									<ul class="stats">
-										<li><a href="#" class="link-icon24 link-icon24-1">12</a></li>
-										<li><a href="#" class="link-icon24 link-icon24-2">24</a></li>
-										<li><a href="#" class="link-icon24 link-icon24-3">48</a></li>
-										<li><a href="#" class="link-icon24 link-icon24-4">96</a></li>
-									</ul>
-								</div>
-<!--								<a href="#" class="image image-full"><img src="../../../static/img/fotogrph-dark-stairwell.jpg" alt="" /></a>-->
-								<p>
-									Quisque vel sapien sit amet tellus elementum ultricies. Nunc vel orci turpis. Donec id malesuada metus.
-									Nunc nulla velit, fermentum quis interdum quis, tate etiam commodo lorem ipsum dolor sit amet dolore.
-									Quisque vel sapien sit amet tellus elementum ultricies. Nunc vel orci turpis. Donec id malesuada metus.
-									Nunc nulla velit, fermentum quis interdum quis, convallis eu sapien. Integer sed ipsum ante.
-								</p>
-							</article>
+<!--							&lt;!&ndash; Post &ndash;&gt;-->
+<!--							<article class="is-post is-post-excerpt">-->
+<!--								<header>-->
+<!--									<h2><a href="#">Lorem ipsum dolor sit amet</a></h2>-->
+<!--									<span class="byline">Feugiat interdum sed commodo ipsum consequat dolor nullam metus</span>-->
+<!--								</header>-->
+<!--								<div class="info">-->
+<!--									<span class="date"><span class="month">Jan<span>uary</span></span> <span class="day">8</span><span class="year">, 2013</span></span>-->
+<!--									<ul class="stats">-->
+<!--										<li><a href="#" class="link-icon24 link-icon24-1">12</a></li>-->
+<!--										<li><a href="#" class="link-icon24 link-icon24-2">24</a></li>-->
+<!--										<li><a href="#" class="link-icon24 link-icon24-3">48</a></li>-->
+<!--										<li><a href="#" class="link-icon24 link-icon24-4">96</a></li>-->
+<!--									</ul>-->
+<!--								</div>-->
+<!--&lt;!&ndash;								<a href="#" class="image image-full"><img src="../../../static/img/fotogrph-dark-stairwell.jpg" alt="" /></a>&ndash;&gt;-->
+<!--								<p>-->
+<!--									Quisque vel sapien sit amet tellus elementum ultricies. Nunc vel orci turpis. Donec id malesuada metus.-->
+<!--									Nunc nulla velit, fermentum quis interdum quis, tate etiam commodo lorem ipsum dolor sit amet dolore.-->
+<!--									Quisque vel sapien sit amet tellus elementum ultricies. Nunc vel orci turpis. Donec id malesuada metus.-->
+<!--									Nunc nulla velit, fermentum quis interdum quis, convallis eu sapien. Integer sed ipsum ante.-->
+<!--								</p>-->
+<!--							</article>-->
 
 							<!-- Pager -->
 							<div class="pager">
@@ -129,41 +129,45 @@
   .S{width:160px;height:50px;position: relative;}
   .S:before{content: ''; display: block;border:10px solid transparent;border-top-color:red;border-right-color:red; width:50px;height: 50px; border-radius:40px;background:transparent;transform:rotateZ(-45deg);position: absolute;}
   .S:after{content: ''; display: block;border:10px solid transparent;border-bottom-color:red;border-right-color:red; width:50px;height: 50px; border-radius:40px;background:transparent;transform:rotateZ(45deg);position: absolute;top:-5px;left:60px}
-
   .banner-wrap{
-    position: relative;
-    height: 100%;
-    .banner-image{
-      width: 100%;
+      position: relative;
       height: 100%;
-      border-radius: 25px;
-      object-fit: cover;
+      .banner-image{
+        width: 100%;
+        height: 100%;
+        border-radius: 25px;
+        object-fit: cover;
+      }
+      .banner-text{
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        padding: 30px 0 12px 15px;
+        font-family: PingFangSC-Medium;
+        font-weight: 500;
+        font-size: 18px;
+        color: #fff;
+        width: 100%;
+        text-align: left;
+        background: url('/img/banner_layer.png') no-repeat
+      }
     }
-    .banner-text{
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      padding: 30px 0 12px 15px;
-      font-family: PingFangSC-Medium;
-      font-weight: 500;
-      font-size: 18px;
-      color: #fff;
-      width: 100%;
-      text-align: left;
-      background: url('/img/banner_layer.png') no-repeat
-    }
+  .el-carousel__item--card.is-in-stage{
+    max-width: 580px;
+    min-width: 35vw;
   }
 
   .top{
+    width: 100%;
     .container {
       position:relative;
-      margin: auto;
+      /*margin: auto;*/
       margin-bottom: 30px;
-      top: 0;
+      /*top: 0;*/
       /*left: 0;*/
       right: 0;
-      bottom: 0;
-      width: 300px;
+      /*bottom: 0;*/
+      width: 34vw;
       height: 80px;
     }
     .container .search {

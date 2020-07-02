@@ -1,4 +1,4 @@
-<template>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
 	<div class="my_post">
 		<div class="header-filter">
 			<el-form  label-position="left">
@@ -106,97 +106,16 @@
 				</el-row>
 			</el-form>
 		</div>
-		<div class="article-list">
-			<!--增加tabindex属性  使focus对div起作用-->
-			<transition-group
-							tag="div">
-			<div class="article-list-item-mp" tabindex="0" v-for="post in posts.results" :key="post.id">
-        <div>
-					<el-row class="article-title">
-            <el-col :span="3">
-              <div v-if="post.image" class="article-image">
-                <img :src="post.image">
-              </div>
-            </el-col>
-						<el-col :span="18">
-								<div class="article-title-text">
-									{{post.name}}
-								</div>
-						</el-col>
-					</el-row>
-					<el-row class="article-info" type="flex">
-            <el-col :span="2">
-              <font_icon :type="post.post_type"></font_icon>
-            </el-col>
-						<el-col :span="5">
-							发表时间:{{post.created_time}}
-						</el-col>
-						<el-col :span="5">
-							更新时间:{{post.update_time}}
-						</el-col>
-						<el-col :span="2">
-							<svg class="icon-min" aria-hidden="true">
-								<use xlink:href="#icon-liulan"></use>
-							</svg>
-							:{{post.read_num}}
-						</el-col>
-						<el-col :span="2">
-							<svg class="icon-min" aria-hidden="true">
-								<use xlink:href="#icon-icon_likegood"></use>
-							</svg>
-							:{{post.praise_num}}
-						</el-col>
-						<el-col :span="2">
-							<svg class="icon-min" aria-hidden="true">
-								<use xlink:href="#icon-shoucang"></use>
-							</svg>
-							:{{post.like_num}}
-						</el-col>
-						<el-col :span="2">
-							<svg class="icon-min" aria-hidden="true">
-								<use xlink:href="#icon-icon_community_line"></use>
-							</svg>
-							:{{post.post_num}}
-						</el-col>
-						<el-col :span="3">
-							<!--占位使用-->
-						</el-col>
-						<el-col v-if="post.is_active" :span="2" class="article-btn">
-							<el-button
-											plain
-											type="info"
-											@click="update_post(post)"
-											size="mini">
-								编辑
-							</el-button>
-						</el-col>
-						<el-col v-if="post.is_active" :span="2" class="article-btn">
-							<el-popconfirm
-											confirmButtonText='好的'
-											cancelButtonText='不用了'
-											icon="el-icon-info"
-											iconColor="red"
-											@onConfirm="delete_post(post)"
-											title="您确定删除这篇文章吗？"
-							>
-								<el-button
-												size="mini"
-												type="danger"
-												slot="reference">删除</el-button>
-							</el-popconfirm>
-						</el-col>
-						<el-col :span="1" class="article-btn" v-if="!post.is_active">
-							<!--占位使用-->
-						</el-col>
-						<el-col :span="3" v-if="!post.is_active" class="article-btn delete_msg">
-								已删除!
-						</el-col>
-					</el-row>
-        </div>
-      </div>
-			</transition-group>
-			<not_data :list="posts.results"></not_data>
-		</div>
+    <list :list="posts.results">
+      <template v-slot:item-content="data">
+        <post_item
+          :post="data.item"
+          @update_func="update_post"
+          @delete_func="delete_post"
+          :editor="true">
+        </post_item>
+      </template>
+    </list>
 		<div class="footer-pagination">
 				<pagination
 								@change="_get_user_posts"
@@ -213,8 +132,8 @@
 
 	import {api_user_post} from "@/api/index"
 	import pagination from '../../../components/pagination'
-	import not_data from '../../../components/not_data'
-	import font_icon from '../../../components/small/font_icon'
+  import list from '../../../components/list'
+  import post_item from '../../../components/post_item'
 
 	export default {
 		data() {
@@ -329,8 +248,8 @@
 		},
 		components:{
 			pagination,
-			not_data,
-			font_icon
+      list,
+      post_item
 		},
 		inject:['blank_push', 'move_to_top']
 	}
@@ -352,88 +271,11 @@
 			padding: 0 20px;
 			margin: 0 0 1em 0;
 		}
-		.article-list{
-			min-height: 80vh;
-			/*帖子列表*/
-			.article-list-item-mp{
-				display: -webkit-box;
-				display: -ms-flexbox;
-				display: flex;
-				-webkit-box-direction: normal;
-				-webkit-box-orient: vertical;
-				-ms-flex-direction: column;
-				flex-direction: column;
-				border-top: 1px dotted #ddd;
-				border-bottom: 1px dotted #ddd;
-				padding: 1rem 1rem 1rem 1rem;
-				color: #999;
-				font-size: 14px;
-				/*与vue动画冲突*/
-				/*transition: background-color 0.25s ease;*/
-				.article-title{
-					-webkit-box-orient: horizontal;
-					-ms-flex-direction: row;
-					flex-direction: row;
-					-webkit-box-pack: start;
-					-ms-flex-pack: start;
-					justify-content: flex-start;
-          .article-image{
-            img{
-              width: 20vh;
-              height: 9vh;
-              object-fit: cover
-            }
-          }
-					.article-title-text{
-						font-size: 16px;
-						color: #4d4d4d;
-						margin-bottom: 0;
-						-webkit-box-flex: 1;
-						-ms-flex-positive: 1;
-						flex-grow: 1;
-					}
-				}
-				.article-info{
-					margin-top: 10px;
-					display: -webkit-box;
-					display: -ms-flexbox;
-					font-size: 11px;
-					display: flex;
-					-webkit-box-orient: horizontal;
-					-webkit-box-direction: normal;
-					-ms-flex-direction: row;
-					flex-direction: row;
-					-webkit-box-align: center;
-					-ms-flex-align: center;
-					align-items: center;
-					-webkit-box-pack: justify;
-					-ms-flex-pack: justify;
-					.article-btn{
-						margin: 0 10px;
-						border-right: 1px solid #e9e9e9;
-					}
-					.delete_msg{
-						border: 0!important;
-					}
-				}
-			}
-			.article-list-item-mp:hover{
-				background-color: #f5f7fa;
-			}
-			.article-list-item-mp:focus{
-				background-color: #ecf5ff;
-				outline: 0;
-				/*outline: -webkit-focus-ring-color auto 1px;*/
-			}
-		}
 
 		.footer-pagination{
 			padding: 8%;
 			text-align: center;
 		}
-		/*.article-list-item-mp:active{*/
-		/*	background-color: #000000;*/
-		/*}*/
 
 	}
 

@@ -10,5 +10,6 @@ class IndexSerializer(serializers.Serializer):
     """首页序列化器"""
     banner = serializers.SerializerMethodField(label='轮播图')
 
+
     def get_banner(self, obj):
         return Post.get_banner()

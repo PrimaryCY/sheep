@@ -37,7 +37,6 @@ class InitServer(object):
             if not os.path.isdir(t):
                 os.makedirs(t)
 
-
     def init(self):
         """
         初始化服务准备工作

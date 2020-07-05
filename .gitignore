@@ -9,6 +9,10 @@ __pycache__/
 # Distribution / packaging
 .Python
 
+*.lock
+celerybeat-schedule.bak
+celerybeat-schedule.dat
+celerybeat-schedule.dir
 node_modules/
 sheep-vue/
 local_setting.py

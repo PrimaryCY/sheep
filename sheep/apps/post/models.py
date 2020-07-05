@@ -160,14 +160,6 @@ class Post(BaseModel):
         """
         return cls.objects.filter(id=post_id).update(read_num=F('read_num')+1)
 
-    @classmethod
-    def get_banner(cls):
-        """
-        获取banner数据,默认获取点赞数最多同时有封面的5条
-        :return:
-        """
-        return list(cls.objects.filter(image__isnull=False).order_by('praise_num').values('id', 'image', 'name')[:5])
-
     class Meta:
         verbose_name_plural = verbose_name = '帖子表'
         unique_together = ('name', 'is_active',)

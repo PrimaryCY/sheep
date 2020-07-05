@@ -5,6 +5,7 @@ django-extensions==2.2.9
 django-filter==2.2.0
 djangorestframework=3.11.0
 django-redis==4.10.0
+redis==3.5.3
 mysqlclient==1.4.5
 pytz==2019.3
 six==1.13.0
@@ -18,3 +19,10 @@ daphne==2.5.0
 channels-redis==2.4.2
 ConcurrentLogHandler==0.9.1
 concurrent-log-handler==0.9.16
+celery==4.4.6
+django-celery-results==1.2.1
+flower==0.9.5
+eventlet==0.25.2
+cryptography==2.8.0
+msgpack==0.6.2
+pipdeptree==1.0.0

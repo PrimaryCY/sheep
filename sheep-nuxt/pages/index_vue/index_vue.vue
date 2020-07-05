@@ -44,7 +44,7 @@
 									<svg class="icon-min" aria-hidden="true">
 										<use xlink:href="#icon-shiyongwendang"></use>
 									</svg>
-									所有文章
+									首页
 								</a></li>
 								<li :class="{current_page_item:active==='/feedback'}" @click.prevent="push('/feedback')"><a href="#">
 									<svg class="icon-min" aria-hidden="true">

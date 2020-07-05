@@ -1,3 +1,4 @@
+from django_celery_results.models import TaskResult
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.response import Response
@@ -5,12 +6,13 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin
 from rest_framework_extensions.cache.mixins import BaseCacheResponseMixin
 
-from apps.other.serializer import UploadSerializer, OptionSerializer, FeedbackCategorySerializer, ListFeedbackSerializer, CreateFeedbackSerializer, UpdateFeedbackSerializer
+from apps.other.serializer import UploadSerializer, OptionSerializer, FeedbackCategorySerializer, \
+    ListFeedbackSerializer, CreateFeedbackSerializer, UpdateFeedbackSerializer, CeleryResultsSerializer
 from apps.other.filters import FeedbackFilter, UploadHistoryFilter
 from apps.other.models import UploadHistoryModel, Feedback, FeedbackCategory
 from apps.user.permission import IsLoginUser, IsAdminUser
 from utils.drf_extensions.decorators import only_data_cache_response
-from utils.viewsets import ModelViewSet
+from utils.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from utils.pagination import LimitOffsetPagination
 
 
@@ -76,3 +78,15 @@ class FeedbackViewSet(ModelViewSet):
             return Feedback.objects.all()
         else:
             return Feedback.objects.filter(author_id=user.id).all()
+
+
+class CeleryResultsViewSet(ReadOnlyModelViewSet):
+    """celery-worker执行结果"""
+    serializer_class = CeleryResultsSerializer
+    queryset = TaskResult.objects.all()
+    permission_classes = (IsAdminUser,)
+    pagination_class = LimitOffsetPagination
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    filter_fields = ('status', 'task_name', 'worker')
+    search_fields = ('task_id',)
+    order_fields = ('date_created', 'date_done')

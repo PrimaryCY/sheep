@@ -2,14 +2,15 @@ from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import serializers
 from rest_framework.filters import SearchFilter, OrderingFilter
-
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.response import Response
+from rest_framework_extensions.utils import default_list_cache_key_func
 
 from apps.post.models import Category, Post, PostReply
 from apps.post.filters import PostFilter
 from utils.viewsets import ModelViewSet, CreateModelMixin, DestroyModelMixin
 from utils.pagination import LimitOffsetPagination
+from utils.drf_extensions.decorators import only_data_cache_response
 from apps.post.serializer import PostCategorySerializer, PostSerializer, PostReplySerializer, RetrievePostSerializer, RetrievePostReplySerializer, UpdateRetrievePostSerializer
 from apps.user.permission import IsAdminUser, IsLoginUser
 
@@ -39,18 +40,26 @@ class AllPostViewSet(ReadOnlyModelViewSet):
     """所有帖子视图"""
     serializer_class = PostSerializer
     retrieve_serializer_class = RetrievePostSerializer
-    queryset = Post.objects.all()
     permission_classes = ()
     pagination_class = LimitOffsetPagination
-    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    filter_backends = (DjangoFilterBackend,)
     filter_fields = ('category', 'author_id')
-    search_fields = ('@name',)
-    ordering_fields = '__all__'
+
+    def get_queryset(self):
+        # 首页不传category时,按照文章收藏数排序
+        if self.action == 'list':
+            query_set = Post.objects.defer('html_content', 'content')
+            return query_set.all() if self.request.query_params.get('category', None) else query_set.order_by('like_num')
+        return Post.objects.all()
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
             return self.retrieve_serializer_class
         return self.serializer_class
+
+    @only_data_cache_response(key_func=default_list_cache_key_func, timeout=600)
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
         """重写retrieve方法  增加阅读数"""

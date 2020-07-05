@@ -13,7 +13,9 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 import sys
 import time
+from multiprocessing import cpu_count
 
+from celery.schedules import crontab
 from django_redis import get_redis_connection
 
 
@@ -51,12 +53,14 @@ INSTALLED_APPS = [
     'django_extensions',
     'mptt',
     'corsheaders',
-    'commands.apps.CommandsConfig',
-    'apps.user.apps.UserConfig',
-    'apps.post.apps.PostConfig',
-    'apps.operate.apps.OperateConfig',
-    'apps.other.apps.OtherConfig',
-    'apps.index.apps.IndexConfig'
+    'django_celery_results',
+    # celery自动导入不支持 apps.user.apps.UserConfig这种方式
+    'commands',
+    'apps.user',
+    'apps.post',
+    'apps.operate',
+    'apps.other',
+    'apps.index'
 ]
 
 MIDDLEWARE = [
@@ -254,13 +258,14 @@ REST_FRAMEWORK = \
 # REST_FRAMEWORK_EXTENSIONS 设置
 REST_FRAMEWORK_EXTENSIONS = {
     "DEFAULT_USE_CACHE": "restframework_extensions",
-    "DEFAULT_CACHE_RESPONSE_TIMEOUT": 60*30
+    "DEFAULT_CACHE_RESPONSE_TIMEOUT": 30*60
 }
 
+REDIS_HOST = 'redis://127.0.0.1:6379/'
 CACHES = {
     'default': {
         'BACKEND': "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": REDIS_HOST + "1",
         'TIMEOUT': 2000,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
@@ -271,7 +276,7 @@ CACHES = {
     'restframework_extensions': {
         # 不用decode_response
         'BACKEND': "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/2",
+        "LOCATION": REDIS_HOST + "2",
         'TIMEOUT': 2000,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
@@ -280,7 +285,7 @@ CACHES = {
     },
     'user': {
         'BACKEND': "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/10",
+        "LOCATION": REDIS_HOST + "10",
         'TIMEOUT': 2000,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
@@ -292,6 +297,48 @@ CACHES = {
 from django_redis import get_redis_connection
 USER_REDIS = get_redis_connection('user')
 
+# celery配置
+CELERY_BROKER_BACKEND = "redis"
+# 设置broker任务队列所在位置
+CELERY_BROKER_URL = REDIS_HOST + "3"
+# 并发worker数
+CELERY_WORKER_CONCURRENCY = cpu_count()
+# celery的时区设置
+CELERY_TIMEZONE = TIME_ZONE
+# 防止celery的死锁情况出现
+# CELERYD_FORCE_EXECV = True
+# 每个worker最多执行内核数*10个任务就会被销毁，可防止内存泄露
+CELERY_WORKER_MAX_TASKS_PER_CHILD = cpu_count() * 10
+# 硬超时,会被强杀
+CELERY_TASK_TIME_LIMIT = 3*60
+# 软超时,会抛异常
+CELERY_TASK_SOFT_TIME_LIMIT = 2*60+30
+CELERY_REDIS_CONNECT_RETRY = True
+CELERY_TASK_SEND_SENT_EVENT = True
+# CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_ENABLE_UTC = False
+# 任务发出后，经过一段时间还未收到acknowledge , 就将任务重新交给其他worker执行
+CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 31104000}
+# 默认worker使用的队列
+CELERY_DEFAULT_QUEUE = 'default'
+CELERY_DEFAULT_EXCHANGE_TYPE = 'topic'
+CELERY_DEFAULT_ROUTING_KEY = 'default'
+
+# celery-result 配置
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_RESULT_BACKEND = REDIS_HOST + "4"
+CELERY_RESULT_EXPIRES = 60*24*2
+CELERY_RESULT_CACHE_MAX = 3
+CELERY_BEAT_SCHEDULE = {
+    'clear-celery-results': {
+        # 由于选用数据库作为result的存储后端,result不会自动清除,所以手写一个定时任务清除
+        'task': 'apps.other.tasks.clear_celery_results',
+        'schedule': crontab(minute=f"*/{CELERY_RESULT_EXPIRES}"),
+    },
+}
 
 # Token配置
 TOKEN = {

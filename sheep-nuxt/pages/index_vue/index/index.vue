@@ -5,8 +5,17 @@
         <input type="text" placeholder="Search...">
         <div class="search"></div>
       </div>
+      <el-tabs v-model="params.category" @tab-click="change_category">
+        <el-tab-pane  label="推荐">
+        </el-tab-pane>
+        <el-tab-pane v-for="category in option.post_category"
+                     :key="category.id"
+                     :name="`${category.id}`"
+                     :label="category.name">
+        </el-tab-pane>
+      </el-tabs>
       <el-carousel :interval="4000" type="card" height="263px" arrow="never">
-        <el-carousel-item v-for="item in index.banner" :key="item.id" class="radius">
+        <el-carousel-item v-for="item in banner" :key="item.id" class="radius">
           <div class="banner-wrap">
             <img :src="item.image" class="banner-image">
             <div class="banner-text">
@@ -17,12 +26,19 @@
       </el-carousel>
     </div>
     <div class="content">
-      <div class="first">
-
+      <div class="left">
+        {{post}}
       </div>
-      <div class="second">
-
+      <div class="right">
+        <ul>
+          <li v-for="i in hot" :key="i.id">
+            {{i.name}}
+          </li>
+        </ul>
       </div>
+    </div>
+    <div>
+
     </div>
 
 <!--							&lt;!&ndash; Post &ndash;&gt;-->
@@ -95,25 +111,45 @@
 </template>
 
 <script>
-  import {api_index} from '../../../api'
+  import {
+    api_banner,
+    api_post,
+    api_hot} from '../../../api'
+  import {mapState} from 'vuex'
+
 
   export default {
     name: "index",
     data(){
       return {
         input:'',
-        index:{}
+        banner:[],
+        hot:[],
+        post:[],
+        tab_category:'0',
+        params:{
+          category:null,
+        }
       }
     },
     async asyncData(context){
+      let post_params = {
+        category:context.params.id===0?null:context.params.id
+      }
       try {
-        let [index] = await Promise.all([
-          api_index.list()
+        let [banner, hot, post] = await Promise.all([
+          api_banner.list(),
+          api_hot.list(),
+          api_post.list(post_params)
         ])
-        index = index.data.data
+        banner = banner.data.data
+        hot = hot.data.data
+        post = post.data.data
         return {
-          // 首页接口所有数据
-          index
+          banner,
+          hot,
+          post,
+          params:post_params
         }
       }catch(e)
       {
@@ -121,14 +157,23 @@
       }
     },
     methods: {
+      change_category(){
+        let params = {
+          id:this.tab_category
+        }
+        this.$router.push({
+          'name':'index-detail',
+          params
+        })
+      }
     },
+    computed:{
+      ...mapState(['option'])
+    }
   }
 </script>
 
 <style scoped lang="scss">
-  .S{width:160px;height:50px;position: relative;}
-  .S:before{content: ''; display: block;border:10px solid transparent;border-top-color:red;border-right-color:red; width:50px;height: 50px; border-radius:40px;background:transparent;transform:rotateZ(-45deg);position: absolute;}
-  .S:after{content: ''; display: block;border:10px solid transparent;border-bottom-color:red;border-right-color:red; width:50px;height: 50px; border-radius:40px;background:transparent;transform:rotateZ(45deg);position: absolute;top:-5px;left:60px}
   .banner-wrap{
       position: relative;
       height: 100%;
@@ -275,20 +320,21 @@
   }
 
   .content{
-    .first{
-      border-top: 2px solid black;
-      border-left: 2px solid black;
-      width: 100%;
-      height: 400px;
-      border-radius: 20%;
+    text-align: initial;
+    font-size: 0;
+    .left{
+      font-size: 14px;
+      width: 80%;
+      display: inline-block;
+      background: gold;
+      vertical-align: top;
     }
-    .second{
-      border-right: 2px solid black;
-      border-bottom: 2px solid black;
-      width: 100%;
-      height: 400px;
-      border-top-left-radius: 0!important;
-      border-radius: 20%;
+    .right{
+      width: 20%;
+      font-size: 14px;
+      display: inline-block;
+      background: #00feff;
     }
+
   }
 </style>

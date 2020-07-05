@@ -40,6 +40,7 @@
 					<input	type="password"
 									v-model="loginData.password"
 									placeholder="请输入密码"
+                  @keyup.enter="login"
 									@keyup="login_watch(2)" maxlength="20"/>
 					<p v-if="loginError.password" class="error-msg"><a href="javascript:">{{loginError.password}}</a></p>
 					<el-checkbox v-model="loginData.remember_me">记住账号</el-checkbox>

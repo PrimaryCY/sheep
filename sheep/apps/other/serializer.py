@@ -4,6 +4,7 @@
 import os
 import datetime
 
+from django_celery_results.models import TaskResult
 from rest_framework.request import Request
 from rest_framework import serializers
 from django.conf import settings
@@ -107,3 +108,19 @@ class UpdateFeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feedback
         fields = ('reply_author_id', 'reply', 'reply_time')
+
+
+class CeleryResultsSerializer(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.context.get('view'):
+            return
+        view = self.context['view']
+        if view.action == 'list':
+            self.Meta.fields = ('id', 'task_id', 'status', 'date_created', 'date_done', 'task_name', 'worker')
+        else:
+            self.Meta.fields = '__all__'
+
+    class Meta:
+        model = TaskResult
+        fields = "__all__"

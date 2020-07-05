@@ -1,8 +1,16 @@
 import common_crud from './common-crud'
 /*
-首页
+轮播图
  */
-export const api_index=common_crud('/v1/web/index/')
+export const api_banner=common_crud('/v1/web/banner/')
+/*
+热门
+*/
+export const api_hot=common_crud('/v1/web/hot/')
+/*
+所有文章
+ */
+export const api_post=common_crud('/v1/web/post/')
 /*
 登录相关
  */

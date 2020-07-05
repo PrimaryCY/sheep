@@ -46,6 +46,12 @@ const routes = [
             component:index,
           },
           {
+            // 首页
+            path:'index/:id',
+            name:'index-detail',
+            component:index,
+          },
+          {
             // 个人信息
             path:'info/',
             name:'info',

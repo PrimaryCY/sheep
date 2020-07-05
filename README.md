@@ -99,7 +99,10 @@
     - celery
     - django-mptt
     - django-debug-toolbar
-
+    - daphne
+    - concurrent-log-handler
+    - django-filter
+    - cryptography
 ---
 
 ### <font color=#ca0c16>关系型数据库选型

@@ -98,7 +98,7 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
         model = Post
         exclude = ("content", "html_content")
         extra_kwargs = {
-            'url': {'view_name': 'v1:web:all_post-detail', 'lookup_field': 'pk'},
+            'url': {'view_name': 'v1:web:post-detail', 'lookup_field': 'pk'},
         }
     ud_url = serializers.HyperlinkedIdentityField(view_name='v1:web:user_post-detail', lookup_field='pk')
 
@@ -110,12 +110,12 @@ class RetrievePostSerializer(PostSerializer):
         model = Post
         fields = "__all__"
         extra_kwargs = {
-            'url': {'view_name': 'v1:web:all_post-detail', 'lookup_field': 'pk'},
+            'url': {'view_name': 'v1:web:post-detail', 'lookup_field': 'pk'},
         }
 
 
 class UpdateRetrievePostSerializer(PostSerializer):
-    """retrieve方法的帖子序列化器"""
+    """个人文章查改方法的帖子序列化器"""
     html_content = serializers.CharField(write_only=True, label='html内容')
     content = serializers.CharField(write_only=True, label='文字内容')
     parse_content = serializers.SerializerMethodField(label='帖子编辑内容')
@@ -132,7 +132,7 @@ class UpdateRetrievePostSerializer(PostSerializer):
         model = Post
         fields = "__all__"
         extra_kwargs = {
-            'url': {'view_name': 'v1:web:all_post-detail', 'lookup_field': 'pk'},
+            'url': {'view_name': 'v1:web:post-detail', 'lookup_field': 'pk'},
         }
 
 

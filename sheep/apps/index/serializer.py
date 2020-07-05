@@ -3,13 +3,17 @@
 # datetime:2020/6/29 23:23
 from rest_framework import serializers
 
-from apps.post.models import Post
+
+class BannerSerializer(serializers.Serializer):
+    """轮播图序列化器"""
+    id = serializers.IntegerField()
+    image = serializers.URLField(label='封面链接')
+    name = serializers.CharField(label='标题')
 
 
-class IndexSerializer(serializers.Serializer):
-    """首页序列化器"""
-    banner = serializers.SerializerMethodField(label='轮播图')
-
-
-    def get_banner(self, obj):
-        return Post.get_banner()
+class HotSerializer(serializers.Serializer):
+    """热门序列化器"""
+    id = serializers.IntegerField()
+    name = serializers.CharField(label='标题')
+    post_type = serializers.IntegerField(label='文章类别')
+    read_num = serializers.IntegerField(label='阅读数量')

@@ -8,11 +8,13 @@ from apps.user.views import UserViewSet, LoginViewSet
 from apps.post.views import PostCategoryViewSet, UserPostViewSet, AllPostViewSet, UserReplyViewSet, \
     PostReplyViewSet
 from apps.operate.views import UserCollectCategoryViewSet, CollectCategoryViewSet, CollectViewSet, PraiseViewSet, FocusViewSet
-from apps.index.views import IndexViewSet
+from apps.index.views import BannerViewSet, HotViewSet
 
 router = CustomRouter()
-# 首页
-router.register('index', IndexViewSet, basename='index')
+# 轮播图
+router.register('banner', BannerViewSet, basename='index')
+# 热门
+router.register('hot', HotViewSet, basename='hot')
 # 用户crud
 router.register('user', UserViewSet, basename='user')
 # 用户登录退出
@@ -20,7 +22,7 @@ router.register('login', LoginViewSet, basename='login')
 # 帖子分类crud
 router.register('post_category', PostCategoryViewSet, basename='post_category')
 # 所有帖子
-router.register('all_post', AllPostViewSet, basename='all_post')
+router.register('post', AllPostViewSet, basename='post')
 # 个人帖子crud
 router.register('user_post', UserPostViewSet, basename='user_post')
 

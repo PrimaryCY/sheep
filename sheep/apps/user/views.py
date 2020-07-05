@@ -16,6 +16,7 @@ User = get_user_model()
 
 from django.db import transaction
 
+
 class LoginViewSet(CreateModelMixin, GenericViewSet):
     """登录视图"""
     serializer_class = LoginSerializer

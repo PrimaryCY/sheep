@@ -5,7 +5,7 @@ from django.conf.urls import url, include
 
 from utils.routes import CustomRouter
 from apps.other.views import UploadViewSet, FeedbackCategoryViewSet, FeedbackViewSet
-from apps.other.views import OptionViewSet
+from apps.other.views import OptionViewSet, CeleryResultsViewSet
 
 router = CustomRouter()
 # 上传接口
@@ -16,8 +16,11 @@ router.register('option', OptionViewSet, basename='option')
 router.register('feedback_category', FeedbackCategoryViewSet, basename='feedback_category')
 # 意见反馈
 router.register('feedback', FeedbackViewSet, basename='feedback')
+# celery-results内容
+router.register('task-result', CeleryResultsViewSet, basename='celery_result')
 
 urlpatterns = [
     url(r'web/', include(('api.v1.web', 'api.v1.v1.web'), namespace='web')),
-    url(r'', include(router.urls))
+    url(r'task/', include(('django_celery_results.urls', 'django_celery_results'), namespace='celery')),
+    url(r'', include(router.urls)),
 ]

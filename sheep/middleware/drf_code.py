@@ -11,6 +11,8 @@ from rest_framework.response import Response
 from apps.user.authentication import TokenAuthentication
 from sheep.constant import RET
 
+DRF = 'drf'
+RAW = 'raw'
 
 class DRFCodeMiddleware(MiddlewareMixin):
     """
@@ -19,6 +21,7 @@ class DRFCodeMiddleware(MiddlewareMixin):
     """
 
     def process_template_response(self, request, response):
+        """ drf的response 会走这个方法 """
         response = self.process_response(request, response)
         # 解决filter组件在drf可视化页面分页的情况下显示不出来的问题
         if not hasattr(response, 'renderer_context'):
@@ -26,36 +29,57 @@ class DRFCodeMiddleware(MiddlewareMixin):
         paginator = getattr(response.renderer_context['view'], "paginator", None)
         if paginator:
             paginator.get_results = (lambda x: x['data']['results'])
+
         return response
 
+    def before_handler(self, request, response):
+        if response.status_code >= 500 or getattr(response, 'FINISH', False):
+            return False, response
+
+        if isinstance(response, Response):
+            response.TYPE = DRF
+        else:
+            response.TYPE = RAW
+
+        try:
+            data = self.get_response_data(response)
+        except:
+            return False, response
+        else:
+            return True, data
+
     def process_response(self, request, response):
-        status_code = response.status_code
-        # 500的情况
-        if status_code >= 500 or response.exception:
+
+        flag, data = self.before_handler(request, response)
+        if not flag:
             return response
 
-        data = self.get_response_data(response)
         # 正常返回的情况
-        if 200 <= status_code < 300:
+        if 200 <= response.status_code < 300:
             data = self.success_response_handle(data)
         # 500之外的情况
         else:
             data = self.error_response_handle(request, response,
-                                              data, status_code)
+                                              data)
+
+        self.finish_handler(response, data)
+        return response
+
+    def finish_handler(self, response, data):
+        response.FINISH = True
         response.status_code = 200
         self.set_response_data(response, data)
-        return response
 
     @staticmethod
     def set_response_data(response, data):
-        if isinstance(response, Response):
+        if response.TYPE == DRF:
             response.data = data
         else:
             response.content = json.dumps(data).encode()
 
     @staticmethod
     def get_response_data(response):
-        if isinstance(response, Response):
+        if response.TYPE == DRF:
             return response.data
         else:
             return json.loads(response.content)
@@ -73,9 +97,9 @@ class DRFCodeMiddleware(MiddlewareMixin):
         }
         return data
 
-    def error_response_handle(self, request, response, data, c):
+    def error_response_handle(self, request, response, data):
         """正常报错返回"""
-
+        c = response.status_code
         # 特殊状态处理映射
         error_dict = {
             400: self.error_400_handle,     # serializer内抛出的异常

@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework_extensions.utils import default_list_cache_key_func
 
 from apps.post.models import Category, Post, PostReply
-from apps.post.filters import PostFilter
+from apps.post.filters import PostFilter, AllPostFilter
 from utils.viewsets import ModelViewSet, CreateModelMixin, DestroyModelMixin
 from utils.pagination import LimitOffsetPagination
 from utils.drf_extensions.decorators import only_data_cache_response
@@ -43,14 +43,8 @@ class AllPostViewSet(ReadOnlyModelViewSet):
     permission_classes = ()
     pagination_class = LimitOffsetPagination
     filter_backends = (DjangoFilterBackend,)
-    filter_fields = ('category', 'author_id')
-
-    def get_queryset(self):
-        # 首页不传category时,按照文章收藏数排序
-        if self.action == 'list':
-            query_set = Post.objects.defer('html_content', 'content')
-            return query_set.all() if self.request.query_params.get('category', None) else query_set.order_by('like_num')
-        return Post.objects.all()
+    filter_class = AllPostFilter
+    queryset = Post.objects.all()
 
     def get_serializer_class(self):
         if self.action == 'retrieve':

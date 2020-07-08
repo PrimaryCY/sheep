@@ -15,6 +15,7 @@ import my_post from './pages/index_vue/my_post/my_post'
 import my_question from './pages/index_vue/my_question/my_question'
 import feedback from './pages/index_vue/feedback/feedback'
 import not_found from './pages/index_vue/not_found/not_found'
+import post_detail from './pages/index_vue/post_detail/post_detail'
 
 // import NotFound from './views/notFound/notFound'
 import test from './pages/test'
@@ -46,12 +47,6 @@ const routes = [
             component:index,
           },
           {
-            // 首页
-            path:'index/:id',
-            name:'index-detail',
-            component:index,
-          },
-          {
             // 个人信息
             path:'info/',
             name:'info',
@@ -70,6 +65,7 @@ const routes = [
             }
           },
           {
+            //
             path:'my_question',
             name:'my_question',
             component:my_question,
@@ -83,6 +79,11 @@ const routes = [
             component:feedback,
             meta:{
             }
+          },
+          {
+            path:'post-detail/:id',
+            name:'post_detail',
+            component:post_detail
           },
           {
             path:'',

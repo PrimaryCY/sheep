@@ -12,7 +12,7 @@ from sheep.init_server import init_stdout
 User = get_user_model()
 
 
-class Category(BaseModel, MPTTModel):
+class Category(MPTTModel, BaseModel):
     """帖子分类表"""
     name = models.CharField(max_length=128, null=False, verbose_name='帖子分类')
     desc = models.CharField(max_length=512, null=True, verbose_name='分类简介')

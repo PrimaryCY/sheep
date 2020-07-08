@@ -17,3 +17,4 @@ class HotSerializer(serializers.Serializer):
     name = serializers.CharField(label='标题')
     post_type = serializers.IntegerField(label='文章类别')
     read_num = serializers.IntegerField(label='阅读数量')
+    image = serializers.URLField(label='封面')

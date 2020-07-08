@@ -24,7 +24,7 @@ class HotViewSet(ListModelMixin,
     """热门,浏览数最多的前15条"""
     serializer_class = HotSerializer
     permission_classes = ()
-    queryset = Post.objects.order_by('read_num').values('id', 'name', 'post_type', 'read_num')[:15]
+    queryset = Post.objects.order_by('read_num').values('id', 'name', 'post_type', 'read_num', 'image')[:10]
 
     @only_data_cache_response()
     def list(self, request, *args, **kwargs):

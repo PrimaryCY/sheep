@@ -107,7 +107,7 @@ class DRFCodeMiddleware(MiddlewareMixin):
         }
         # 特定的几种状态处理
         if c in error_dict.keys():
-            error_dict.get(c)(response, data)
+            data = error_dict.get(c)(response, data)
         # 当报错返回数据没有包含code,success,msg关键状态
         if {'code', 'msg'} - set(data.keys()):
             data = {

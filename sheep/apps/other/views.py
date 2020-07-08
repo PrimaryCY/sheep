@@ -3,8 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin
-from rest_framework_extensions.cache.mixins import BaseCacheResponseMixin
+from rest_framework.mixins import ListModelMixin, CreateModelMixin
 
 from apps.other.serializer import UploadSerializer, OptionSerializer, FeedbackCategorySerializer, \
     ListFeedbackSerializer, CreateFeedbackSerializer, UpdateFeedbackSerializer, CeleryResultsSerializer

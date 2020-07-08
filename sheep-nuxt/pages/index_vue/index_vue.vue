@@ -31,12 +31,6 @@
 											@click.prevent="login"
 							>{{ loginBtn.loading ? '登陆中...' : '登录' }}</el-button>
 						</div>
-<!--						&lt;!&ndash; Search &ndash;&gt;-->
-<!--						<section class="is-search is-first">-->
-<!--							<form method="post" action="#">-->
-<!--								<input type="text" class="text" name="search" placeholder="Search" />-->
-<!--							</form>-->
-<!--						</section>-->
 						<!-- Nav -->
 						<nav id="nav" class="mobileUI-site-nav">
 							<ul>
@@ -156,65 +150,6 @@
 					</div>
 
 				<div>
-<!--					<div v-if="!user.username">-->
-<!--						&lt;!&ndash; Logo &ndash;&gt;-->
-<!--						<div id="logo">-->
-<!--							<el-button-->
-<!--											type="danger"-->
-<!--											:loading="loginBtn.loading"-->
-<!--											class="login-btn"-->
-<!--											@click.prevent="login"-->
-<!--							>{{ loginBtn.loading ? '登陆中...' : '登录' }}</el-button>-->
-<!--						</div>-->
-<!--						&lt;!&ndash; Nav &ndash;&gt;-->
-<!--						<nav id="nav" class="mobileUI-site-nav">-->
-<!--							<ul>-->
-<!--								<li><a href="#">所</a></li>-->
-<!--								<li><a href="#">意</a></li>-->
-<!--							</ul>-->
-<!--						</nav>-->
-<!--					</div>-->
-<!--					<div v-else>-->
-<!--						&lt;!&ndash; logo &ndash;&gt;-->
-<!--						<div class="user" @click="push('/info',2)">-->
-<!--							<el-avatar :size="50" :src="user.portrait" >-->
-<!--								<img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>-->
-<!--							</el-avatar>-->
-<!--						</div>-->
-
-<!--						&lt;!&ndash;postings&ndash;&gt;-->
-<!--						<section class="is-search is-first">-->
-<!--							<div id="postings">-->
-<!--								<el-button-->
-<!--												type="danger"-->
-<!--												class="login-btn"-->
-<!--												@click.prevent="blank_push('postings')"-->
-<!--								>发</el-button>-->
-<!--							</div>-->
-<!--						</section>-->
-
-<!--						&lt;!&ndash;Nav&ndash;&gt;-->
-<!--						<nav id="nav" class="mobileUI-site-nav">-->
-<!--							<ul>-->
-<!--								<li :class="{current_page_item:active==='/index'}" @click.prevent="push('/index')"><a href="#">所</a></li>-->
-<!--								<li :class="{current_page_item:active==='/info'}" @click.prevent="push('/info')"><a href="#">个</a></li>-->
-<!--								<li :class="{current_page_item:active==='/my_post'}" @click="push('/my_post')"><a href="#">我</a></li>-->
-<!--								<li><a href="#">我</a></li>-->
-<!--								<li><a href="#">我</a></li>-->
-<!--								<li><a href="#">我</a></li>-->
-<!--								<li><a href="#">意</a></li>-->
-<!--							</ul>-->
-<!--						</nav>-->
-<!--						&lt;!&ndash;quit&ndash;&gt;-->
-<!--						<section class="is-text-style1">-->
-<!--							<div class="inner" @click="quit()">-->
-<!--								<p>-->
-<!--									退出-->
-<!--								</p>-->
-<!--							</div>-->
-<!--						</section>-->
-
-<!--					</div>-->
 
 				</div>
 				<!-- Recent Posts -->
@@ -237,73 +172,12 @@
 						<h2>关于本站</h2>
 					</header>
 					<ul>
-						<!--						<li><a href="#">关于本站</a></li>-->
+            <li><a href="#" target="_blank">关于我们</a></li>
+            <li><a href="#" target="_blank">广告服务</a></li>
+            <li><a href="#" target="_blank">我的愿景</a></li>
 						<li><a href="#">技术支持</a></li>
 						<li><a href="https://github.com/PrimaryCY/sheep" target="_blank">github 地址</a></li>
 					</ul>
-				</section>
-
-				<!-- Calendar -->
-				<section class="is-calendar">
-
-					<!--					<div class="inner">-->
-					<!--						<table>-->
-					<!--							<caption>February 2013</caption>-->
-					<!--							<thead>-->
-					<!--							<tr>-->
-					<!--								<th scope="col" title="Monday">M</th>-->
-					<!--								<th scope="col" title="Tuesday">T</th>-->
-					<!--								<th scope="col" title="Wednesday">W</th>-->
-					<!--								<th scope="col" title="Thursday">T</th>-->
-					<!--								<th scope="col" title="Friday">F</th>-->
-					<!--								<th scope="col" title="Saturday">S</th>-->
-					<!--								<th scope="col" title="Sunday">S</th>-->
-					<!--							</tr>-->
-					<!--							</thead>-->
-					<!--							<tbody>-->
-					<!--							<tr>-->
-					<!--								<td colspan="4" class="pad"><span>&nbsp;</span></td>-->
-					<!--								<td><span>1</span></td>-->
-					<!--								<td><span>2</span></td>-->
-					<!--								<td><span>3</span></td>-->
-					<!--							</tr>-->
-					<!--							<tr>-->
-					<!--								<td><span>4</span></td>-->
-					<!--								<td><span>5</span></td>-->
-					<!--								<td><a href="#">6</a></td>-->
-					<!--								<td><span>7</span></td>-->
-					<!--								<td><span>8</span></td>-->
-					<!--								<td><span>9</span></td>-->
-					<!--								<td><a href="#">10</a></td>-->
-					<!--							</tr>-->
-					<!--							<tr>-->
-					<!--								<td><span>11</span></td>-->
-					<!--								<td><span>12</span></td>-->
-					<!--								<td><span>13</span></td>-->
-					<!--								<td class="today"><a href="#">14</a></td>-->
-					<!--								<td><span>15</span></td>-->
-					<!--								<td><span>16</span></td>-->
-					<!--								<td><span>17</span></td>-->
-					<!--							</tr>-->
-					<!--							<tr>-->
-					<!--								<td><span>18</span></td>-->
-					<!--								<td><span>19</span></td>-->
-					<!--								<td><span>20</span></td>-->
-					<!--								<td><span>21</span></td>-->
-					<!--								<td><span>22</span></td>-->
-					<!--								<td><a href="#">23</a></td>-->
-					<!--								<td><span>24</span></td>-->
-					<!--							</tr>-->
-					<!--							<tr>-->
-					<!--								<td><a href="#">25</a></td>-->
-					<!--								<td><span>26</span></td>-->
-					<!--								<td><span>27</span></td>-->
-					<!--								<td><span>28</span></td>-->
-					<!--								<td class="pad" colspan="3"><span>&nbsp;</span></td>-->
-					<!--							</tr>-->
-					<!--							</tbody>-->
-					<!--						</table>-->
-					<!--					</div>-->
 				</section>
 
 				<!-- Copyright -->

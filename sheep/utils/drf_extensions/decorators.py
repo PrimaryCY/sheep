@@ -13,21 +13,24 @@ class OnlyDataCacheResponse(CacheResponse):
                                request,
                                args,
                                kwargs):
-        key = self.calculate_key(
-            view_instance=view_instance,
-            view_method=view_method,
-            request=request,
-            args=args,
-            kwargs=kwargs
-        )
-        data = self.cache.get(key)
-        if not data:
-            response = view_method(view_instance, request, *args, **kwargs)
+        if getattr(view_instance, 'use_cache', True):
+            key = self.calculate_key(
+                view_instance=view_instance,
+                view_method=view_method,
+                request=request,
+                args=args,
+                kwargs=kwargs
+            )
+            data = self.cache.get(key)
+            if not data:
+                response = view_method(view_instance, request, *args, **kwargs)
 
-            if not response.status_code >= 400 or self.cache_errors:
-                self.cache.set(key, response.data, self.timeout)
+                if not response.status_code >= 400 or self.cache_errors:
+                    self.cache.set(key, response.data, self.timeout)
+            else:
+                response = Response(data=data)
         else:
-            response = Response(data=data)
+            response = view_method(view_instance, request, *args, **kwargs)
 
         if not hasattr(response, '_closable_objects'):
             response._closable_objects = []

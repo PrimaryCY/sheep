@@ -34,7 +34,8 @@ class PostCategorySerializer(serializers.ModelSerializer):
         fields = ["id", "name", "parent_id", "level", "desc", 'author_id', 'image', 'child', 'parent']
 
 
-class PostSerializer(serializers.HyperlinkedModelSerializer):
+# class PostSerializer(serializers.HyperlinkedModelSerializer):
+class PostSerializer(serializers.ModelSerializer):
     """帖子序列化器"""
     id = serializers.ReadOnlyField(label='帖子id')
     author_id = serializers.HiddenField(default=CurrentUserIdDefault(), label='创建人')
@@ -97,10 +98,10 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Post
         exclude = ("content", "html_content")
-        extra_kwargs = {
-            'url': {'view_name': 'v1:web:post-detail', 'lookup_field': 'pk'},
-        }
-    ud_url = serializers.HyperlinkedIdentityField(view_name='v1:web:user_post-detail', lookup_field='pk')
+        # extra_kwargs = {
+        #     'url': {'view_name': 'v1:web:post-detail', 'lookup_field': 'pk'},
+        # }
+    # ud_url = serializers.HyperlinkedIdentityField(view_name='v1:web:user_post-detail', lookup_field='pk')
 
 
 class RetrievePostSerializer(PostSerializer):

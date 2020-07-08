@@ -1,8 +1,6 @@
 import Vue from 'vue'
 import NuxtLoading from './components/nuxt-loading.vue'
 
-import '..\\static\\font\\17font.css'
-
 import '..\\static\\css\\reset.css'
 
 import '..\\static\\css\\5grid\\core.css'
@@ -25,7 +23,7 @@ const layouts = { "_default": _6f6c098b }
 
 
 export default {
-  head: {"title":"sheep-nuxt","meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"hid":"description","name":"description","content":"My rad Nuxt.js project"}],"link":[{"rel":"icon","type":"image\u002Fx-icon","href":"\u002Ffavicon.png"}],"script":[{"src":"http:\u002F\u002Flibs.baidu.com\u002Fjquery\u002F1.8.3\u002Fjquery.min.js"},{"src":"http:\u002F\u002Fat.alicdn.com\u002Ft\u002Ffont_1739386_3e3dvqnsu48.js"}],"bodyAttrs":{"class":"left-sidebar is-desktop is-1200px"},"style":[]},
+  head: {"title":"sheep-nuxt","meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"hid":"description","name":"description","content":"My rad Nuxt.js project"}],"link":[{"rel":"icon","type":"image\u002Fx-icon","href":"\u002Ffavicon.png"}],"script":[{"src":"http:\u002F\u002Flibs.baidu.com\u002Fjquery\u002F1.8.3\u002Fjquery.min.js"},{"src":"http:\u002F\u002Fat.alicdn.com\u002Ft\u002Ffont_1739386_jdtu7g78fj.js"}],"bodyAttrs":{"class":"left-sidebar is-desktop is-1200px"},"style":[]},
   render(h, props) {
     const loadingEl = h('nuxt-loading', { ref: 'loading' })
     const layoutEl = h(this.layout || 'nuxt')

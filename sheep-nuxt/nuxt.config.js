@@ -16,7 +16,7 @@ module.exports = {
     ],
     script:[
       {src:"http://libs.baidu.com/jquery/1.8.3/jquery.min.js"},
-      {src:"http://at.alicdn.com/t/font_1739386_3e3dvqnsu48.js"}
+      {src:"http://at.alicdn.com/t/font_1739386_jdtu7g78fj.js"}
     ],
     bodyAttrs:{
         class:'left-sidebar is-desktop is-1200px'
@@ -30,7 +30,7 @@ module.exports = {
   ** Global CSS
   */
   css: [
-    "./static/font/17font.css",
+    // "./static/font/17font.css",
     './static/css/reset.css',
     //导入17素材的css文件
     './static/css/5grid/core.css',
@@ -39,7 +39,6 @@ module.exports = {
     './static/css/style-desktop.css',
     './static/css/5grid/core-1200px.css',
     './static/css/style-1200px.css',
-
   ],
   /*
   ** Plugins to load before mounting the App

@@ -6,6 +6,7 @@
         reload: this.reload,
         push:this.push,
         blank_push:this.blank_push,
+        generate_url:this.generate_url
 			}
 		},
     data(){
@@ -15,6 +16,7 @@
     },
 		methods:{
 			move_to_top(){
+        // 移动到顶部
 				document.body.scrollIntoView({behavior:'smooth'})
 			},
       blank_push(push_params){
@@ -38,5 +40,9 @@
         this.move_to_top()
         this.$router.push(url)
       },
+      generate_url(params){
+        // 生产反向解析url
+        return this.$router.resolve(params).href
+      }
 		}
 	}

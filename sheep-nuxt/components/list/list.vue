@@ -2,7 +2,11 @@
   <div class="list">
     <!--增加tabindex属性  使focus对div起作用-->
     <transition-group tag="div">
-      <div class="item" tabindex="0" v-for="item in list" :key="item.id">
+      <div class="item"
+           :style="{'border-top':need_border_top?'1px dotted #ddd':'initial'}"
+           tabindex="0"
+           v-for="item in list"
+           :key="item.id">
         <slot name="item-content" :item="item">
 
         </slot>
@@ -14,7 +18,7 @@
 </template>
 
 <script>
-  import not_data from './not_data'
+  import not_data from './../not_data'
 
   export default {
     name: 'item',
@@ -26,6 +30,10 @@
       no_data_text:{
         type:String,
         default:'空空如也😭'
+      },
+      need_border_top:{
+        type:Boolean,
+        default:true
       }
     },
     components:{

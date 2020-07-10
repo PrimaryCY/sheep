@@ -31,6 +31,7 @@
     "nprogress": "^0.2.0",
     "nuxt": "^2.0.0",
     "tinymce": "^5.2.1",
+    "vue-infinite-scroll": "2.0.2",
     "vue-particles": "^1.0.9"
   },
   "devDependencies": {

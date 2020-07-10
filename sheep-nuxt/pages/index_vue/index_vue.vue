@@ -352,11 +352,13 @@
 	}
 	#content{
 		min-height: 100em;
-		transition: margin-left 0.25s ease-in-out;
+    /* 去除动画,动画卡顿*/
+		/*transition: margin-left 0.25s ease-in-out;*/
 	}
 
 	.sidebar {
-		transition: width 0.25s ease-in-out;
+    /* 去除动画,动画卡顿*/
+		/*transition: width 0.25s ease-in-out;*/
 		-moz-box-shadow:7px 0px 15px #595654;
 		-webkit-box-shadow:7px 0px 15px #595654;
 		box-shadow:7px 0px 15px #595654;

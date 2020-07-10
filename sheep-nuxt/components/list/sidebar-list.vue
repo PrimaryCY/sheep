@@ -119,6 +119,9 @@
           line-clamp: 2;
           -webkit-box-orient: vertical;
         }
+        .company_name:hover{
+          color: #b53c57;
+        }
       }
     }
   }

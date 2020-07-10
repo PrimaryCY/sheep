@@ -5,10 +5,10 @@ from django.conf.urls import url,include
 
 from utils.routes import CustomRouter
 from apps.user.views import UserViewSet, LoginViewSet
-from apps.post.views import PostCategoryViewSet, UserPostViewSet, AllPostViewSet, UserReplyViewSet, \
+from apps.post.views import PostCategoryViewSet, UserPostViewSet, UserReplyViewSet, \
     PostReplyViewSet
 from apps.operate.views import UserCollectCategoryViewSet, CollectCategoryViewSet, CollectViewSet, PraiseViewSet, FocusViewSet
-from apps.index.views import BannerViewSet, HotViewSet
+from apps.index.views import BannerViewSet, HotViewSet, AllPostViewSet
 
 router = CustomRouter()
 # 轮播图

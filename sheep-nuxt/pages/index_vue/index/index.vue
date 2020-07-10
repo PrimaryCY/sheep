@@ -1,10 +1,18 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
-	<div>
+	<div
+    v-infinite-scroll="_get_next_posts"
+    infinite-scroll-disabled="disabled_scroll"
+    infinite-scroll-distance="10">
     <div class="top">
-      <div class="container">
-        <input type="text" placeholder="Search...">
-        <div class="search"></div>
-      </div>
+<!--      <div class="container">-->
+<!--        <input type="text" placeholder="Search...">-->
+<!--        <div class="search"></div>-->
+<!--      </div>-->
+      <el-input
+        size="mini"
+        placeholder="请输入内容">
+        <template slot="append"><el-button>搜索</el-button></template>
+      </el-input>
       <div class="menuList">
         <ul>
           <li :class="{active:params.category===0}">
@@ -44,16 +52,21 @@
     </div>
     <div class="content">
       <div class="left">
-        <div v-for="(post,index) in posts" :key="post.id">
-          <el-row>
-            <el-col>
-              {{post}}
-            </el-col>
-          </el-row>
+        <list
+          :need_border_top="false"
+          :list="posts.results">
+          <template v-slot:item-content="data">
+              <common_post_item
+                :post="data.item">
+              </common_post_item>
+          </template>
+        </list>
+        <div v-show="loading" class="loading">
+          <hexagon_loading></hexagon_loading>
         </div>
       </div>
       <div class="right">
-        <sidebar_item
+        <sidebar_list
           :list="hot"
           title="热门推荐">
           <template v-slot:item-content="data">
@@ -62,15 +75,12 @@
             </svg>
             {{ data.item.name }}
           </template>
-        </sidebar_item>
+        </sidebar_list>
 
         <div class="newest">
 
         </div>
       </div>
-    </div>
-    <div>
-
     </div>
 
 <!--							&lt;!&ndash; Post &ndash;&gt;-->
@@ -125,19 +135,19 @@
 <!--								</p>-->
 <!--							</article>-->
 
-							<!-- Pager -->
-							<div class="pager">
-								<!--<a href="#" class="button previous">Previous Page</a>-->
-								<div class="pages">
-									<a href="#" class="active">1</a>
-									<a href="#">2</a>
-									<a href="#">3</a>
-									<a href="#">4</a>
-									<span>&hellip;</span>
-									<a href="#">20</a>
-								</div>
-								<a href="#" class="button next">Next Page</a>
-							</div>
+<!--							&lt;!&ndash; Pager &ndash;&gt;-->
+<!--							<div class="pager">-->
+<!--								&lt;!&ndash;<a href="#" class="button previous">Previous Page</a>&ndash;&gt;-->
+<!--								<div class="pages">-->
+<!--									<a href="#" class="active">1</a>-->
+<!--									<a href="#">2</a>-->
+<!--									<a href="#">3</a>-->
+<!--									<a href="#">4</a>-->
+<!--									<span>&hellip;</span>-->
+<!--									<a href="#">20</a>-->
+<!--								</div>-->
+<!--								<a href="#" class="button next">Next Page</a>-->
+<!--							</div>-->
 
 						</div>
 </template>
@@ -149,7 +159,10 @@
     api_banner,
     api_post,
     api_hot} from '../../../api'
-  import sidebar_item from '../../../components/list/item/sidebar-item'
+  import sidebar_list from '../../../components/list/sidebar-list'
+  import list from '../../../components/list/list'
+  import common_post_item from '../../../components/list/item/common_post_item'
+  import hexagon_loading from '../../../components/common/hexagon_loading'
 
 
   export default {
@@ -163,13 +176,17 @@
         tab_category:'0',
         params:{
           category:null,
-        }
+        },
+        disabled_scroll:false,
+        loading:false,
       }
     },
     async asyncData(context){
       console.log(context.query.category)
       let post_query = {
-        category:context.query.category?Number(context.query.category):0
+        category:context.query.category?Number(context.query.category):0,
+        offset:0,
+        limit:10,
       }
       try {
         let banner, hot, posts
@@ -191,7 +208,7 @@
           [hot, posts] = await Promise.all(async_list)
         }
         res.hot = hot.data.data
-        res.posts = posts.data.data.results
+        res.posts = posts.data.data
         return res
       }catch(e)
       {
@@ -200,17 +217,43 @@
     },
     inject:['generate_url'],
     methods: {
+      async _get_next_posts(){
+        this.disabled_scroll = true
+        if(isNaN(this.params.offset) || (this.params.offset>=this.posts.count)){
+          return null
+        }
+        this.loading = true
+        this.params.offset+=this.params.limit
+        let res = await api_post.list(this.params)
+        res = res.data
+        if(res.code===2000){
+         this.posts.results.push.apply(this.posts.results, res.data.results)
+        }else {
+          this.params.offset-=this.params.limit
+          this.$message(res.msg)
+        }
+        this.loading = this.disabled_scroll=false
+      }
     },
     computed:{
       ...mapState(['option'])
     },
     components:{
-      sidebar_item
+      sidebar_list,
+      list,
+      common_post_item,
+      hexagon_loading
     }
   }
 </script>
 
 <style scoped lang="scss">
+  .loading{
+    position: relative;
+    height: 300px;
+    width: 100%;
+    zoom: .2;
+  }
   .banner-wrap{
       position: relative;
       height: 100%;
@@ -249,6 +292,7 @@
       padding-bottom: 10px;
       .active {
         border-bottom: 2px solid #364045;
+        /*background: #F0F0F5;*/
         a{
           color: black;
         }
@@ -265,7 +309,7 @@
         border-bottom: 1px solid #e4e7ed;
         li {
           /*flex: 0 0 100px;*/
-          margin: 0 20px;
+          padding: 0 20px;
           text-align: center;
           cursor: pointer;
           a{
@@ -273,6 +317,9 @@
             height: 100%;
             color: #717181;
           }
+        }
+        li:hover{
+          background: #F0F0F5;
         }
       }
     }

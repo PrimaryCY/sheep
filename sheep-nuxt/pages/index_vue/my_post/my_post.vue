@@ -108,12 +108,12 @@
 		</div>
     <list :list="posts.results">
       <template v-slot:item-content="data">
-        <post_item
+        <user_post_item
           :post="data.item"
           @update_func="update_post"
           @delete_func="delete_post"
           :editor="true">
-        </post_item>
+        </user_post_item>
       </template>
     </list>
 		<div class="footer-pagination">
@@ -132,8 +132,8 @@
 
 	import {api_user_post} from "@/api/index"
 	import pagination from '../../../components/pagination'
-  import list from '../../../components/list'
-  import post_item from '../../../components/post_item'
+  import list from '../../../components/list/list'
+  import user_post_item from '../../../components/list/item/user_post_item'
 
 	export default {
 		data() {
@@ -249,7 +249,7 @@
 		components:{
 			pagination,
       list,
-      post_item
+      user_post_item
 		},
 		inject:['blank_push', 'move_to_top']
 	}

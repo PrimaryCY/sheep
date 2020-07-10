@@ -97,4 +97,4 @@ class User(BaseModel, AbstractBaseUser):
         :param user_id:
         :return:
         """
-        return dict(cls.objects.filter(id=user_id).values('id', 'username').first())
+        return dict(cls.objects.filter(id=user_id).values('id', 'username', 'portrait').first())

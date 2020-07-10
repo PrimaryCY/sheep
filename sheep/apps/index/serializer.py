@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 # author:CY
 # datetime:2020/6/29 23:23
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
+
+from apps.post.models import Post
+
+User = get_user_model()
 
 
 class BannerSerializer(serializers.Serializer):
@@ -18,3 +23,5 @@ class HotSerializer(serializers.Serializer):
     post_type = serializers.IntegerField(label='文章类别')
     read_num = serializers.IntegerField(label='阅读数量')
     image = serializers.URLField(label='封面')
+
+

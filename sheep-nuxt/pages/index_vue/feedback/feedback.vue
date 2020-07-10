@@ -118,7 +118,7 @@
 <script>
   import {mapState} from 'vuex'
 
-  import list from '@/components/list'
+  import list from '@/components/list/list'
   import bubble_text from '@/components/common/bubble_text'
   import pagination from '@/components/pagination'
   import font_icon from '@/components/small/font_icon'

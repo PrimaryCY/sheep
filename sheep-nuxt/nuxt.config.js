@@ -48,6 +48,7 @@ module.exports = {
     {src:'~/plugins/vue-particles',ssr:false},
     {src:'~/plugins/nprogress',ssr:false},
     {src:'~/plugins/element/element',ssr:true},
+    {src:'~/plugins/vue-infinite-scroll',ssr:false},
     {src:'~/plugins/axios',ssr:true},
     {src:'@/plugins/util',ssr:true},
   ],

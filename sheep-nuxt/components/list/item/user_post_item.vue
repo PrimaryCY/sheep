@@ -8,6 +8,9 @@
       <div class="article-title-text">
         {{post.name}}
       </div>
+      <span class="article-desc byline ellipsis">
+        {{post.desc}}
+      </span>
     </el-col>
   </el-row>
   <el-row class="article-info" type="flex">
@@ -15,7 +18,7 @@
       <font_icon :type="post.post_type"></font_icon>
     </el-col>
     <el-col :span="5">
-      提问时间:{{post.created_time}}
+      {{post.post_type===1?'创建':'提问'}}时间:{{post.created_time}}
     </el-col>
     <el-col :span="5">
       更新时间:{{post.update_time}}
@@ -63,7 +66,7 @@
         icon="el-icon-info"
         iconColor="red"
         @onConfirm="delete_func(post)"
-        title="您确定删除这篇提问吗？"
+        :title="`您确定删除${post.post_type===1?'此文章':'此问题'}吗？`"
       >
         <el-button
           size="mini"
@@ -82,7 +85,7 @@
 </template>
 
 <script>
-  import font_icon from './small/font_icon'
+  import font_icon from '../../small/font_icon'
 
   export default {
     name: 'post_item',
@@ -127,7 +130,8 @@
       -ms-flex-pack: start;
       justify-content: flex-start;
       .article-image{
-        display: inline-block;
+        float: left;
+        margin-right: 5px;
         img{
           vertical-align:text-top;
           width: 100px;
@@ -136,13 +140,17 @@
         }
       }
       .article-title-text{
-        display: inline-block;
         font-size: 16px;
         color: #4d4d4d;
         margin-bottom: 0;
         -webkit-box-flex: 1;
         -ms-flex-positive: 1;
         flex-grow: 1;
+      }
+      .article-desc{
+        font-size: 10px!important;
+        display: -webkit-box;
+        margin-top: initial;
       }
     }
     .article-info{

@@ -1,28 +1,28 @@
 <template>
-		<a v-if="type===2" class="base article-question-type" >
+		<div v-if="type===2" class="base article-question-type" >
 			<svg class="icon-min" aria-hidden="true">
 				<use xlink:href="#icon-wenti--copy"></use>
 			</svg>
       <span>问题</span>
-		</a>
-		<a v-else-if="type===1" class="base article-post-type">
+		</div>
+		<div v-else-if="type===1" class="base article-post-type">
 			<svg class="icon-min" aria-hidden="true">
 				<use xlink:href="#icon-shiyongwendang"></use>
 			</svg>
 			<span>文章</span>
-		</a>
-    <a v-else-if="type===3" class="base feedback-replied">
-      <svg class="icon-min" aria-hidden="true">
+		</div>
+    <div v-else-if="type===3" class="base feedback-replied">
+      <svg v-cloak class="icon-min" aria-hidden="true">
         <use xlink:href="#icon-shiyongwendang"></use>
       </svg>
       <span>已回复</span>
-    </a>
-    <a v-else-if="type===4" class="base feedback-no-reply">
+    </div>
+    <div v-else-if="type===4" class="base feedback-no-reply">
       <svg class="icon-min" aria-hidden="true">
         <use xlink:href="#icon-shiyongwendang"></use>
       </svg>
       <span>未回复</span>
-    </a>
+    </div>
 </template>
 
 <script>
@@ -49,6 +49,7 @@
       opacity: .7;
       margin: 0 5px 0 0;
       padding: 4px;
+      font-weight: normal;
     }
 		.article-question-type{
 			background-color: #b02727;

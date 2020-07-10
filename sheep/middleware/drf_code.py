@@ -14,6 +14,7 @@ from sheep.constant import RET
 DRF = 'drf'
 RAW = 'raw'
 
+
 class DRFCodeMiddleware(MiddlewareMixin):
     """
     处理drf响应middleware

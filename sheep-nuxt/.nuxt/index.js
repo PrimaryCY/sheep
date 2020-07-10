@@ -17,6 +17,7 @@ import nuxt_plugin_nuxtcookies_2be8578a from 'nuxt_plugin_nuxtcookies_2be8578a' 
 import nuxt_plugin_vueparticles_b91bd920 from 'nuxt_plugin_vueparticles_b91bd920' // Source: ..\\plugins\\vue-particles (ssr: false)
 import nuxt_plugin_nprogress_2ce44436 from 'nuxt_plugin_nprogress_2ce44436' // Source: ..\\plugins\\nprogress (ssr: false)
 import nuxt_plugin_element_0d2eee9a from 'nuxt_plugin_element_0d2eee9a' // Source: ..\\plugins\\element\\element
+import nuxt_plugin_vueinfinitescroll_18d3fb29 from 'nuxt_plugin_vueinfinitescroll_18d3fb29' // Source: ..\\plugins\\vue-infinite-scroll (ssr: false)
 import nuxt_plugin_axios_3566aa80 from 'nuxt_plugin_axios_3566aa80' // Source: ..\\plugins\\axios
 import nuxt_plugin_util_925ee814 from 'nuxt_plugin_util_925ee814' // Source: ..\\plugins\\util
 
@@ -172,6 +173,7 @@ async function createApp (ssrContext) {
   if (process.client) { 
     if (typeof nuxt_plugin_vueparticles_b91bd920 === 'function') await nuxt_plugin_vueparticles_b91bd920(app.context, inject)
     if (typeof nuxt_plugin_nprogress_2ce44436 === 'function') await nuxt_plugin_nprogress_2ce44436(app.context, inject)
+    if (typeof nuxt_plugin_vueinfinitescroll_18d3fb29 === 'function') await nuxt_plugin_vueinfinitescroll_18d3fb29(app.context, inject)
   }
 
   // If server-side, wait for async component to be resolved first

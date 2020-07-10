@@ -1,10 +1,16 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin
+from rest_framework_extensions.utils import default_list_cache_key_func
 
+from apps.index.filters import AllPostFilter
 from apps.index.serializer import BannerSerializer, HotSerializer
 from apps.post.models import Post
+from apps.post.serializer import PostSerializer, RetrievePostSerializer
 from utils.drf_extensions.decorators import only_data_cache_response
+from utils.pagination import LimitOffsetPagination
+from utils.viewsets import ReadOnlyModelViewSet
 
 
 class BannerViewSet(GenericViewSet):
@@ -30,3 +36,28 @@ class HotViewSet(ListModelMixin,
     def list(self, request, *args, **kwargs):
         serializer = self.get_serializer(self.queryset, many=True)
         return Response(serializer.data)
+
+
+class AllPostViewSet(ReadOnlyModelViewSet):
+    """所有帖子视图"""
+    serializer_class = {
+        'list': PostSerializer,
+        'retrieve': RetrievePostSerializer
+    }
+    permission_classes = ()
+    pagination_class = LimitOffsetPagination
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = AllPostFilter
+    queryset = Post.objects.all()
+
+    # @only_data_cache_response(key_func=default_list_cache_key_func, timeout=600)
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """重写retrieve方法  增加阅读数"""
+        instance = self.get_object()
+        instance.add_read_num(instance.id)
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+

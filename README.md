@@ -88,6 +88,7 @@
     - axios
     - nprogres
     - crypto-js
+    - vue-infinite-scroll
 
 ---
 
@@ -119,6 +120,21 @@
 
 ### <font color=#ca0c16>项目运行
 
+_celery部分:_
+
+```
+
+
+# linux|macos:
+celery -B -A sheep.celery worker -l info
+
+# windows:
+# 定时任务:
+celery -A sheep.celery beat
+# 新打开cmd窗口,异步任务
+celery -A sheep.celery worker -l info --pool=eventlet
+```
+
 _后台部分:_
 
 ```
@@ -129,8 +145,11 @@ pip3 install -r requirements.txt
 python manage.py makemigrations
 # 执行迁移文件
 python manage.py migrate
+
 # 测试环境运行
 python manage.py runserver
+# 线上环境运行
+daphne sheep.asgi:application
 
 # 有什么自定义覆盖的配置在settings.py文件旁新建local_setting.py文件进行重新变量定义就ok
 # settings.py同级目录下有local_setting_example.py文件作为样板,本地配置参考这里

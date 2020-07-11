@@ -6,6 +6,7 @@ from django.conf.urls import url, include
 from utils.routes import CustomRouter
 from apps.other.views import UploadViewSet, FeedbackCategoryViewSet, FeedbackViewSet
 from apps.other.views import OptionViewSet, CeleryResultsViewSet
+from apps.search.views import SearchViewSet
 
 router = CustomRouter()
 # 上传接口
@@ -16,6 +17,8 @@ router.register('option', OptionViewSet, basename='option')
 router.register('feedback_category', FeedbackCategoryViewSet, basename='feedback_category')
 # 意见反馈
 router.register('feedback', FeedbackViewSet, basename='feedback')
+# 搜索
+router.register('search', SearchViewSet, basename='search')
 # celery-results内容
 router.register('task-result', CeleryResultsViewSet, basename='celery_result')
 

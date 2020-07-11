@@ -15,11 +15,11 @@ class AllPostFilter(FilterSet):
     def filter_category(self, qs, name, value):
         qs = qs.defer('html_content', 'content')
         if value == 0:
-            return qs
+            return qs.order_by('like_num')
         else:
             c = Category.objects.filter(id=value).first()
             if not c:
                 c_range = []
             else:
                 c_range = c.get_descendants(include_self=True).values_list('id', flat=True)
-            return qs.filter(category__in=c_range).order_by('like_num')
+            return qs.filter(category__in=c_range)

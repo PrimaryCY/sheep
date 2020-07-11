@@ -2,7 +2,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin
-from rest_framework_extensions.utils import default_list_cache_key_func
 
 from apps.index.filters import AllPostFilter
 from apps.index.serializer import BannerSerializer, HotSerializer
@@ -11,6 +10,7 @@ from apps.post.serializer import PostSerializer, RetrievePostSerializer
 from utils.drf_extensions.decorators import only_data_cache_response
 from utils.pagination import LimitOffsetPagination
 from utils.viewsets import ReadOnlyModelViewSet
+from utils.drf_extensions.util import limit_offset_list_cache_key_func
 
 
 class BannerViewSet(GenericViewSet):
@@ -50,7 +50,7 @@ class AllPostViewSet(ReadOnlyModelViewSet):
     filter_class = AllPostFilter
     queryset = Post.objects.all()
 
-    # @only_data_cache_response(key_func=default_list_cache_key_func, timeout=600)
+    @only_data_cache_response(key_func=limit_offset_list_cache_key_func, timeout=600)
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 

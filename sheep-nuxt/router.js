@@ -16,6 +16,7 @@ import my_question from './pages/index_vue/my_question/my_question'
 import feedback from './pages/index_vue/feedback/feedback'
 import not_found from './pages/index_vue/not_found/not_found'
 import post_detail from './pages/index_vue/post_detail/post_detail'
+import search from './pages/index_vue/search/search'
 
 // import NotFound from './views/notFound/notFound'
 import test from './pages/test'
@@ -77,6 +78,13 @@ const routes = [
             path:'feedback',
             name:'feedback',
             component:feedback,
+            meta:{
+            }
+          },
+          {
+            path:'search',
+            name:'search',
+            component:search,
             meta:{
             }
           },

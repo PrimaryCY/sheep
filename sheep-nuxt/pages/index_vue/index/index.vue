@@ -8,21 +8,39 @@
 <!--        <input type="text" placeholder="Search...">-->
 <!--        <div class="search"></div>-->
 <!--      </div>-->
-      <el-input
-        size="mini"
-        placeholder="请输入内容">
-        <template slot="append"><el-button>搜索</el-button></template>
-      </el-input>
+        <el-row type="flex">
+          <el-col>
+          </el-col>
+          <el-col :span="17">
+              <el-input
+                size="mini"
+                type="text"
+                placeholder="请输入关键字"
+                v-model="form.keyword"
+              ></el-input>
+          </el-col>
+          <el-col :span="2">
+            <div class="search-btn">
+              <el-button
+                plain
+                @click="blank_push({name:'search',query:form})"
+                size="mini">
+                搜索🔍
+              </el-button>
+            </div>
+          </el-col>
+
+        </el-row>
       <div class="menuList">
         <ul>
-          <li :class="{active:params.category===0}">
+          <li :class="{active:one_category===0}">
             <a
               :href="$router.resolve({name:'index',query:{category:0}}).href">
               推荐
             </a>
           </li>
-          <li v-for="(item,index) in option.post_category"
-              :class="{active:item.id===params.category}"
+          <li v-for="item in option.post_category"
+              :class="{active:item.id===one_category}"
               :key="item.id">
             <a
               :href="generate_url({name:'index',query:{category:item.id}})">
@@ -52,6 +70,30 @@
     </div>
     <div class="content">
       <div class="left">
+        <div v-if="one_category!==0">
+          <a
+            class="pointer"
+            :href="generate_url({name:'index',query:{category:one_category}})">
+            <el-tag
+              :class="{'el-tag-active':one_category===params.category}"
+              type="info"
+              size="mini">
+              全部
+            </el-tag>
+          </a>
+          <a
+            :key="c.id"
+            v-for="c in two_categories"
+            :href="generate_url({name:'index',query:{category:c.id,one_category:one_category}})"
+            class="pointer" >
+            <el-tag
+              :class="{'el-tag-active':c.id===params.category}"
+              type="info"
+              size="mini">
+              {{c.name}}
+            </el-tag>
+          </a>
+        </div>
         <list
           :need_border_top="false"
           :list="posts.results">
@@ -173,16 +215,19 @@
         banner:[],
         hot:[],
         posts:[],
-        tab_category:'0',
+        // tab栏目category选中状态
+        one_category:0,
         params:{
           category:null,
         },
         disabled_scroll:false,
         loading:false,
+        form:{
+          keyword:''
+        }
       }
     },
     async asyncData(context){
-      console.log(context.query.category)
       let post_query = {
         category:context.query.category?Number(context.query.category):0,
         offset:0,
@@ -194,7 +239,9 @@
           'banner':[],
           'hot':[],
           'posts':[],
-          'params':post_query
+          'params':post_query,
+          // tab_category由二级分类传递到query,用于跳转时页面能获取到一级分类的选中状态
+          'one_category': Number(context.query.one_category) || post_query.category
         }
         let async_list = [
           api_hot.list(),
@@ -215,7 +262,7 @@
         context.error({statusCode:500,message:'ssr internal server error'})
       }
     },
-    inject:['generate_url'],
+    inject:['generate_url','blank_push'],
     methods: {
       async _get_next_posts(){
         this.disabled_scroll = true
@@ -233,16 +280,24 @@
           this.$message(res.msg)
         }
         this.loading = this.disabled_scroll=false
-      }
+      },
     },
     computed:{
-      ...mapState(['option'])
+      ...mapState(['option']),
+      two_categories(){
+        for ( let c of this.option.post_category){
+          if(c.id===this.one_category){
+            return c.child
+          }
+        }
+        return []
+      }
     },
     components:{
       sidebar_list,
       list,
       common_post_item,
-      hexagon_loading
+      hexagon_loading,
     }
   }
 </script>
@@ -286,6 +341,10 @@
 
   .top{
     width: 100%;
+    .search-btn{
+      height: 100%;
+      display: flex;
+    }
     .menuList {
       /*width: 800px;*/
       /*height: 60px;*/
@@ -443,6 +502,25 @@
     text-align: initial;
     font-size: 0;
     .left{
+      .el-tag{
+        margin-right: 10px;
+      }
+      .el-tag:hover{
+        /*background: #364050;*/
+        /*color: #F0F0F5;*/
+
+        box-shadow: 0 0 2px 2px #BC8F8F
+      }
+      .el-tag-active{
+        /*border-bottom: 1px solid black;*/
+        /*background: #364050;*/
+        /*color: #F0F0F5;*/
+        /*color: black;*/
+
+        color: #F0F0F5;
+        background: #808080;
+        /*border-bottom: 1px solid black;*/
+      }
       font-size: 14px;
       width: 80%;
       display: inline-block;

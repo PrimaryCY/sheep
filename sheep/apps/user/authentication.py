@@ -16,6 +16,7 @@ from django_redis import get_redis_connection
 from sheep import settings
 from sheep.constant import RET, error_map
 from apps.user.token import Token
+from utils.re_compile import ReCompile
 
 User = get_user_model()
 user_redis = get_redis_connection('user')
@@ -34,7 +35,10 @@ class UserModelBackend(ModelBackend):
                 user/msg --> 登录成功返回用户实例, 登录失败返回错误提示
         """
         try:
-            user = User.objects.get(Q(Q(phone=username) | Q(email=username)) & Q(is_anonymity=False) & Q(is_active=True))
+            if ReCompile.Phone.match(username):
+                user = User.objects.get(Q(phone=username) & Q(is_anonymity=False) & Q(is_active=True) & Q(is_phone=True))
+            else:
+                user = User.objects.get(Q(email=username) & Q(is_anonymity=False) & Q(is_active=True))
             code = kwargs.pop('code', None)
             # 验证码登录
             if code:

@@ -26,10 +26,10 @@
 			<div 	class="form sign-in">
 				<h2>欢迎回来</h2>
 				<label>
-					<span>邮箱/手机号</span>
+					<span>邮箱</span>
 					<input	type="text"
 									v-model="loginData.email_or_phone"
-									placeholder="请输入邮箱或手机号"
+									placeholder="请输入邮箱用户名"
 									@keyup="login_watch(1)"
 									maxlength="20"
 									minlength="3"/>
@@ -43,7 +43,7 @@
                   @keyup.enter="login"
 									@keyup="login_watch(2)" maxlength="20"/>
 					<p v-if="loginError.password" class="error-msg"><a href="javascript:">{{loginError.password}}</a></p>
-					<el-checkbox v-model="loginData.remember_me">记住账号</el-checkbox>
+					<el-checkbox v-model="loginData.remember_me">记住账户</el-checkbox>
 				</label>
 				<br>
 <!--				<p class="forgot-pass"><a href="javascript:">忘记密码？</a></p>-->
@@ -53,7 +53,7 @@
 								:disabled="loginError.flag"
 				>登 录</button>
 
-				<button type="button" class="fb-btn">使用 <span>facebook</span> 帐号登录</button>
+<!--				<button type="button" class="fb-btn">使用 <span>facebook</span> 帐号登录</button>-->
 			</div>
 			<!--			注册-->
 			<div class="sub-cont">
@@ -114,7 +114,7 @@
 									:disabled="registerError.flag"
 									@click="register"
 					>注 册</button>
-					<button type="button" class="fb-btn">使用 <span>facebook</span> 帐号注册</button>
+<!--					<button type="button" class="fb-btn">使用 <span>facebook</span> 帐号注册</button>-->
 				</div>
 			</div>
 			<div style="height: 100%; width: 100%; background-image: radial-gradient(at 45px 45px, rgb(0, 255, 255) 0%, rgba(0, 0, 255, 0) 50%, rgb(0, 0, 255) 95%); opacity: 0.18; position: absolute;"></div>

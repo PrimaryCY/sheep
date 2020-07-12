@@ -5,7 +5,7 @@
       <div v-if="post.image" class="article-image">
         <img :src="post.image">
       </div>
-      <div class="article-title-text">
+      <div class="article-title-text" @click="blank_push({name:'post_detail',params:{id:post.id}})">
         {{post.name}}
       </div>
       <span class="article-desc byline ellipsis">
@@ -111,7 +111,9 @@
       update_func(post){
         this.$emit('update_func', post)
       },
+
     },
+    inject:['blank_push'],
     computed:{
       delete_text(){
         return this.post.post_type===1?'文章已被删除❌!':'问题已被删除❌!'
@@ -146,11 +148,15 @@
         -webkit-box-flex: 1;
         -ms-flex-positive: 1;
         flex-grow: 1;
+        cursor: pointer;
       }
       .article-desc{
         font-size: 10px!important;
         display: -webkit-box;
         margin-top: initial;
+      }
+      .article-title-text:hover{
+        color: #b53c57;
       }
     }
     .article-info{

@@ -1,19 +1,25 @@
 <template>
   <div :style="{backgroundImage:statusCode===404?'url(\'/img/404.jpg\')':'url(\'/img/500.jpg\')'}">
-    <button class="noselect not_found">
-      返回首页
-      <span> &gt;&gt;&gt;</span>
-    </button>
+    <div class="go_back">
+      <h1 class="go_back_text">
+        {{count_down}}秒后自动返回首页,<a href="/index">点击此处</a>立即返回首页
+      </h1>
+    </div>
   </div>
 </template>
 
 <script>
   export default {
+    data(){
+      return {
+        count_down:3
+      }
+    },
     props: {
       error: {
         type: Object,
         default: null
-      }
+      },
     },
     computed: {
       statusCode () {
@@ -33,67 +39,47 @@
           }
         ]
       }
+    },
+    methods: {
+      _timed_task() {
+        this.count_down --;
+        if(this.count_down<=0){
+          return this.$router.replace('/index')
+        }
+        console.log(this.count_down);
+      }
+    },
+    mounted() {
+      this.timer = setInterval(this._timed_task, 1000);
+    },
+    beforeDestroy() {
+      clearInterval(this.timer);
     }
   }
 </script>
 
 <style lang="scss" scoped>
-  .not_found{
+  .go_back{
     position: absolute;
-    bottom: 45%;
-    right: 25%;
-    border: 2px solid cornflowerblue;
-    color: cadetblue;
-  }
-  .not_found:hover span{
-    color: cadetblue!important;
-  }
-
-  button {
-    font-family: 'Play', sans-serif;
-    font-size: 16px;
-    background: transparent;
-    border: 2px solid #eee;
-    width: 150px;
-    height: 50px;
-    border-radius: 5px;
-    color: #eee;
-    -webkit-tap-highlight-color: transparent;
-    cursor: pointer;
-    transition: 400ms ease-in-out;
-    margin: 0 10px 0 10px;
+    top: 0;
+    height: initial;
+    width: 100%;
+    text-align: center;
+    background: rgba(244,68,68,0.9);
+    .go_back_text{
+      padding: 5px 0;
+      color: #fff;
+      a{
+        color: #fff;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+      a:hover{
+        color: #c94663;
+      }
+    }
   }
 
-  .noselect {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
-
-  button:hover {
-    width: 170px;
-    background: #777;
-    border: 2px solid #777;
-    margin: 0;
-  }
-
-  button:focus {
-    border: none;
-  }
-
-  button span {
-    color: transparent;
-    transition: 500ms;
-    margin-left: -20px;
-  }
-
-  button:hover span {
-    color: #d3d3d3;
-    margin-left: 0;
-  }
   div{
     position: absolute;
     height: 100%; width: 100%;

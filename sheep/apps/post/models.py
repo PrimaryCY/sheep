@@ -111,7 +111,7 @@ class Post(BaseModel):
     name = models.CharField(max_length=128, null=False, verbose_name='帖子标题')
     author_id = models.IntegerField(null=False, verbose_name='创建人', db_index=True)
     category = models.IntegerField(null=False, default=1, verbose_name='帖子分类', db_index=True)
-    desc = models.CharField(max_length=512, null=True, verbose_name='帖子简介')
+    desc = models.CharField(max_length=512, default='', verbose_name='帖子简介')
     html_content = models.TextField(null=False, verbose_name='html帖子内容')
     content = models.TextField(null=False, verbose_name='帖子内容')
     post_type = models.SmallIntegerField(choices=post_type_choices, default=1, verbose_name='文章类型')

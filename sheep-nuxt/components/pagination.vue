@@ -66,6 +66,10 @@
 		},
 		mounted() {},
 		methods: {
+      reset_params(){
+        this.params.offset = 0
+        this.currentPage = 1
+      },
 			// 每页条数
 			onChangeSize(rows) {
 				this.currentPage = 1
@@ -75,6 +79,7 @@
 			},
 			// 翻页
 			onChangePage(page) {
+        console.log(page)
 				this.params.offset = (this.params.limit*page)-this.params.limit;
 				this.$emit('change');
 			}

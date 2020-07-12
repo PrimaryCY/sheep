@@ -73,7 +73,7 @@
 								<el-button
 												type="danger"
 												class="login-btn"
-												@click.prevent="blank_push('postings')"
+												@click.prevent="blank_push('/postings')"
 								><svg class="icon-min" aria-hidden="true">
 									<use xlink:href="#icon-fabu"></use>
 								</svg>
@@ -315,7 +315,7 @@
 					}
 			}
 			#content{
-				margin-left: 12%!important;
+				margin-left: 8%!important;
 				min-height: 118em;
 				#content-inner{
 					max-width: 95%;

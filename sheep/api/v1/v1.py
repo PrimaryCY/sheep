@@ -18,7 +18,7 @@ router.register('feedback_category', FeedbackCategoryViewSet, basename='feedback
 # 意见反馈
 router.register('feedback', FeedbackViewSet, basename='feedback')
 # 搜索
-router.register('search', SearchViewSet, basename='search')
+router.register('s', SearchViewSet, basename='search')
 # celery-results内容
 router.register('task-result', CeleryResultsViewSet, basename='celery_result')
 

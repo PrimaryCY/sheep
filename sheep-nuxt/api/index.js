@@ -1,5 +1,9 @@
 import common_crud from './common-crud'
 /*
+搜索
+ */
+export const api_s=common_crud('/v1/s/')
+/*
 轮播图
  */
 export const api_banner=common_crud('/v1/web/banner/')

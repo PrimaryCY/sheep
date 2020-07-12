@@ -94,7 +94,7 @@
           position="right">
         </bubble_text>
         <bubble_text
-          text="上传图片,你的文章/提问才能上轮播推荐和栏目推荐哦👍"
+          text="上传图片,你的文章/提问才能上轮播推荐哦👍"
           position="right">
         </bubble_text>
       </div>
@@ -250,9 +250,9 @@
 						return this.$message('内容不能为空!')
 					}
 					this.post.category=this.cascader_data.category
-
+          let res
 					if(this.schema==='create'){
-						let res = await api_user_post.create(this.post)
+						res = await api_user_post.create(this.post)
             res = res.data
 						if(res.code!==2000){
 							this.$message(res.msg)
@@ -263,7 +263,7 @@
 						this.$message.success('发布成功!')
 					}
 					else {
-						let res = await api_user_post.update(this.$route.params.id, this.post)
+						res = await api_user_post.update(this.$route.params.id, this.post)
             res = res.data
 						if(res.code!==2000){
 							this.$message(res.msg)
@@ -273,6 +273,7 @@
 						loading.close()
 						this.$message.success('修改成功!')
 					}
+					this.$router.replace({name:'post_detail',params:{id:res.data.id}})
 				}
 				)
 			},

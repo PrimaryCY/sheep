@@ -123,8 +123,6 @@
 _celery部分:_
 
 ```
-
-
 # linux|macos:
 celery -B -A sheep.celery worker -l info
 

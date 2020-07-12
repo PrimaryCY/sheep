@@ -306,7 +306,7 @@ class PostSerializer(serializers.ModelSerializer):
 class RetrievePostSerializer(PostSerializer):
     """retrieve方法的帖子序列化器"""
 
-    class Meta(PostSerializer.Meta):
+    class Meta:
         model = Post
         fields = "__all__"
         extra_kwargs = {

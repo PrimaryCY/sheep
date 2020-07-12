@@ -47,7 +47,7 @@ export default function (context, inject) {
         case 4101:
           console.log(response)
           context.app.$cookies.remove(settings.TOKEN_NAME)
-          console.log('用户登录失效!')
+          Message('用户登录失效!')
           context.redirect('/login')
           break
         case 4105:

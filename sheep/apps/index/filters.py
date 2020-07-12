@@ -12,6 +12,11 @@ class AllPostFilter(FilterSet):
     category = django_filters.NumberFilter(required=True, field_name='category',
                                            method='filter_category', label='类别')
 
+    def __init__(self, *args, **kwargs):
+        super(FilterSet,self).__init__(*args, **kwargs)
+        if self.request.parser_context['view'].action == 'retrieve':
+            del self.filters['category']
+
     def filter_category(self, qs, name, value):
         qs = qs.defer('html_content', 'content')
         if value == 0:

@@ -12,4 +12,4 @@ class LimitOffsetPagination(DRF_LimitoffsetPagination):
     # 通过limit改变默认显示的个数
     limit_query_param = "limit"
     # 一页最多显示的个数
-    max_limit = 10
+    max_limit = 20

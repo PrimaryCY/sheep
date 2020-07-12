@@ -371,6 +371,7 @@
           padding: 0 20px;
           text-align: center;
           cursor: pointer;
+          transition: 0.25s;
           a{
             display: block;
             height: 100%;
@@ -382,120 +383,6 @@
         }
       }
     }
-
-    .container {
-      position:relative;
-      /*margin: auto;*/
-      margin-bottom: 30px;
-      /*top: 0;*/
-      /*left: 0;*/
-      right: 0;
-      /*bottom: 0;*/
-      width: 34vw;
-      height: 80px;
-    }
-    .container .search {
-      position: absolute;
-      margin: auto;
-      top: 0;
-      right: -100%;
-      bottom: 0;
-      /*left: 0;*/
-      width: 45px;
-      height: 45px;
-      background: crimson;
-      border-radius: 50%;
-      transition: all 1s;
-      z-index: 4;
-      box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.4);
-    }
-    .container .search:hover {
-      cursor: pointer;
-    }
-    .container .search::before {
-      content: "";
-      position: absolute;
-      margin: auto;
-      top: 17px;
-      right: 0;
-      bottom: 0;
-      left: 17px;
-      width: 12px;
-      height: 2px;
-      background: white;
-      transform: rotate(45deg);
-      transition: all .5s;
-    }
-    .container .search::after {
-      content: "";
-      position: absolute;
-      margin: auto;
-      top: -5px;
-      right: 0;
-      bottom: 0;
-      left: -5px;
-      width: 15px;
-      height: 15px;
-      border-radius: 50%;
-      border: 2px solid white;
-      transition: all .5s;
-    }
-    .container input {
-      font-family: 'Inconsolata', monospace;
-      position: absolute;
-      margin: auto;
-      top: 0;
-      right: -100%;
-      bottom: 0;
-      /*left: 0;*/
-      width: 40px;
-      height: 40px;
-      outline: none;
-      border: none;
-      background: crimson;
-      color: white;
-      text-shadow: 0 0 10px crimson;
-      padding: 0 80px 0 20px;
-      border-radius: 30px;
-      box-shadow: 0 0 5px 0 crimson, 0 20px 25px 0 rgba(0, 0, 0, 0.2);
-      transition: all 1s;
-      opacity: 0;
-      z-index: 5;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-    }
-    .container input:hover {
-      cursor: pointer;
-    }
-    .container input:focus {
-      width: 600px;
-      opacity: 1;
-      cursor: text;
-    }
-    .container input:focus ~ .search {
-      background: #151515;
-      z-index: 6;
-    }
-    .container input:focus ~ .search::before {
-      top: 0;
-      left: 0;
-      width: 25px;
-    }
-    .container input:focus ~ .search::after {
-      top: 0;
-      left: 0;
-      width: 25px;
-      height: 2px;
-      border: none;
-      background: white;
-      border-radius: 0%;
-      transform: rotate(-45deg);
-    }
-    .container input::placeholder {
-      color: white;
-      opacity: 0.5;
-      font-weight: bolder;
-    }
   }
 
   .content{
@@ -504,6 +391,7 @@
     .left{
       .el-tag{
         margin-right: 10px;
+        transition: .25s;
       }
       .el-tag:hover{
         /*background: #364050;*/

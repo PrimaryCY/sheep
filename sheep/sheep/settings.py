@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     'django_celery_results',
     # celery自动导入不支持 apps.user.apps.UserConfig这种方式
     'commands',
-    'apps.user',
+    'apps.user.apps.UserConfig',
     'apps.post',
     'apps.operate',
     'apps.other',

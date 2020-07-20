@@ -1,10 +1,14 @@
 import datetime
+from typing import Union
 
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
+from django.db.models import Sum, Count
 
+from apps.post.models import Post
 from sheep import settings
-from utils.models import BaseModel
+from utils.django_util.models import BaseModel
+from utils.tools import rounding
 
 
 # 用户.
@@ -29,6 +33,25 @@ class User(BaseModel, AbstractBaseUser):
 
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'username'
+
+    @property
+    def website_age(self):
+        """
+        网站年龄
+        :return:
+        """
+        result = datetime.datetime.now() - self.created_time
+        return rounding(str(result.days/365))
+
+    @property
+    def age(self):
+        """
+        实际年龄
+        :return:
+        """
+        if not self.birth:
+            return '保密'
+        return datetime.date.today().year - self.birth.year
 
     # 用户默认数据
     defautl_man_portrait = 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2519824424,1132423651&fm=26&gp=0.jpg'
@@ -98,3 +121,28 @@ class User(BaseModel, AbstractBaseUser):
         :return:
         """
         return dict(cls.objects.filter(id=user_id).values('id', 'username', 'portrait').first())
+
+
+    @classmethod
+    def get_post_retrieve_author_info(cls, user_id: Union[int, object]):
+        """
+        获取文章作者信息
+        :param user_id:
+        :return:
+        """
+        if isinstance(user_id, User):
+            user = user_id
+        else:
+            user = User.objects.filter(id=user_id).only('id', 'portrait', 'username', 'created_time').first()
+            if not user:
+                return {}
+        res = dict(id=user.id,
+                   portrait=user.portrait,
+                   age=user.age,
+                   website_age=user.website_age,
+                   username=user.username)
+        post_aggregate = Post.objects.filter(author=user.id).aggregate(Sum('praise_num'), Sum('like_num'))
+        res['article_total'] = Post.objects.filter(author=user.id, post_type=1).only('id').count()
+        res['praise_total'] = post_aggregate['praise_num__sum']
+        res['like_total'] = post_aggregate['like_num__sum']
+        return res

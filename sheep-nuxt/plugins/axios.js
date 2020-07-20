@@ -29,7 +29,7 @@ export default function (context, inject) {
         // 为了解决ssr渲染后端还能查询到匿名用户,新增header:u-host
         request.headers['u-host'] = context.req.socket.remoteAddress
       }
-      if (context.app.$cookies.secure_get(settings.TOKEN_NAME)) {
+      if (context.app.$cookies.secure_get(settings.TOKEN_NAME)&&!request.headers.tk) {
         // 判断是否存在token，如果存在的话，则每个http header都加上token
         request.headers.tk = context.app.$cookies.secure_get(settings.TOKEN_NAME);
       }
@@ -42,11 +42,9 @@ export default function (context, inject) {
   //http-响应拦截
   service.interceptors.response.use(
     function (response) {
-      console.log(response.data.code)
       switch(response.data.code) {
         case 4101:
-          console.log(response)
-          context.app.$cookies.remove(settings.TOKEN_NAME)
+          context.app.$cookies.set(settings.TOKEN_NAME,'',{maxAge:0})
           Message('用户登录失效!')
           context.redirect('/login')
           break
@@ -61,7 +59,6 @@ export default function (context, inject) {
     },
     error => {
       if (!error.response) {
-        // console.log(error.response)
         Message('网络连接错误,请检查网络!')
       } else {
         switch (error.response.status) {
@@ -70,10 +67,6 @@ export default function (context, inject) {
             break
           case 500:
             Message('500 internal server error')
-            // context.error({
-            //   statusCode: error.response.status,
-            //   message: '500 internal server error'
-            // })
             break
         }
       }

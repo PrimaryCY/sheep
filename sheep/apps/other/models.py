@@ -2,10 +2,9 @@ from django.db import models
 from mptt.models import MPTTModel
 
 from apps.post.models import User
-from utils.models import BaseModel
+from utils.django_util.models import BaseModel
 from sheep import settings
 # Create your models here.
-from utils.tools import stdout
 from sheep.init_server import init_stdout
 
 

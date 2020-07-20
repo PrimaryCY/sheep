@@ -18,11 +18,11 @@ if(settings.DEBUG){
 
 
 settings.TOKEN_NAME='tk'
-settings.TOKEN_EXPIRE="7d"
+settings.TOKEN_EXPIRE=60*60*24*7
 
 settings.DEFAULT_PORTRAIT='https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png'
 
-settings.REMEMBER_ME_EXPIRE='7d'
+settings.REMEMBER_ME_EXPIRE=60*60*24*7
 
 
 Vue.prototype.$settings = settings

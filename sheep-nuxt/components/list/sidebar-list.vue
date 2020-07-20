@@ -79,7 +79,7 @@
       /*margin-bottom: 10px;*/
       overflow: hidden;
       /*min-height: 52px;*/
-      height: 45px;
+      height: 50px;
       display: block;
       border-bottom: 1px solid #e4e7ed;
       .img-box {
@@ -119,13 +119,16 @@
           line-clamp: 2;
           -webkit-box-orient: vertical;
         }
-        .company_name:hover{
-          color: #b53c57;
-        }
       }
     }
   }
   .sidebar-list-item:hover{
-    background-color: #f5f7fa;
+      background-color: #f5f7fa;
+    .content{
+      .company_name{
+        color: #b53c57;
+      }
+    }
   }
+
 </style>

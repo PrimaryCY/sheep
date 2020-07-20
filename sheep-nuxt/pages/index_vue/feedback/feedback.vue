@@ -37,7 +37,7 @@
                                     ref="tinymce"
                                     :height="340"
                                     :menubar="false"
-                                    :toolbar="'simple_toolbar'"
+                                    toolbar="simple_toolbar"
                                     placeholder="在这里请写下您宝贵的意见,我们会加油努力改进哒!"
                     ></tinymce-editor>
                   </no-ssr>

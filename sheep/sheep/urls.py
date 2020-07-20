@@ -13,8 +13,9 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.conf.urls import url, include
+from django.conf.urls import include
 from django.conf.urls.static import static
+from django.urls import path
 from django.views.static import serve
 from django.conf import settings
 
@@ -22,10 +23,10 @@ import api.urls
 
 urlpatterns = [
                   # 修改media文件路由
-                  url(r'^media/(?P<path>.*)$', serve, {"document_root": settings.MEDIA_ROOT}),
+                  path(r'media/<path:path>/', serve, {"document_root": settings.MEDIA_ROOT}),
                   # 导入rest framework
-                  url(r'^api_auth/', include('rest_framework.urls', namespace='rest_framework')),
-                  url(r'^api/', include(api.urls)),
+                  path(r'api_auth/', include('rest_framework.urls', namespace='rest_framework')),
+                  path(r'api/', include(api.urls)),
               ] + \
               static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
@@ -33,5 +34,5 @@ urlpatterns = [
 if settings.DEBUG:
     import debug_toolbar
     urlpatterns = [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
+        path(r'__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns

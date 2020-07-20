@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
 # author:CY
 # datetime:2019/11/14 16:13
-from django.conf.urls import include, url
+from django.conf.urls import include
+from django.db.models import QuerySet
+from django.urls import path
+
+from utils.django_util.models import BaseModelMange
+
+QuerySet
+BaseModelMange
 
 urlpatterns = [
-    url(r'v1/', include(('api.v1.v1', 'api.v1.v1'), namespace='v1')),
+    path(r'v1/', include(('api.v1.v1', 'api.v1.v1'), namespace='v1')),
 ]
 

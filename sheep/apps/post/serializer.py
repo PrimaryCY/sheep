@@ -274,19 +274,6 @@ class PostSerializer(serializers.ModelSerializer):
             return u_id
         return User.get_simple_user_info(u_id)
 
-    # is_like = serializers.SerializerMethodField(label='是否收藏')
-    # is_praise = serializers.SerializerMethodField(label='是否点赞')
-    #
-    # def get_is_like(self, obj):
-    #     from apps.operate.models import Collect
-    #     return Collect.select_is_like(self.context['request'].user.id,
-    #                                   1, obj.id)
-    #
-    # def get_is_praise(self, obj):
-    #     from apps.operate.models import Praise
-    #     return Praise.select_is_praise(self.context['request'].user.id,
-    #                                    1, obj.id)
-
     def get_author_info(self, obj):
         """帖子创建人信息"""
         if obj.author_id == self.context['request'].user.id:
@@ -295,8 +282,7 @@ class PostSerializer(serializers.ModelSerializer):
                         portrait=user.portrait,
                         username=user.username)
         user = User.get_simple_user_info(obj.author_id)
-        if user:
-            return dict(user)
+        return user
 
     class Meta:
         model = Post
@@ -305,11 +291,19 @@ class PostSerializer(serializers.ModelSerializer):
 
 class RetrievePostSerializer(PostSerializer):
     """retrieve方法的帖子序列化器"""
+    author_info = serializers.SerializerMethodField(label='创建人信息')
+
+    def get_author_info(self, obj):
+        """帖子创建人信息"""
+        if obj.author_id == self.context['request'].user.id:
+            res = User.get_post_retrieve_author_info(self.context['request'].user)
+        else:
+            res = User.get_post_retrieve_author_info(obj.author_id)
+        return res
 
     class Meta:
         model = Post
-        fields = "__all__"
+        exclude = ('content',)
         extra_kwargs = {
             'url': {'view_name': 'v1:web:post-detail', 'lookup_field': 'pk'},
         }
-

@@ -175,12 +175,12 @@
         let res = await api_login.create(data)
         res = res.data
 				if(res.code===2000){
-					this.$cookies.secure_set(setting.TOKEN_NAME,res.data.token, setting.TOKEN_EXPIRE)
+					this.$cookies.secure_set(setting.TOKEN_NAME,res.data.token, {maxAge:setting.TOKEN_EXPIRE})
 					// 如果之前已经登录其它账号,先清空再获取新用户信息
 					this.$store.dispatch('modify_userinfo',{})
 					this.$store.dispatch('receive_userinfo')
 					if(this.loginData.remember_me){
-						this.$cookies.secure_set('un',data.email_or_phone,this.$settings.REMEMBER_ME_EXPIRE)
+						this.$cookies.secure_set('un',data.email_or_phone,{maxAge:this.$settings.TOKEN_EXPIRE})
 					}
 					this.$router.replace('/index')
 				}else if(res.msg.indexOf('邮箱') !== -1) {

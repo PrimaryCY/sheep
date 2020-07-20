@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # author:CY
 # datetime:2019/11/14 16:15
-from django.conf.urls import url, include
+from django.conf.urls import include
+from django.urls import path, re_path
 
 from utils.routes import CustomRouter
 from apps.other.views import UploadViewSet, FeedbackCategoryViewSet, FeedbackViewSet
@@ -23,7 +24,7 @@ router.register('s', SearchViewSet, basename='search')
 router.register('task-result', CeleryResultsViewSet, basename='celery_result')
 
 urlpatterns = [
-    url(r'web/', include(('api.v1.web', 'api.v1.v1.web'), namespace='web')),
-    url(r'task/', include(('django_celery_results.urls', 'django_celery_results'), namespace='celery')),
-    url(r'', include(router.urls)),
+    path(r'web/', include(('api.v1.web', 'api.v1.web'), namespace='web')),
+    path(r'task/', include(('django_celery_results.urls', 'django_celery_results'), namespace='celery')),
+    path(r'', include(router.urls)),
 ]

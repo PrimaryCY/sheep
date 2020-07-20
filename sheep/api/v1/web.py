@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 # author:CY
 # datetime:2019/12/13 13:54
-from django.conf.urls import url,include
+from django.conf.urls import include
+from django.urls import path
 
 from utils.routes import CustomRouter
 from apps.user.views import UserViewSet, LoginViewSet
 from apps.post.views import PostCategoryViewSet, UserPostViewSet, UserReplyViewSet, \
-    PostReplyViewSet
+    PostReplyViewSet, AllPostViewSet, CategoryPostViewSet, AuthorPostViewSet
 from apps.operate.views import UserCollectCategoryViewSet, CollectCategoryViewSet, CollectViewSet, PraiseViewSet, FocusViewSet
-from apps.index.views import BannerViewSet, HotViewSet, AllPostViewSet
+from apps.index.views import BannerViewSet, HotViewSet
 
 router = CustomRouter()
 # 轮播图
@@ -23,6 +24,10 @@ router.register('login', LoginViewSet, basename='login')
 router.register('post_category', PostCategoryViewSet, basename='post_category')
 # 所有帖子
 router.register('post', AllPostViewSet, basename='post')
+# 作者相关推荐
+router.register('author_post', AuthorPostViewSet, basename='author_post')
+# 分类相关推荐
+router.register('category_post', CategoryPostViewSet, basename='category_post')
 # 个人帖子crud
 router.register('user_post', UserPostViewSet, basename='user_post')
 
@@ -45,5 +50,5 @@ router.register('collect_category', CollectCategoryViewSet, basename='collect_ca
 
 
 urlpatterns = [
-    url(r'', include(router.urls)),
+    path(r'', include(router.urls)),
 ]

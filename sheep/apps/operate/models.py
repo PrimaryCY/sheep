@@ -3,7 +3,7 @@ from django.db.models import F
 
 from apps.post.models import Post
 from apps.post.serializer import PostSerializer
-from utils.models import BaseModel
+from utils.django_util.models import BaseModel
 
 TYPE_CHOICES_MAPPING = (
         (1, '帖子'),

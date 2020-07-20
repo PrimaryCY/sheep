@@ -43,7 +43,7 @@
     methods: {
       _timed_task() {
         this.count_down --;
-        if(this.count_down<=0){
+        if(this.count_down<=0&& this.count_down>=-2){
           return this.$router.replace('/index')
         }
         console.log(this.count_down);

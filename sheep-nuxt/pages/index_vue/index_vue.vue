@@ -15,7 +15,6 @@
 									v-model="pack_up"
 									:width="20"
 									active-color="#7d7d83"
-									@change="click_pack_up"
 									inactive-color="#b53c57">
 					</el-switch>
 				</div>
@@ -201,28 +200,31 @@
   export default {
     name: "index",
 		inject:['push','blank_push'],
-		created(){
-			this.pack_up = this.$cookies.secure_get('pack_up')
-		},
 		data(){
       return {
-				pack_up:false, // 是否展开收起
         loginBtn:{
           loading:false,
 				},
 			}
 		},
+		created(){
+      this.$store.dispatch('modify_pack_up', this.$cookies.secure_get('pack_up'))
+		},
 		computed:{
 			...mapState(['user']),
+			pack_up:{
+				get(){
+          return this.$store.state.pack_up
+				},
+				set(new_val){
+          this.$store.dispatch('modify_pack_up', new_val)
+				}
+			},
 			active(){
 				return this.$route.path
-			}
+			},
 		},
 		methods:{
-			click_pack_up(val){
-				// 点击收起时存入cookie中
-				this.$cookies.secure_set('pack_up',val,'7d')
-			},
       async login(){
 				console.log('login')
 				this.loginBtn.loading = true

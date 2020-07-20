@@ -4,9 +4,26 @@
 from typing import Iterable
 
 from django.db import models
+from django.db.models import QuerySet
+from django.db.models.manager import BaseManager
+
+from utils.django_util.signals import pre_ud_save, aft_ud_save
 
 
-class BaseModelMange(models.Manager):
+class CustomQuerySet(QuerySet):
+
+    def update(self, **kwargs):
+        pre_ud_save.send(sender=self.model, queryset=self)
+        rows = super(CustomQuerySet, self).update(**kwargs)
+        aft_ud_save.send(sender=self.model, queryset=self, rows=rows)
+        return rows
+
+
+class Manager(BaseManager.from_queryset(CustomQuerySet)):
+    pass
+
+
+class BaseModelMange(Manager):
 
     def all(self):
         return self.filter(is_active=True).all()

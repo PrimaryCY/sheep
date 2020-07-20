@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from mptt.models import MPTTModel
 from mptt.fields import TreeForeignKey
 
-from utils.models import BaseModel
+from utils.django_util.models import BaseModel
 from sheep import settings
 from sheep.init_server import init_stdout
 

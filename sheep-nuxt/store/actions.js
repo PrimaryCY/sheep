@@ -1,6 +1,7 @@
 import {
   RECEIVE_USERINFO,
-  RECEIVE_OPTION
+  RECEIVE_OPTION,
+  MODIFY_PACK_UP
 } from "./mutations-types"
 
 import {
@@ -55,5 +56,11 @@ export default {
       this._vm.$message(res.data.msg)
     }
     callback && callback()
+  },
+  modify_pack_up({commit}, data){
+    // 点击收起时存入cookie中
+    data = Boolean(data)
+    commit(MODIFY_PACK_UP, data)
+    process.$cookies.secure_set('pack_up', data, {maxAge:60*60*24*7})
   }
 }

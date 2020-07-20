@@ -1,3 +1,4 @@
+
 export default{
   // receive_count(state){
   //   //计算总个数
@@ -14,6 +15,5 @@ export default{
   // }
 	get_user(state){
 		return state.user
-	}
-
+	},
 }

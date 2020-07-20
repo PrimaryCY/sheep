@@ -75,7 +75,12 @@
         type:String,
         required:false,
         default:'请输入内容...'
-      }
+      },
+      statusbar:{
+				type:Boolean,
+				required:false,
+				default:true
+			}
 		},
 		data(){
 			return{
@@ -106,7 +111,7 @@
 					browser_spellcheck: true, // 拼写检查
 					branding: false, // 不去水印
 					elementpath: true,  //禁用编辑器底部的状态栏
-					statusbar: true, // 隐藏编辑器底部的状态栏
+					statusbar: this.statusbar, // 隐藏编辑器底部的状态栏
 					paste_data_images: true, // 允许粘贴图像
 					link_list: [
 						{ title: '百度', value: 'http://www.baidu.com' },

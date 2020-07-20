@@ -2,14 +2,13 @@ from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import serializers
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.response import Response
 from rest_framework.mixins import ListModelMixin
 
 from apps.post.models import Category, Post, PostReply
 from apps.post.filters import PostFilter, AllPostFilter, AuthorPostFilter, CategoryPostFilter
 from utils.drf_extensions.util import limit_offset_list_cache_key_func
-from utils.viewsets import ModelViewSet, CreateModelMixin, DestroyModelMixin, GenericViewSet
+from utils.viewsets import ModelViewSet, CreateModelMixin, DestroyModelMixin, GenericViewSet, ReadOnlyModelViewSet
 from utils.pagination import LimitOffsetPagination
 from utils.drf_extensions.decorators import only_data_cache_response
 from apps.post.serializer import PostCategorySerializer, UserPostSerializer, PostReplySerializer, \
@@ -144,6 +143,7 @@ class AuthorPostViewSet(ListModelMixin,
     作者相关文章推荐
     """
     queryset = Post.objects
+    permission_classes = ()
     filter_backends = (DjangoFilterBackend,)
     pagination_class = LimitOffsetPagination
     filter_class = AuthorPostFilter
@@ -160,6 +160,7 @@ class CategoryPostViewSet(ListModelMixin,
     分类相关文章推荐
     """
     queryset = Post.objects
+    permission_classes = ()
     filter_backends = (DjangoFilterBackend,)
     pagination_class = LimitOffsetPagination
     filter_class = CategoryPostFilter

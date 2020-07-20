@@ -38,11 +38,11 @@ class AllPostFilter(FilterSet):
 
 
 class AuthorPostFilter(FilterSet):
-    author = django_filters.NumberFilter(required=True, field_name='author',
+    author_id = django_filters.NumberFilter(required=True, field_name='author_id',
                                         method='filter_author', label='作者')
 
     def filter_author(self, qs, name, value):
-        return qs.filter(author=value).order_by('post_num')
+        return qs.filter(author_id=value).order_by('post_num')
 
 
 class CategoryPostFilter(FilterSet):

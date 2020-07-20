@@ -5,7 +5,6 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 from django.db.models import Sum, Count
 
-from apps.post.models import Post
 from sheep import settings
 from utils.django_util.models import BaseModel
 from utils.tools import rounding
@@ -122,7 +121,6 @@ class User(BaseModel, AbstractBaseUser):
         """
         return dict(cls.objects.filter(id=user_id).values('id', 'username', 'portrait').first())
 
-
     @classmethod
     def get_post_retrieve_author_info(cls, user_id: Union[int, object]):
         """
@@ -130,10 +128,12 @@ class User(BaseModel, AbstractBaseUser):
         :param user_id:
         :return:
         """
+        from apps.post.models import Post
+
         if isinstance(user_id, User):
             user = user_id
         else:
-            user = User.objects.filter(id=user_id).only('id', 'portrait', 'username', 'created_time').first()
+            user = User.objects.filter(id=user_id).only('id', 'portrait', 'username', 'created_time', 'birth').first()
             if not user:
                 return {}
         res = dict(id=user.id,
@@ -141,8 +141,8 @@ class User(BaseModel, AbstractBaseUser):
                    age=user.age,
                    website_age=user.website_age,
                    username=user.username)
-        post_aggregate = Post.objects.filter(author=user.id).aggregate(Sum('praise_num'), Sum('like_num'))
-        res['article_total'] = Post.objects.filter(author=user.id, post_type=1).only('id').count()
+        post_aggregate = Post.objects.filter(author_id=user.id).aggregate(Sum('praise_num'), Sum('like_num'))
+        res['article_total'] = Post.objects.filter(author_id=user.id, post_type=1).only('id').count()
         res['praise_total'] = post_aggregate['praise_num__sum']
         res['like_total'] = post_aggregate['like_num__sum']
         return res

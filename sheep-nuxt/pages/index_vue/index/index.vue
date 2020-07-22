@@ -31,7 +31,7 @@
           </el-col>
 
         </el-row>
-      <div class="menuList">
+      <div class="menuList" :class="{'is_fixed' : isFixed}" id="boxFixed">
         <ul>
           <li :class="{active:one_category===0}">
             <a
@@ -224,7 +224,9 @@
         loading:false,
         form:{
           keyword:''
-        }
+        },
+				isFixed:false,
+        offsetTop: 0
       }
     },
     async asyncData(context){
@@ -264,6 +266,10 @@
     },
     inject:['generate_url','blank_push'],
     methods: {
+      initHeight() {
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
+        this.isFixed = scrollTop-15 > this.offsetTop ? true : false;
+      },
       async _get_next_posts(){
         this.disabled_scroll = true
         if(isNaN(this.params.offset) || (this.params.offset>=this.posts.count)){
@@ -293,6 +299,15 @@
         return []
       }
     },
+    beforeMount() {
+      window.addEventListener('scroll', this.initHeight);
+      this.$nextTick(() => {
+        this.offsetTop = document.querySelector('#boxFixed').offsetTop;
+      })
+    },
+    destroyed() {
+      window.removeEventListener('scroll', this.handleScroll)
+    },
     components:{
       sidebar_list,
       list,
@@ -303,6 +318,15 @@
 </script>
 
 <style scoped lang="scss">
+  /* 吸顶 */
+  .is_fixed{
+    position: fixed;
+    top: 0;
+    z-index: 999;
+    margin: 0;
+    padding: 0!important;
+    width: calc(100% - 285px);
+  }
   .loading{
     position: relative;
     height: 300px;
@@ -348,6 +372,7 @@
     .menuList {
       /*width: 800px;*/
       /*height: 60px;*/
+			background-color: white;
       padding-bottom: 10px;
       .active {
         border-bottom: 2px solid #364045;

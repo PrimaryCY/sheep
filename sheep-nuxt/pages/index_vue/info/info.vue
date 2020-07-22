@@ -183,7 +183,7 @@
 			return {
 				uploadData:{
 					// 上传图片的数据
-					upload_path:'portrait',
+					upload_path:'sheep-portrait',
 					file: undefined,
 					flag: false
 				},

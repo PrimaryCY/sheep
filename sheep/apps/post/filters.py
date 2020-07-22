@@ -2,9 +2,11 @@
 # author:CY
 # datetime:2020/5/22 17:01
 from django_filters.rest_framework import FilterSet
+from rest_framework.exceptions import ValidationError
 import django_filters
 
 from apps.post.models import Category
+from sheep.constant import RET, error_map
 
 
 class PostFilter(FilterSet):
@@ -51,3 +53,14 @@ class CategoryPostFilter(FilterSet):
 
     def filter_category(self, qs, name, value):
         return qs.filter(category=value).order_by('post_num')
+
+
+class CorrelationCategoryFilter(FilterSet):
+    id = django_filters.NumberFilter(required=True, field_name='id',
+                                    method='filter_id', label='id')
+
+    def filter_id(self, qs, name, value):
+        c = qs.filter(id=value, level=1).only('parent').first()
+        if not c:
+            raise ValidationError({'code': RET.NODATA,'msg': error_map[RET.NODATA]})
+        return c.get_siblings().only('id', 'name', 'parent_id', 'level')

@@ -9,10 +9,9 @@ const toolbar = [`code undo redo restoredraft | cut copy paste pastetext | forec
 const simple_toolbar = [`undo redo restoredraft | cut copy paste pastetext | forecolor backcolor bold italic underline link | alignleft aligncenter alignright outdent indent |
     formatselect fontselect fontsizeselect | bullist numlist | removeformat image media emoticons hr pagebreak insertdatetime preview | fullscreen |  indent2em lineheight formatpainter axupimgs`]
 
-const reply_toolbar = [`forecolor backcolor bold italic underline link alignleft aligncenter alignright outdent indent
+const reply_toolbar = [`forecolor bold italic underline link alignleft aligncenter alignright outdent
    removeformat image emoticons hr insertdatetime |  indent2em lineheight formatpainter axupimgs`]
 
-const sidebar_reply_toolbar = [`forecolor backcolor bold italic underline link alignleft`]
 
 export default {
   toolbar,

@@ -7,7 +7,7 @@ from django.urls import path
 from utils.routes import CustomRouter
 from apps.user.views import UserViewSet, LoginViewSet
 from apps.post.views import PostCategoryViewSet, UserPostViewSet, UserReplyViewSet, \
-    PostReplyViewSet, AllPostViewSet, CategoryPostViewSet, AuthorPostViewSet
+    PostReplyViewSet, AllPostViewSet, CategoryPostViewSet, AuthorPostViewSet, CorrelationCategoryViewSet
 from apps.operate.views import UserCollectCategoryViewSet, CollectCategoryViewSet, CollectViewSet, PraiseViewSet, FocusViewSet
 from apps.index.views import BannerViewSet, HotViewSet
 
@@ -28,6 +28,8 @@ router.register('post', AllPostViewSet, basename='post')
 router.register('author_post', AuthorPostViewSet, basename='author_post')
 # 分类相关推荐
 router.register('category_post', CategoryPostViewSet, basename='category_post')
+# 同一级分类
+router.register('correlation_category', CorrelationCategoryViewSet, basename='correlation_category')
 # 个人帖子crud
 router.register('user_post', UserPostViewSet, basename='user_post')
 

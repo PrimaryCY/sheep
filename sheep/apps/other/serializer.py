@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 # author:CY
 # datetime:2020/4/14 10:52
+import json
 import os
 import datetime
+from urllib import parse
 
 from django_celery_results.models import TaskResult
+from qiniu import Auth, BucketManager
 from rest_framework.request import Request
 from rest_framework import serializers
 from django.conf import settings
@@ -17,21 +20,66 @@ from utils.extra_fields import CurrentUserIdDefault, RangeField, SerializerMetho
 from utils.tools import random_filename
 
 
-class UploadSerializer(serializers.ModelSerializer):
-    user_id = serializers.HiddenField(default=CurrentUserIdDefault())
-    url = serializers.FileField(read_only=True)
+class UploadTokenSerializer(serializers.Serializer):
+    """七牛云token接口"""
 
-    file = serializers.FileField(required=True, label='文件', write_only=True)
-    upload_path = RangeField(iterable=os.listdir(settings.MEDIA_ROOT),
-                             label='上传目录',
-                             required=False,
-                             error_messages='不存在此目录!',
-                             write_only=True)
+    bucket = serializers.CharField(required=True, label='桶', write_only=True)
+
+    tk = serializers.CharField(read_only=True, label='七牛token')
 
     def validate(self, attrs):
-        file = attrs.pop('file')
-        upload_path = attrs.pop('upload_path', '')
-        attrs['url'] = self.save_file(file, upload_path)
+        q = Auth(**settings.QI_NIU_CLOUD['auth'])
+        bucket = BucketManager(q)
+
+        buckets, _ = bucket.buckets()
+        bucket = attrs.get('bucket')
+        if bucket not in buckets:
+            raise serializers.ValidationError({'code': RET.PARAMERR, 'msg': '桶不存在'})
+
+        expires = settings.QI_NIU_CLOUD.get('expires')
+        return {
+            'tk': q.upload_token(bucket, expires=expires, policy=self.get_policy(bucket))
+        }
+
+    def get_policy(self, bucket):
+        return {
+            'returnBody': json.dumps({
+                'success': True,
+                'code': RET.OK,
+                'data': {
+                    'url': parse.urljoin(settings.QI_NIU_CLOUD['base_url'].get(bucket), '$(key)'),
+                    'key': '$(key)',
+                    'size': '$(fsize)'
+                }
+            })
+        }
+
+
+class UploadHistorySerializer(serializers.ModelSerializer):
+    user_id = serializers.HiddenField(default=CurrentUserIdDefault())
+    url = serializers.URLField(label='资源链接')
+    bucket = serializers.CharField(label='桶')
+    file = serializers.CharField(label='资源名称')
+    raw_file = serializers.CharField(label='资源原名')
+    size = serializers.FloatField(label='大小')
+
+    def validate_size(self, size):
+        """文件大小,保留一位小数,以 kb 为单位"""
+        size = size/1024
+        return round(size, 1)
+
+    # url = serializers.FileField(read_only=True)
+    # file = serializers.FileField(required=True, label='文件', write_only=True)
+    # upload_path = RangeField(iterable=os.listdir(settings.MEDIA_ROOT),
+    #                          label='上传目录',
+    #                          required=False,
+    #                          error_messages='不存在此目录!',
+    #                          write_only=True)
+
+    def validate(self, attrs):
+        # file = attrs.pop('file')
+        # upload_path = attrs.pop('upload_path', '')
+        # attrs['url'] = self.save_file(file, upload_path)
         return attrs
 
     @staticmethod

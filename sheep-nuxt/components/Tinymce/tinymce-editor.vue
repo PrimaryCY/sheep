@@ -85,7 +85,7 @@
 		data(){
 			return{
 				upload_data:{
-					upload_path:'post_tinymce',
+					upload_path:'sheep-post-tinymce',
 					file:null,
 				},
 				tinymceId: this.id,
@@ -139,7 +139,8 @@
 					file_picker_types: 'file image media', // 可以接受的上传文件类型
 					file_picker_callback: (callback) => {
 						//文件分类
-						let filetype='.pdf, .txt, .zip, .rar, .7z, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .mp3, .mp4, .png';
+						// let filetype='.pdf, .txt, .zip, .rar, .7z, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .mp3, .mp4, .png';
+            let filetype='.mp4';
 						//模拟出一个input用于添加本地文件
 						let input = document.createElement('input');
 						input.setAttribute('type', 'file');
@@ -148,10 +149,16 @@
 						let self = this
 						input.onchange =async function f() {
 							let loading = self.openLoading({
-								text:'上传中...',
-								target:'div'
+								text:'上传文件未完成请不要关闭窗口,请耐心等待链接生成!',
+								target:'div',
+                time_out: 1000*15
 							})
 							self.upload_data.file= this.files[0]
+              if(self.upload_data.file.type !== 'video/mp4'){
+                self.$message('十分抱歉,现在多媒体上传仅支持mp4格式!')
+								loading.close()
+								return
+							}
 							let res = await api_upload.upload(self.upload_data)
               res = res.data
 							if (res.code !== 2000) {

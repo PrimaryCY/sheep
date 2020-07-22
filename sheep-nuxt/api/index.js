@@ -16,6 +16,18 @@ export const api_hot=common_crud('/v1/web/hot/')
  */
 export const api_post=common_crud('/v1/web/post/')
 /*
+详情页分类推荐
+*/
+export const api_category_post=common_crud('/v1/web/category_post')
+/*
+详情页相关分类
+*/
+export const api_correlation_category=common_crud('/v1/web/correlation_category')
+/*
+详情页作者推荐
+*/
+export const api_author_post=common_crud('/v1/web/author_post')
+/*
 登录相关
  */
 export const api_login=common_crud('/v1/web/login/')

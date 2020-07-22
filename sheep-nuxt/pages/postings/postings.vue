@@ -171,7 +171,7 @@
 				},
         reader_portrait: null,
 				upload_data:{
-          upload_path:'post_image',
+          upload_path:'sheep-post-image',
           file: undefined,
         }
 			}

@@ -40,10 +40,9 @@
        context.error({statusCode:500,message:'ssr internal server error'})
       }
 
-
       let word_list = []
       // 远程获取公共配置
-      if(!context.store.option){
+      if(!context.store.state.option.post_category){
         word_list.push(context.store.dispatch('receive_option'))
       }
       await Promise.all(word_list).catch(

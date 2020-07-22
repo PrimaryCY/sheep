@@ -42,7 +42,7 @@ class InitServer(object):
         初始化服务准备工作
         :return:
         """
-        self.create_default_media_dir()
+        # self.create_default_media_dir()
         from apps.post.models import Category
         from apps.other.models import FeedbackCategory
         Category.create_default_category()

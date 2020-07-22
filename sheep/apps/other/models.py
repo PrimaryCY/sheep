@@ -10,7 +10,11 @@ from sheep.init_server import init_stdout
 
 class UploadHistoryModel(BaseModel):
     user_id = models.IntegerField(verbose_name='创建人', null=False)
-    url = models.FileField(verbose_name='上传地址', null=False)
+    url = models.URLField(verbose_name='上传地址', null=False)
+    bucket = models.CharField(max_length=64, verbose_name='桶', null=False, default='')
+    file = models.CharField(max_length=512, verbose_name='文件名', null=False, default='')
+    raw_file = models.CharField(max_length=512, verbose_name='文件原名称', null=False, default='')
+    size = models.FloatField(verbose_name='大小/kb为单位', null=False, default=0.0)
 
     def __str__(self):
         return f'{self.user_id}:{self.url}'
@@ -21,7 +25,7 @@ class UploadHistoryModel(BaseModel):
 
 
 class FeedbackCategory(BaseModel):
-    """帖子分类表"""
+    """反馈分类表"""
     name = models.CharField(max_length=128, null=False, verbose_name='反馈分类')
     desc = models.CharField(max_length=512, null=True, verbose_name='反馈简介')
     author_id = models.IntegerField(null=False, verbose_name='创建人', db_index=True)

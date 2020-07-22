@@ -167,7 +167,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'www')
 # 用户上传得静态资源
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_DIRS = ['portrait', 'post_image', 'post_mavon', 'post_tinymce']
+# MEDIA_DIRS = ['portrait', 'post_image', 'post_mavon', 'post_tinymce']
 
 # 设置可以跨域访问
 CORS_ORIGIN_ALLOW_ALL = True
@@ -347,7 +347,7 @@ TOKEN = {
     'TOKEN_SECURITY_KEY': b'pBy0j5_m6qqTOXElHSs0OlfV5qiYhqHkEvwLtdrXZ5o=',
     'TOKEN_EXPIRES': 7*24*3600,
     'TOKEN_REDIS': USER_REDIS,
-    'TOKEN_NAME': 'tk'
+    'TOKEN_NAME': 'token'
 }
 
 
@@ -473,6 +473,23 @@ if DEBUG:
     MIDDLEWARE.extend(EXTRA_MIDDLEWARE)
     INSTALLED_APPS.extend(EXTRA_INSTALL_APPS)
 
+# 百度api
+BD_API_LOCATION_IP_URL = "http://api.map.baidu.com/location/ip"
+BD_API_MAP_PARAMS = {
+    'ak': '个人自己的ak',
+}
+
+# 七牛云配置
+QI_NIU_CLOUD = {
+    'auth': {
+        'access_key': '用户ak',
+        'secret_key': '用户sk'
+    },
+    'base_url': {
+        '桶名': '桶域名'
+    },
+    'expires': 3600
+}
 
 try:
     from .local_setting import *

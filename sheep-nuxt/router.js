@@ -98,7 +98,7 @@ const routes = [
             redirect:'index'
           },
           {
-            path:'index/404',
+            path:'not-found/',
             name:"not_found",
             component:not_found
           }

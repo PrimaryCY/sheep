@@ -26,3 +26,4 @@ eventlet==0.25.2
 cryptography==2.8.0
 msgpack==0.6.2
 pipdeptree==1.0.0
+qiniu==7.2.8

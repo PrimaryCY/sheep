@@ -8,3 +8,9 @@ DEVELOP = True
 # 超管手机号
 ADMIN_PHONE = ['输入admin的手机号', '']
 
+DEBUG = True
+
+# 百度ak
+BD_API_MAP_PARAMS = {
+    'ak': '用户自己的ak',
+}

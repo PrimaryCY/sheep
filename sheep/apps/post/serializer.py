@@ -98,7 +98,10 @@ class UpdateRetrieveUserPostSerializer(UserPostSerializer):
     """个人文章查改方法的帖子序列化器"""
     desc = serializers.ReadOnlyField(label='帖子简介')
     html_content = serializers.CharField(write_only=True, label='html内容')
-    content = serializers.CharField(write_only=True, label='文字内容')
+    content = serializers.CharField(write_only=True, label='文字内容', error_messages={
+        'null': '文章内容必须要输入一些内容!',
+        'blank': '文章内容必须要输入一些内容!',
+    })
     parse_content = serializers.SerializerMethodField(label='帖子编辑内容')
     category_list = serializers.SerializerMethodField(label='类别列表')
 
@@ -292,6 +295,8 @@ class PostSerializer(serializers.ModelSerializer):
 class RetrievePostSerializer(PostSerializer):
     """retrieve方法的帖子序列化器"""
     author_info = serializers.SerializerMethodField(label='创建人信息')
+    category = serializers.SerializerMethodField(label='分类')
+    category_id = serializers.IntegerField(label='分类id', source='category')
 
     def get_author_info(self, obj):
         """帖子创建人信息"""
@@ -301,9 +306,26 @@ class RetrievePostSerializer(PostSerializer):
             res = User.get_post_retrieve_author_info(obj.author_id)
         return res
 
+    def get_category(self, obj):
+        c = Category.objects.filter(id=obj.category).only('name').first()
+        if not c:
+            return '不告诉你!'
+        return c.name
+
     class Meta:
         model = Post
         exclude = ('content',)
         extra_kwargs = {
             'url': {'view_name': 'v1:web:post-detail', 'lookup_field': 'pk'},
         }
+
+
+class CorrelationCategorySerializer(serializers.ModelSerializer):
+    article_total = serializers.SerializerMethodField(label='该分类下的文章总数')
+
+    def get_article_total(self, obj):
+        return Post.objects.filter(category=obj.id).only('id').count()
+
+    class Meta:
+        model = Category
+        fields = ["id", "name", "parent_id", "level", "article_total"]

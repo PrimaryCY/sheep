@@ -5,13 +5,15 @@ from django.conf.urls import include
 from django.urls import path, re_path
 
 from utils.routes import CustomRouter
-from apps.other.views import UploadViewSet, FeedbackCategoryViewSet, FeedbackViewSet
-from apps.other.views import OptionViewSet, CeleryResultsViewSet
+from apps.other.views import UploadHistoryViewSet, FeedbackCategoryViewSet, FeedbackViewSet
+from apps.other.views import OptionViewSet, CeleryResultsViewSet, UploadTokenViewSet
 from apps.search.views import SearchViewSet
 
 router = CustomRouter()
 # 上传接口
-router.register('upload', UploadViewSet, basename='upload')
+router.register('upload/history', UploadHistoryViewSet, basename='upload')
+# 获取上传token
+router.register('upload/token', UploadTokenViewSet, basename='upload_token')
 # 公共配置
 router.register('option', OptionViewSet, basename='option')
 # 意见反馈类别

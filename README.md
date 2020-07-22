@@ -19,7 +19,7 @@
 - 登录注册
 - 发表文章(支持富文本+markdown)
 - 个人资料修改
-- 上传文件/图片
+- 七牛云存储上传文件/图片
 - 编辑文章
 - 删除文章
 - 我的文章
@@ -89,6 +89,7 @@
     - nprogres
     - crypto-js
     - vue-infinite-scroll
+    - qiniu-js
 
 ---
 
@@ -104,6 +105,7 @@
     - concurrent-log-handler
     - django-filter
     - cryptography
+    - qiniu
 ---
 
 ### <font color=#ca0c16>关系型数据库选型

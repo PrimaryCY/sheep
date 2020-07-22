@@ -6,13 +6,13 @@ from rest_framework.response import Response
 from rest_framework.mixins import ListModelMixin
 
 from apps.post.models import Category, Post, PostReply
-from apps.post.filters import PostFilter, AllPostFilter, AuthorPostFilter, CategoryPostFilter
+from apps.post.filters import PostFilter, AllPostFilter, AuthorPostFilter, CategoryPostFilter, CorrelationCategoryFilter
 from utils.drf_extensions.util import limit_offset_list_cache_key_func
 from utils.viewsets import ModelViewSet, CreateModelMixin, DestroyModelMixin, GenericViewSet, ReadOnlyModelViewSet
 from utils.pagination import LimitOffsetPagination
 from utils.drf_extensions.decorators import only_data_cache_response
 from apps.post.serializer import PostCategorySerializer, UserPostSerializer, PostReplySerializer, \
-    RetrievePostReplySerializer, UpdateRetrieveUserPostSerializer, PostSerializer, RetrievePostSerializer
+    RetrievePostReplySerializer, UpdateRetrieveUserPostSerializer, PostSerializer, RetrievePostSerializer, CorrelationCategorySerializer
 from apps.user.permission import IsAdminUser, IsLoginUser
 
 
@@ -167,5 +167,21 @@ class CategoryPostViewSet(ListModelMixin,
     serializer_class = PostSerializer
 
     @only_data_cache_response(key_func=limit_offset_list_cache_key_func, timeout=600)
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+
+class CorrelationCategoryViewSet(ListModelMixin,
+                                 GenericViewSet):
+    """
+    相关分类
+    """
+    queryset = Category.objects
+    permission_classes = ()
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = CorrelationCategoryFilter
+    serializer_class = CorrelationCategorySerializer
+
+    @only_data_cache_response(key_func=limit_offset_list_cache_key_func, timeout=60*60)
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)

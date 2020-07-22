@@ -84,7 +84,7 @@
 					preview: true, // 预览
 				},
 				upload_data:{
-					upload_path:'post_mavon',
+					upload_path:'sheep-post-mavon',
 					file:null,
 				}
 			};

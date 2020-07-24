@@ -33,8 +33,6 @@ SECRET_KEY = 'nog-m-%lwpued&hxe6v^c9+m_b=dfe!7atv@^vmq&_*-980h=n'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-# 是否为测试环境
-DEVELOP = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -271,7 +269,11 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
-            'CONNECTION_POOL_KWARGS': {'decode_responses': True},
+            "PARSER_CLASS": "redis.connection.HiredisParser",
+            'CONNECTION_POOL_KWARGS': {
+                "max_connections": 100,
+                'decode_responses': True,
+            },
         }
     },
     'restframework_extensions': {
@@ -282,6 +284,10 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+            "PARSER_CLASS": "redis.connection.HiredisParser",
+            "CONNECTION_POOL_KWARGS": {
+                "max_connections": 100,
+            }
         }
     },
     'user': {
@@ -291,12 +297,31 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
-            'CONNECTION_POOL_KWARGS': {'decode_responses': True},
+            "PARSER_CLASS": "redis.connection.HiredisParser",
+            'CONNECTION_POOL_KWARGS': {
+                "max_connections": 100,
+                'decode_responses': True,
+            },
+        }
+    },
+    'post': {
+        'BACKEND': "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_HOST + "11",
+        'TIMEOUT': 2000,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+            "PARSER_CLASS": "redis.connection.HiredisParser",
+            'CONNECTION_POOL_KWARGS': {
+                "max_connections": 100,
+                'decode_responses': True,
+            },
         }
     },
 }
 from django_redis import get_redis_connection
 USER_REDIS = get_redis_connection('user')
+POST_REDIS = get_redis_connection('post')
 
 # celery配置
 CELERY_BROKER_BACKEND = "redis"
@@ -437,6 +462,23 @@ LOGGING = {
             'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,
             'formatter': 'simple',
+        },
+        # celery日志
+        'celery': {
+            'level': 'INFO',
+            'class': 'concurrent_log_handler.ConcurrentRotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, "celery-{}.log".format(time.strftime('%Y-%m-%d'))),
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 5,
+            'formatter': 'simple',
+        },
+        'celery-error': {
+            'level': 'ERROR',
+            'class': 'concurrent_log_handler.ConcurrentRotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, "celery-error-{}.log".format(time.strftime('%Y-%m-%d'))),
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 5,
+            'formatter': 'verbose',
         }
     },
     'loggers': {
@@ -457,6 +499,11 @@ LOGGING = {
         'script': {
             'handlers': ['script'],
             'level': 'INFO',
+            'propagate': False
+        },
+        # celery的日志名称不能为'celery', 否在配置失效
+        'celery_logger': {
+            'handlers': ['celery', 'celery-error'],
             'propagate': False
         },
     }

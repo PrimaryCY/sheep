@@ -45,7 +45,7 @@ class LoginSerializer(serializers.Serializer):
         if not all({user_input.get(self.username_field),
                     user_input.get('password')}):
             raise serializers.ValidationError({'code': RET.LOGINERR, 'msg': '请输入用户名和密码'})
-        flag, user = authenticate(**user_input)
+        flag, user = authenticate(self.context['request'], **user_input)
 
         if not flag:
             raise serializers.ValidationError({'code': RET.LOGINERR, 'msg': user})
@@ -73,6 +73,9 @@ class ListCreateUserSerializer(serializers.ModelSerializer):
     is_admin = serializers.ReadOnlyField(label='是否超管')
     password = serializers.CharField(style={'input_type': 'password'}, write_only=True, label='密码')
     last_login = serializers.DateTimeField(read_only=True, label='最后登录时间')
+    last_login_province = serializers.CharField(read_only=True, label='最后登录地点-省份')
+    last_login_city = serializers.CharField(read_only=True, label='最后登录地点-城市')
+
     login_num = serializers.ReadOnlyField(label='登录次数')
     phone = serializers.ReadOnlyField(label='手机号')
     gender = serializers.ReadOnlyField(label='性别')
@@ -119,6 +122,8 @@ class UpdateUserSerializer(serializers.ModelSerializer):
     is_admin = serializers.ReadOnlyField(label='是否超管')
     last_login = serializers.DateTimeField(read_only=True, label='最后登录时间')
     login_num = serializers.ReadOnlyField(label='登录次数')
+    last_login_province = serializers.CharField(read_only=True, label='最后登录地点-省份')
+    last_login_city = serializers.CharField(read_only=True, label='最后登录地点-城市')
     username = serializers.CharField(read_only=True)
     email = serializers.CharField(read_only=True)
 

@@ -16,6 +16,7 @@ from django_redis import get_redis_connection
 from sheep import settings
 from sheep.constant import RET, error_map
 from apps.user.token import Token
+from apps.user.tasks import after_login
 from utils.re_compile import ReCompile
 
 User = get_user_model()
@@ -58,7 +59,7 @@ class UserModelBackend(ModelBackend):
             return False, ex.detail
         else:
             # 用户登录成功后的操作
-            user.after_login(user)
+            after_login.delay(user.id, request.u_host)
             return True, user
 
 
@@ -112,18 +113,15 @@ class TokenAuthentication(BaseAuthentication):
     def anonymity_authenticate(request):
         """匿名用户"""
         user, flag = User.objects.get_or_create(username=request.u_host, is_anonymity=True, is_active=True)
-        # 匿名用户每次访问接口都会增加一次访问记录
-        user.login_num += 1
-        user.last_login = datetime.datetime.now()
-        User.objects.filter(id=user.id).update(login_num=user.login_num,
-                                               last_login=user.last_login)
+        # 匿名用户登录之后操作
+        after_login.delay(user.id, request.u_host)
         return user, flag
 
     @staticmethod
     def user_authenticate(token, request):
         """登录用户"""
         # 后门
-        if token == '1234567890' and settings.DEVELOP:
+        if token == '1234567890' and settings.DEBUG:
             return User.objects.filter(is_admin=True).first(), token
 
         user_info = Token.unpackTk(settings.TOKEN, request, token)
@@ -139,7 +137,7 @@ class TokenAuthentication(BaseAuthentication):
         return user, token
 
 
-def authenticate(request=None, **credentials):
+def authenticate(request, **credentials):
     """
     重写authenticate方法
     """

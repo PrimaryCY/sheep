@@ -15,6 +15,7 @@ class RecordLoggingMiddleware(MiddlewareMixin):
     """
 
     def process_exception(self, request, exc):
+        logger.error('\n')
         user = getattr(request, 'user', None)
         user_id = getattr(user, 'id', '未登录')
         username = getattr(user, 'username', '未登录')

@@ -8,4 +8,6 @@ from django.dispatch import receiver
 
 @receiver(aft_ud_save, sender=User)
 def test_signals(sender, queryset=None, **kwargs):
+    # print(queryset)
+    # print(sender)
     pass

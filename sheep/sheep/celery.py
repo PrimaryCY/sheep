@@ -4,19 +4,43 @@
 from __future__ import absolute_import, unicode_literals
 
 import os
+import logging; logger = logging.getLogger('celery_logger')
 
 from celery import Celery
+from celery.signals import task_success, task_failure
 from django.conf import settings
 
-# 为celery设置环境变量
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sheep.settings')
 
-# 创建应用
 app = Celery("sheep")
 app.config_from_object('django.conf:settings', namespace='CELERY')
-# 设置app自动加载任务
-# 从已经安装的app中查找任务
 app.autodiscover_tasks(settings.INSTALLED_APPS)
+
+
+# 配置日志
+@task_success.connect
+def task_success_log(sender=None, headers=None, body=None, result=None, **kwargs):
+    logger.info('*'*80)
+    logger.info(f'sender:{sender.name}---id:{sender.request.id} success')
+    logger.info(f'headers:{headers}')
+    logger.info(f"body:{body}")
+    logger.info(f"kwargs:{kwargs}")
+    logger.info(f'result:{result}')
+    logger.info('*'*80)
+
+
+@task_failure.connect
+def task_failure_log(sender=None, headers=None, body=None,**kwargs):
+    logger.error('*'*80)
+    logger.error(f'sender:{sender.name}---id:{kwargs["task_id"]}')
+    logger.error(f'headers:{headers}')
+    logger.error(f'body:{body}')
+    logger.error(f'args:{kwargs["args"]}')
+    logger.error(f'kwargs:{kwargs["kwargs"]}')
+    logger.exception(f'traceback{kwargs["traceback"]}')
+    logger.error('*'*80)
+
 
 # 启动flower
 # celery flower -A sheep.celery --persistent=True

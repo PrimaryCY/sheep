@@ -29,6 +29,8 @@ class User(BaseModel, AbstractBaseUser):
     is_anonymity = models.BooleanField(default=False, verbose_name='匿名')
     login_num = models.IntegerField(default=0, verbose_name='登录次数')
     brief = models.CharField(max_length=200, verbose_name='个人简介', null=True)
+    last_login_province = models.CharField(max_length=12, verbose_name='上次登录省份', null=False, default='')
+    last_login_city = models.CharField(max_length=24, verbose_name='上次登录城市', null=False, default='')
 
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'username'
@@ -87,18 +89,6 @@ class User(BaseModel, AbstractBaseUser):
         if not self.password.startswith('pbkdf2_sha256$150000$'):
             self.set_password(self.password)
         super().save(force_insert, force_update, using, update_fields)
-
-    @classmethod
-    def after_login(cls, user):
-        """
-        用户成功登录后的操作
-        :return:
-        """
-        user.login_num += 1
-        user.last_login = datetime.datetime.now()
-        cls.objects.filter(id=user.id).update(login_num=user.login_num,
-                                              last_login=datetime.datetime.now())
-        return user
 
     @staticmethod
     def generate_token_data(user) -> dict:

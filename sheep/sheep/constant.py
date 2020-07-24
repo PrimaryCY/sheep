@@ -6,6 +6,7 @@ RdAllot = {
     2: 'restframework-extengsions',
     3: 'celery',
     10: '存储token',
+    11: '文章'
 }
 
 

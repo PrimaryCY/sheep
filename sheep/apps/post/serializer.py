@@ -31,7 +31,7 @@ class PostCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ["id", "name", "parent_id", "level", "desc", 'author_id', 'image', 'child', 'parent']
+        fields = ["id", "name", "parent_id", "level", "desc", 'author_id', 'child', 'parent']
 
 
 # class PostSerializer(serializers.HyperlinkedModelSerializer):
@@ -43,7 +43,7 @@ class UserPostSerializer(serializers.ModelSerializer):
     read_num = serializers.ReadOnlyField(label='浏览数量')
     like_num = serializers.ReadOnlyField(label='收藏数量')
     praise_num = serializers.ReadOnlyField(label='点赞数量')
-    is_active = serializers.ReadOnlyField(label='帖子状态')
+    status = serializers.ReadOnlyField(label='帖子状态')
     name = serializers.CharField(validators=[
         UniqueValidator(
             queryset=Post.objects.all(),
@@ -130,7 +130,7 @@ class UpdateRetrieveUserPostSerializer(UserPostSerializer):
 class UserPostReplySerializer(serializers.ModelSerializer):
     """个人中心帖子回复序列化器"""
     praise_num = serializers.ReadOnlyField(label='点赞数量')
-    is_active = serializers.ReadOnlyField(label='状态')
+    status = serializers.ReadOnlyField(label='状态')
 
     post_id = serializers.IntegerField(label='回复帖子id')
     replier_id = serializers.ReadOnlyField(label='回复用户id')
@@ -179,7 +179,7 @@ class UserPostReplySerializer(serializers.ModelSerializer):
 class PostReplySerializer(serializers.ModelSerializer):
     """帖子内回复序列化器"""
     praise_num = serializers.ReadOnlyField(label='点赞数量')
-    is_active = serializers.ReadOnlyField(label='状态')
+    status = serializers.ReadOnlyField(label='状态')
     replier_id = serializers.ReadOnlyField(label='回复用户id')
     author_id = serializers.HiddenField(default=CurrentUserIdDefault(), label='创建人')
     post_id = serializers.IntegerField(label='回复帖子id')
@@ -262,7 +262,7 @@ class PostSerializer(serializers.ModelSerializer):
     read_num = serializers.ReadOnlyField(label='浏览数量')
     like_num = serializers.ReadOnlyField(label='收藏数量')
     praise_num = serializers.ReadOnlyField(label='点赞数量')
-    is_active = serializers.ReadOnlyField(label='帖子状态')
+    status = serializers.ReadOnlyField(label='帖子状态')
     desc = serializers.ReadOnlyField(label='帖子简介')
     name = serializers.CharField(label='帖子标题')
     content_type = serializers.IntegerField(label='文章书写类型')

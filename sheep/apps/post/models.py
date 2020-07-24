@@ -17,14 +17,14 @@ class Category(MPTTModel, BaseModel):
     name = models.CharField(max_length=128, null=False, verbose_name='帖子分类')
     desc = models.CharField(max_length=512, null=True, verbose_name='分类简介')
     author_id = models.IntegerField(null=False, verbose_name='创建人', db_index=True)
-    image = models.URLField(null=True, verbose_name='分类ICON')
+    # image = models.URLField(null=True, verbose_name='分类ICON')
     parent = TreeForeignKey('self', on_delete=models.CASCADE, related_name='children',
                             verbose_name='父亲ID', null=True, blank=True)
 
     @property
     def child(self):
         """显示所有的子节点"""
-        tree = self.get_descendants().values("id", "name", "parent_id", "level", "desc", 'author_id', 'image', 'parent__name').iterator()
+        tree = self.get_descendants().values("id", "name", "parent_id", "level", "desc", 'author_id', 'parent__name').iterator()
         init = {}
         for i in tree:
             init[i['id']] = i
@@ -107,6 +107,13 @@ class Post(BaseModel):
         (1, '文章'),
         (2, '问题')
     )
+    post_status_choices = (
+        (0, '上线'),
+        (1, '用户删除'),
+        (2, '管理员删除'),
+        (3, '点赞数过低删除'),
+        (4, '内容违规')
+    )
 
     name = models.CharField(max_length=128, null=False, verbose_name='帖子标题')
     author_id = models.IntegerField(null=False, verbose_name='创建人', db_index=True)
@@ -123,6 +130,8 @@ class Post(BaseModel):
     # not_reply = models.BooleanField(default=True, verbose_name='是否可以回复')
     content_type = models.SmallIntegerField(choices=content_type_choices,verbose_name='内容类型')
     newest_user_id = models.IntegerField(null=True, verbose_name='最新回复人')
+    status = models.PositiveSmallIntegerField(choices=post_status_choices, null=False, default=0, verbose_name='文章上下线状态')
+    is_active = None
 
     @classmethod
     def get_simple_post_info(cls, post_id: int):
@@ -162,8 +171,8 @@ class Post(BaseModel):
         return cls.objects.filter(id=post_id).update(read_num=F('read_num')+1)
 
     class Meta:
-        verbose_name_plural = verbose_name = '帖子表'
-        unique_together = ('name', 'is_active',)
+        verbose_name_plural = verbose_name = '文章/问题表'
+        unique_together = ('status', 'name')
         ordering = ('-created_time',)
 
     def __str__(self):

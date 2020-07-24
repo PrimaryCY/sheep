@@ -65,6 +65,10 @@ class UserPostViewSet(ModelViewSet):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
+    def perform_destroy(self, instance):
+        instance.status = 1
+        instance.save()
+
 
 class UserReplyViewSet(ReadOnlyModelViewSet,
                        DestroyModelMixin):

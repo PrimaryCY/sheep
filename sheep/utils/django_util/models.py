@@ -26,11 +26,14 @@ class Manager(BaseManager.from_queryset(CustomQuerySet)):
 class BaseModelMange(Manager):
 
     def all(self):
-        return self.filter(is_active=True).all()
+        return self.filter().all()
 
     def filter(self, *args, **kwargs):
-        if not kwargs.get('is_active'):
+        fields = (i.name for i in self.model._meta.fields)
+        if 'is_active' in fields and not kwargs.get('is_active'):
             kwargs['is_active'] = True
+        elif 'status' in fields and not kwargs.get('status'):
+            kwargs['status'] = 0
         return super().filter(*args, **kwargs)
 
 
@@ -40,6 +43,7 @@ class BaseModel(models.Model):
     update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
     is_active = models.BooleanField(default=True, verbose_name='状态')
     objects = BaseModelMange()
+
     raw_objects = models.Manager()
 
     @classmethod

@@ -31,7 +31,9 @@ class UploadTokenSerializer(serializers.Serializer):
         q = Auth(**settings.QI_NIU_CLOUD['auth'])
         bucket = BucketManager(q)
 
-        buckets, _ = bucket.buckets()
+        # buckets, _ = bucket.buckets()
+        buckets = settings.QI_NIU_CLOUD['base_url'].keys()
+
         bucket = attrs.get('bucket')
         if bucket not in buckets:
             raise serializers.ValidationError({'code': RET.PARAMERR, 'msg': '桶不存在'})

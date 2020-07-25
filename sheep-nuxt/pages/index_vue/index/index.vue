@@ -17,13 +17,14 @@
                 type="text"
                 placeholder="请输入关键字"
                 v-model="form.keyword"
+                @keyup.enter.native="search"
               ></el-input>
           </el-col>
           <el-col :span="2">
             <div class="search-btn">
               <el-button
                 plain
-                @click="blank_push({name:'search',query:form})"
+                @click="search"
                 size="mini">
                 搜索🔍
               </el-button>
@@ -266,9 +267,21 @@
     },
     inject:['generate_url','blank_push'],
     methods: {
+      search(){
+        return this.blank_push({name:'search',query:this.form})
+      },
       initHeight() {
+        // 文章顶部栏吸顶效果
         var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
         this.isFixed = scrollTop-15 > this.offsetTop ? true : false;
+        let el = document.getElementById('boxFixed')
+        if(!el) return null;
+        if(this.isFixed){
+          let width = document.getElementsByClassName('top')[0].clientWidth
+          el.style.width = `${width}px`
+        }else {
+          el.style.width = 'initial'
+        }
       },
       async _get_next_posts(){
         this.disabled_scroll = true
@@ -325,7 +338,6 @@
     z-index: 999;
     margin: 0;
     padding: 0!important;
-    width: calc(100% - 285px);
   }
   .loading{
     position: relative;

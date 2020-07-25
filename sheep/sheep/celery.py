@@ -12,6 +12,7 @@ from django.conf import settings
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sheep.settings')
+os.environ['CELERY_RDB_HOST'] = '0.0.0.0'
 
 app = Celery("sheep")
 app.config_from_object('django.conf:settings', namespace='CELERY')

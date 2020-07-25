@@ -29,7 +29,7 @@ class BaseModelMange(Manager):
         return self.filter().all()
 
     def filter(self, *args, **kwargs):
-        fields = (i.name for i in self.model._meta.fields)
+        fields = {i.name for i in self.model._meta.fields}
         if 'is_active' in fields and not kwargs.get('is_active'):
             kwargs['is_active'] = True
         elif 'status' in fields and not kwargs.get('status'):

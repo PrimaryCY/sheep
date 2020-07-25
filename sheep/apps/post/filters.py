@@ -44,7 +44,7 @@ class AuthorPostFilter(FilterSet):
                                         method='filter_author', label='作者')
 
     def filter_author(self, qs, name, value):
-        return qs.filter(author_id=value).order_by('post_num')
+        return qs.filter(author_id=value)
 
 
 class CategoryPostFilter(FilterSet):
@@ -60,7 +60,7 @@ class CorrelationCategoryFilter(FilterSet):
                                     method='filter_id', label='id')
 
     def filter_id(self, qs, name, value):
-        c = qs.filter(id=value, level=1).only('parent').first()
+        c = qs.filter(id=value).only('parent').first()
         if not c:
             raise ValidationError({'code': RET.NODATA,'msg': error_map[RET.NODATA]})
         return c.get_siblings().only('id', 'name', 'parent_id', 'level')

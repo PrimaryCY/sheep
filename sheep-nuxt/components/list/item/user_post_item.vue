@@ -5,7 +5,7 @@
       <div v-if="post.image" class="article-image">
         <img :src="post.image">
       </div>
-      <div class="article-title-text" @click="blank_push({name:'post_detail',params:{id:post.id}})">
+      <div class="article-title-text" @click="blank_push_post_detail(post)">
         {{post.name}}
       </div>
       <span class="article-desc byline ellipsis">
@@ -13,7 +13,7 @@
       </span>
     </el-col>
   </el-row>
-  <el-row class="article-info" type="flex">
+  <el-row class="article-info">
     <el-col :span="2">
       <font_icon :type="post.post_type"></font_icon>
     </el-col>
@@ -50,7 +50,7 @@
     <el-col :span="4">
       <!--占位使用-->
     </el-col>
-    <el-col v-if="post.is_active&&editor" :span="2" class="article-btn">
+    <el-col v-if="post.status===0&&editor" :span="2" class="article-btn">
       <el-button
         plain
         type="info"
@@ -59,7 +59,7 @@
         编辑
       </el-button>
     </el-col>
-    <el-col v-if="post.is_active&&editor" :span="2" class="article-btn">
+    <el-col v-if="post.status===0&&editor" :span="2" class="article-btn">
       <el-popconfirm
         confirmButtonText='好的'
         cancelButtonText='不用了'
@@ -74,10 +74,7 @@
           slot="reference">删除</el-button>
       </el-popconfirm>
     </el-col>
-    <el-col :span="1" class="article-btn" v-if="!post.is_active">
-      <!--占位使用-->
-    </el-col>
-    <el-col :span="3" v-if="!post.is_active" class="article-btn delete_msg">
+    <el-col :span="5" v-if="post.status !== 0" class="article-btn delete_msg">
       {{ delete_text }}
     </el-col>
   </el-row>
@@ -111,12 +108,39 @@
       update_func(post){
         this.$emit('update_func', post)
       },
-
+      blank_push_post_detail(post){
+        if(post.status!==0){
+          return this.$message(`此${post.post_type===1?'文章':'问题'}已被删除!`)
+        }
+        this.blank_push({name:'post_detail',params:{id:post.id}})
+      }
     },
     inject:['blank_push'],
     computed:{
       delete_text(){
-        return this.post.post_type===1?'文章已被删除❌!':'问题已被删除❌!'
+        let text;
+        if(this.post.post_type===1){
+          if(this.post.status===1){
+            text = '文章已被您删除'
+          }else if(this.post.status===2){
+            text = '文章已被管理员删除'
+          }else if(this.post.status===3)
+            text = '由于点赞过低已被删除'
+          else if(this.post.status===4){
+            text = '由于内容违规已被删除'
+          }
+        }else {
+          if(this.post.status ===1){
+            text = '问题已被您删除'
+          } else if(this.post.status===2){
+            text = '问题已被管理员删除'
+          }else if(this.post.status===3)
+            text = '由于点赞过低已被删除'
+          else if(this.post.status===4){
+            text = '由于内容违规已被删除'
+          }
+      }
+      return `${text}❌!`
       }
     }
   }
@@ -180,6 +204,8 @@
       }
       .delete_msg{
         border: 0!important;
+        color: #F56C6C;
+        text-align: center;
       }
     }
 

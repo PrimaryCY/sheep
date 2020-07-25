@@ -162,10 +162,10 @@ STATIC_URL = '/static/'
 # 指定导出的静态文件存放目录
 STATIC_ROOT = os.path.join(BASE_DIR, 'www')
 
-# 用户上传得静态资源
+# 用户上传得静态资源, 换成七牛云,已废弃
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-# MEDIA_DIRS = ['portrait', 'post_image', 'post_mavon', 'post_tinymce']
+MEDIA_DIRS = ['portrait', 'post_image', 'post_mavon', 'post_tinymce']
 
 # 设置可以跨域访问
 CORS_ORIGIN_ALLOW_ALL = True
@@ -277,7 +277,7 @@ CACHES = {
         }
     },
     'restframework_extensions': {
-        # 不用decode_response
+        # drf-extensions不用decode_response,否则缓存数据解析会报错
         'BACKEND': "django_redis.cache.RedisCache",
         "LOCATION": REDIS_HOST + "2",
         'TIMEOUT': 2000,
@@ -522,6 +522,7 @@ if DEBUG:
 
 # 百度api
 BD_API_LOCATION_IP_URL = "http://api.map.baidu.com/location/ip"
+BD_API_TIMEOUT = 8
 BD_API_MAP_PARAMS = {
     'ak': '个人自己的ak',
 }

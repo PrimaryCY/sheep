@@ -11,6 +11,7 @@
             placeholder="请输入关键字"
             clearable
             v-model="params.search"
+            @keyup.enter.native="search"
           ></el-input>
         </el-col>
         <el-col :span="2">

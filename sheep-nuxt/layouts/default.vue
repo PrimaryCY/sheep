@@ -37,5 +37,21 @@
     font-size: 10px!important;
   }
 
+  /*修改vue star组件定位问题*/
+  .VueStar{
+    /*float: left;*/
+    display: inline-block;
+  }
+  .VueStar__ground,.VueStar{
+    position: initial!important;
+    width: initial!important;
+    height: initial!important;
+  }
+  .VueStar__decoration{
+    left: initial!important;
+    top: initial!important;
+    bottom: initial!important;
+    right: initial!important;
+  }
 
 </style>

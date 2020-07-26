@@ -16,7 +16,7 @@ module.exports = {
     ],
     script:[
       {src:"http://libs.baidu.com/jquery/1.8.3/jquery.min.js"},
-      {src:"http://at.alicdn.com/t/font_1739386_djqkvttbch.js"}
+      {src:"http://at.alicdn.com/t/font_1739386_b1v0j57qmu8.js"}
     ],
     bodyAttrs:{
         class:'left-sidebar is-desktop is-1200px'
@@ -51,7 +51,6 @@ module.exports = {
     {src:'~/plugins/vue-infinite-scroll',ssr:false},
     {src:'~/plugins/axios',ssr:true},
     {src:'@/plugins/util',ssr:true},
-    {src:'~/plugins/vue-star',ssr:false},
   ],
   router: {
     // middleware: 'user_auth'    // 是js文件名字

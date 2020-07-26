@@ -24,7 +24,13 @@ class CollectCategorySerializer(serializers.ModelSerializer):
     # )
     user_id = serializers.HiddenField(default=CurrentUserIdDefault(), label='用户')
     is_active = serializers.ReadOnlyField(label='状态')
-    resource_num = serializers.ReadOnlyField(label='资源数量')
+    is_show = serializers.BooleanField(label='是否可见', required=False)
+    image = serializers.URLField(label='封面图片', required=False)
+    desc = serializers.CharField(label='描述', default='')
+    total = serializers.SerializerMethodField(label='文章总和')
+
+    def get_total(self, obj):
+        return Collect.objects.filter(category_id=obj.id).only('id').count()
 
     class Meta:
         model = CollectCategory

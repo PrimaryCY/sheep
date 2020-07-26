@@ -18,26 +18,137 @@
                     <svg class="icon-mid"  aria-hidden="true">
                       <use xlink:href="#icon-liulan"></use>
                     </svg>
-                    {{data.read_num}}
+                    <span>
+                      {{data.read_num}}
+                    </span>
                   </div>
                 </el-col>
                 <el-col :span="4">
-                  <div class="on pointer cancel-select">
+                  <div class="on cancel-select">
                     <no-ssr>
-                      <vue-star animate="animated bounceIn" color="#b53c57">
-                        <svg class="icon-mid" slot="icon" style="width: 18px;height: 20px;vertical-align: sub" aria-hidden="true">
+                      <star
+                              ref="praise"
+                              animate="animated bounceIn"
+                              color="#b53c57">
+                        <svg class="icon-mid pointer compatibility-icon" slot="icon"
+                             @click="click_praise_or_tread(1)"
+                             aria-hidden="true">
                           <use xlink:href="#icon-icon_likegood"></use>
                         </svg>
-                      </vue-star>
+                      </star>
                     </no-ssr>
-                    <p style="display: inline-block">&nbsp;{{data.post_num}}</p>
-
+                    <span>&nbsp;{{data.praise_num}}&nbsp;</span>
+                    <no-ssr>
+                      <star
+                              ref="tread"
+                              animate="animated bounceIn"
+                              color="#b53c57">
+                        <svg class="icon-mid pointer compatibility-icon"
+                             slot="icon"
+                             @click="click_praise_or_tread(2)"
+                             aria-hidden="true">
+                          <use xlink:href="#icon-icon_likegood"></use>
+                        </svg>
+                      </star>
+                    </no-ssr>
                   </div>
                 </el-col>
+                <el-col :span="2">
+                  <div class="on cancel-select">
+                    <svg class="icon-mid compatibility-icon"
+                         aria-hidden="true">
+                      <use xlink:href="#icon-icon_community_line"></use>
+                    </svg>
+                    <span>
+                      {{data.post_num}}
+                    </span>
+                  </div>
+                </el-col>
+                <el-col :span="2">
+                  <div class="on cancel-select">
+                        <star
+                                ref="like"
+                                animate="animated bounceIn"
+                                color="#b53c57">
+                          <el-popover
+                                  placement="bottom"
+																	slot="icon"
+                                  popper-class="clear-padding"
+                                  v-model="like_dialog"
+                                  :visible-arrow="false"
+                                  @click.native.stop="click_like"
+                                  width="260">
+                            <div class="like-dialog">
+                              <div class="list">
+                                <el-row
+                                        class="item pointer"
+                                        type="flex"
+                                        tabindex="0"
+                                        v-for="i in collect" :key="i.id">
+                                  <el-col :span="3">
+                                    <img :src="i.image">
+                                  </el-col>
+                                  <el-col :span="17" :offset="1">
+                                    <div class="ellipsis">
+                                      {{i.name}}
+                                    </div>
+                                    <font_icon  v-if="i.is_show" :type="5">
+                                    </font_icon>
+                                    <font_icon  v-else :type="6">
+                                    </font_icon>
+                                  </el-col>
+                                  <el-col :span="3">
+                                  <span class="ellipsis" style="text-align: center">
+                                  {{i.total}}
+                                  </span>
+                                  </el-col>
+                                </el-row>
 
-                <el-col :span="5" :offset="9">
+                              </div>
+                              <div class="add-like-category">
+                                <el-button v-show="!collect_form.flag"
+                                           size="mini"
+                                           type="text"
+                                           @click="collect_form.flag=!collect_form.flag">
+                                  新增收藏集
+                                </el-button>
+                                <div v-show="collect_form.flag" >
+                                  <el-row type="flex">
+                                    <el-col :span="18">
+                                      <el-input size="mini"
+                                                class="like-input"
+                                                placeholder="输入收藏集名称..."
+                                                v-model="collect_form.name"
+                                                type="text"></el-input>
+                                    </el-col>
+                                    <el-col :span="6">
+                                      <el-button size="mini"
+                                                 type="text"
+                                                 :disabled="collect_form.name.length===0"
+                                                 @click="create_like_category">
+                                        新增
+                                      </el-button>
+                                    </el-col>
+                                  </el-row>
+                                </div>
+                              </div>
+                            </div>
+                            <svg class="icon-mid compatibility-icon pointer"
+                                 slot="reference"
+                                 aria-hidden="true">
+                              <use xlink:href="#icon-shoucang"></use>
+                            </svg>
+                          </el-popover>
+
+                        </star>
+                    <span>
+                      {{data.like_num}}
+                    </span>
+                  </div>
+                </el-col>
+                <el-col :span="5" :offset="5">
                 <span class="byline">
-                  发布时间:{{data.created_time}}
+                  分类:{{data.category}}
                 </span>
                 </el-col>
                 <el-col :span="1">
@@ -47,7 +158,7 @@
                 </el-col>
                 <el-col :span="5">
                 <span class="byline">
-                更新时间:{{data.update_time}}
+                  发布于&nbsp;{{data.created_time}}
                 </span>
                 </el-col>
               </el-row>
@@ -57,7 +168,11 @@
           <div class="article-content-wrap">
             <div  class="article-content" v-html="data.html_content">
             </div>
+            <div class="updatetime-text">
+              -------------&nbsp;&nbsp;&nbsp;最后更新于&nbsp;{{data.update_time}}
+            </div>
             <el-divider></el-divider>
+
             <no-ssr placeholder="Loading...">
               <tinymce-editor v-model="reply_form.html_content"
                               ref="tinymce"
@@ -132,11 +247,18 @@
   import {mapState } from 'vuex'
   // import VueStar from 'vue-star'
 
-  import {api_post, api_category_post, api_correlation_category, api_author_post} from '../../../api'
+  import {api_post,
+    api_category_post,
+    api_user_collect_category,
+    api_correlation_category,
+    api_author_post} from '../../../api'
   import tinymceEditor from '../../../components/Tinymce/tinymce-editor'
   import post_detail_list from '../../../components/list/post-detail-list'
-  import post_detail_item from '../../../components/list/item/post-detail-item'
+  import post_detail_item from '@/components/list/item/post-detail-item'
+  import font_icon from '@/components/small/font_icon'
+  import star from '@/components/common/star'
   import {get_tree_first_node} from '../../../utils/util'
+
 
   export default {
     head:{
@@ -164,19 +286,28 @@
         category_post:{     //相同分类下文章
           results:[]
         },
+        collect:[],        //用户收藏类别列表
+        collect_form:{    //新增收藏集表单
+          name:'',
+          flag:false      //是否展示新增类别输入框
+        },
         isFixed:false,    //吸顶
         offsetTop: 0,     //吸顶
         not_found_page: false, //是否展示404页面
+        like_dialog:false ,    // 点击收藏的dialog
       }
     },
     components:{
       tinymceEditor,
 			post_detail_list,
       post_detail_item,
+      star,
+      font_icon
     },
     computed:{
-      ...mapState(['pack_up'])
+      ...mapState(['pack_up', 'user'])
     },
+    inject:['blank_push'],
     async asyncData(context){
       let id,post_res,detail_recommend_list
       id = context.params.id
@@ -212,6 +343,56 @@
       return return_dict
     },
     methods:{
+      click_praise_or_tread(flag){
+        // 点餐或者踩, flag=1为点赞,flag=2为踩
+        if(flag===1){
+          if(this.$refs['tread'].active){
+            this.$refs['tread'].toggle()
+          }
+
+        }else if(flag===2){
+          if(this.$refs['praise'].active){
+            this.$refs['praise'].toggle()
+          }
+        }
+      },
+      async click_like(){
+        if(!this.user.username){
+          this.like_dialog = false
+          return this.blank_push({'name':'login'})
+        }
+        let collect = await api_user_collect_category.list()
+        collect = collect.data
+        if(collect.code!==2000){
+          this.custom_notify(collect.msg)
+          this.like_dialog = false
+          return null
+        }
+        this.collect = collect.data
+      },
+      custom_notify(msg){
+        this.$notify({
+          message:`<strong>${msg}</strong>`,
+          dangerouslyUseHTMLString:true,
+          showClose:true
+        })
+      },
+      async create_like_category(){
+        let loading = this.openLoading({
+          text:'创建中...',
+          target:'.like-dialog'
+        })
+        let res = await api_user_collect_category.create(this.collect_form)
+        res = res.data
+        if(res.code!==2000){
+          loading.close()
+          return this.custom_notify(res.msg)
+        }
+        this.collect_form.name = ''
+        this.collect_form.flag = !this.collect_form.flag
+        this.collect.unshift(res.data)
+        loading.close()
+      },
       initHeight() {
         // 文章顶部栏吸顶效果
         var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
@@ -259,6 +440,55 @@
 
 <style scoped lang="scss">
 
+  .like-dialog{
+    font-size: 12px;
+    text-align: left;
+    margin-top: 6px;
+    .add-like-category{
+      text-align: center;
+
+      font-size: 12px;
+      border-top: 1px solid #EBEEF5;
+      button{
+        height: 35px;
+        color: #d2d2d2;
+      }
+      .like-input{
+        height: 100%;
+        /deep/ input{
+          height: 100% !important;
+        }
+      }
+    }
+    .list{
+      max-height: 300px;
+      overflow-y: auto;
+      padding-bottom: 35px;
+      .item{
+        padding: 8px 10px;
+        img{
+          width: 30px;
+          height: 30px;
+          vertical-align: middle;
+        }
+      }
+      .item:hover{
+        background-color: #f5f7fa;
+      }
+      .item:focus{
+        background-color: #ecf5ff;
+        outline: 0;
+        /*outline: -webkit-focus-ring-color auto 1px;*/
+      }
+    }
+
+    .add-like-category:hover{
+      button{
+        color: #007fff;
+      }
+    }
+
+  }
   /* 吸顶 */
   .is_fixed{
     position: fixed;
@@ -271,6 +501,13 @@
       margin-top: 5px;
       margin-bottom: initial!important;
     }
+  }
+  /*更新日期文字样式*/
+  .updatetime-text{
+    font-size: 12px;
+    text-align: right;
+    font-weight: 600;
+    color: #999;
   }
   .el-divider--horizontal{
     margin-top: 5px;
@@ -302,9 +539,20 @@
               svg{
                 vertical-align: bottom;
               }
+              span{
+                display: inline-block;
+                min-width: 20px;
+              }
+              .compatibility-icon{
+                margin-top: 2px;
+                width: 18px;
+                height: 18px;
+                vertical-align: sub;
+              }
             }
             .byline{
               text-align: right;
+              font-weight: 600;
             }
             .divider{
               margin-top: 1em;

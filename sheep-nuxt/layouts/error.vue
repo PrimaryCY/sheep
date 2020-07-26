@@ -9,6 +9,8 @@
 </template>
 
 <script>
+  import settings from '@/conf/settings'
+
   export default {
     data(){
       return {
@@ -50,11 +52,11 @@
       }
     },
     mounted() {
-      this.timer = setInterval(this._timed_task, 1000);
+      if(!settings.DEBUG){
+        this.timer = setInterval(this._timed_task, 1000);
+        this.$once('hook:beforeDestroy', () => clearInterval(this.timer))
+      }
     },
-    beforeDestroy() {
-      clearInterval(this.timer);
-    }
   }
 </script>
 

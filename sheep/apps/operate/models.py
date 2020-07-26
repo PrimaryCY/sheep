@@ -1,3 +1,5 @@
+import random
+
 from django.db import models
 from django.db.models import F
 
@@ -20,15 +22,31 @@ TYPE_SERIALIZER_MAPPING = {
 
 class CollectCategory(BaseModel):
     """收藏类别表"""
+    default_images = [
+        'https://imgconvert.csdnimg.cn/aHR0cHM6Ly91c2VyLWdvbGQtY2RuLnhpdHUuaW8vY29sbGVjdGlvbi9kZWZhdWx0LWltYWdlcy83LmpwZw?x-oss-process=image/format,png',
+        'https://imgconvert.csdnimg.cn/aHR0cHM6Ly91c2VyLWdvbGQtY2RuLnhpdHUuaW8vY29sbGVjdGlvbi9kZWZhdWx0LWltYWdlcy81LmpwZw?x-oss-process=image/format,png',
+        'https://imgconvert.csdnimg.cn/aHR0cHM6Ly91c2VyLWdvbGQtY2RuLnhpdHUuaW8vY29sbGVjdGlvbi9kZWZhdWx0LWltYWdlcy8xOS5qcGc?x-oss-process=image/format,png'
+    ]
     user_id = models.PositiveIntegerField(verbose_name='用户id', db_index=True)
     name = models.CharField(max_length=128, verbose_name='收藏类别名称')
-    desc = models.CharField(max_length=512, verbose_name='收藏类别描述')
+    image = models.URLField(null=False, verbose_name='收藏类别封面')
+    desc = models.CharField(max_length=512, null=False, verbose_name='收藏类别描述')
     is_show = models.BooleanField(default=True, verbose_name='是否展示')
-    resource_num = models.PositiveIntegerField(default=0, verbose_name='收藏资源数量')
+
+    def __init__(self, *args, **kwargs):
+        kwargs = self.set_default(kwargs)
+        super().__init__(*args, **kwargs)
+
+    def set_default(self, attr):
+        image = attr.get('image')
+        if not image:
+            attr['image'] = random.choice(self.default_images)
+
+        return attr
 
     class Meta:
         verbose_name_plural = verbose_name = '用户收藏帖子类别表'
-        ordering = ('-update_time', '-created_time',)
+        ordering = ('-created_time',)
 
     def __str__(self):
         return self.name

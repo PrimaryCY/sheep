@@ -9,7 +9,7 @@ from rest_framework.mixins import ListModelMixin
 from rest_framework.settings import api_settings
 from rest_framework.viewsets import GenericViewSet
 
-from apps.operate.filters import CollectCategoryFilter, CollectFilter, PraiseFilter
+from apps.operate.filters import CollectFilter, PraiseFilter
 from apps.user.serializer import ListCreateUserSerializer
 from utils.mixins import CreateModelMixin
 from utils.pagination import LimitOffsetPagination
@@ -25,22 +25,23 @@ User = get_user_model()
 class UserCollectCategoryViewSet(ModelViewSet):
     """用户收藏类别视图"""
     serializer_class = CollectCategorySerializer
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = CollectCategoryFilter
-    queryset = CollectCategory.objects.all()
+    filter_backends = (SearchFilter,)
+    search_fields = ('name', )
 
     def get_queryset(self):
-        # 当用户请求不是get时候,只能对用户自己的资源进行操作
-        if self.request.method != 'GET':
-            self.request.GET._mutable = True
-            self.request.query_params['user_id'] = self.request.user.id
-            self.request.GET._mutable = False
-        return self.queryset
+        # 当用户请求不是get时候或者没有传递user_id参数时,
+        # 只能对用户自己的资源进行操作
+        # if not self.request.query_params.get('user_id') or \
+        #         self.request.method != 'GET':
+        #     self.request.GET._mutable = True
+        #     self.request.query_params['user_id'] = self.request.user.id
+        #     self.request.GET._mutable = False
+        return CollectCategory.objects.filter(user_id=self.request.user.id).all()
 
-    def get_permissions(self):
-        if self.action in {'list', 'retrieve'}:
-            return ()
-        return (i() for i in api_settings.DEFAULT_PERMISSION_CLASSES)
+    # def get_permissions(self):
+    #     if self.action in {'list', 'retrieve'}:
+    #         return ()
+    #     return (i() for i in api_settings.DEFAULT_PERMISSION_CLASSES)
 
 
 class CollectCategoryViewSet(ReadOnlyModelViewSet):

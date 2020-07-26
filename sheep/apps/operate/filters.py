@@ -10,21 +10,21 @@ from utils.util import sort_queryset
 
 User = get_user_model()
 
-
-class CollectCategoryFilter(filters.FilterSet):
-    user_id = filters.NumberFilter(method='filter_user_id', label='用户id')
-
-    def filter_user_id(self, queryset, name, value):
-        # 当筛选用户是自己时, 展示自己的所有收藏分类
-        if value == self.request.user.id or self.request.method != 'GET':
-            return queryset.filter(user_id=value).all()
-        # 当用户在看他人的收藏类别时, 展示他人想展示的收藏分类
-        else:
-            return queryset.filter(user_id=value, is_show=True).all()
-
-    class Meta:
-        model = CollectCategory
-        fields = ('user_id',)
+#
+# class CollectCategoryFilter(filters.FilterSet):
+#     # user_id = filters.NumberFilter(method='filter_user_id', label='用户id', required=True)
+#     #
+#     # def filter_user_id(self, queryset, name, value):
+#     #     # 当筛选用户是自己时, 展示自己的所有收藏分类
+#     #     if value == self.request.user.id:
+#     #         return queryset.filter(user_id=value).all()
+#     #     # 当用户在看他人的收藏类别时, 展示他人想展示的收藏分类
+#     #     else:
+#     #         return queryset.filter(user_id=value, is_show=True).all()
+#
+#     class Meta:
+#         model = CollectCategory
+#         fields = ('',)
 
 
 class CollectFilter(filters.FilterSet):

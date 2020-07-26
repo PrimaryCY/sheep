@@ -58,7 +58,10 @@ export const api_feedback=common_crud('/v1/feedback/')
 获取远端公共配置
  */
 export const api_option=common_crud('/v1/option/')
-
+/*
+收藏分类
+*/
+export const api_user_collect_category=common_crud('/v1/web/user_collect_category')
 
 
 /*

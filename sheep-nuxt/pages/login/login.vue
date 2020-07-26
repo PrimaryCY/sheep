@@ -182,7 +182,7 @@
 					if(this.loginData.remember_me){
 						this.$cookies.secure_set('un',data.email_or_phone,{maxAge:this.$settings.TOKEN_EXPIRE})
 					}
-					this.$router.replace('/index')
+					this.$router.replace({'name':'index'})
 				}else if(res.msg.indexOf('邮箱') !== -1) {
 					this.loginError.email_or_phone=res.msg
 				}else if(res.msg.indexOf('密码') !== -1){
@@ -218,7 +218,6 @@
 					pwd.length !== 0 && email_or_phone.length !== 0
 				));
 			},
-
 			// 注册相关
 			async register(){
 				const loading = this.openLoading({

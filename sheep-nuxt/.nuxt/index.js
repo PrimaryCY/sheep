@@ -20,7 +20,6 @@ import nuxt_plugin_element_0d2eee9a from 'nuxt_plugin_element_0d2eee9a' // Sourc
 import nuxt_plugin_vueinfinitescroll_18d3fb29 from 'nuxt_plugin_vueinfinitescroll_18d3fb29' // Source: ..\\plugins\\vue-infinite-scroll (ssr: false)
 import nuxt_plugin_axios_3566aa80 from 'nuxt_plugin_axios_3566aa80' // Source: ..\\plugins\\axios
 import nuxt_plugin_util_925ee814 from 'nuxt_plugin_util_925ee814' // Source: ..\\plugins\\util
-import nuxt_plugin_vuestar_9db6b0a2 from 'nuxt_plugin_vuestar_9db6b0a2' // Source: ..\\plugins\\vue-star (ssr: false)
 
 
 // Component: <no-ssr>
@@ -175,7 +174,6 @@ async function createApp (ssrContext) {
     if (typeof nuxt_plugin_vueparticles_b91bd920 === 'function') await nuxt_plugin_vueparticles_b91bd920(app.context, inject)
     if (typeof nuxt_plugin_nprogress_2ce44436 === 'function') await nuxt_plugin_nprogress_2ce44436(app.context, inject)
     if (typeof nuxt_plugin_vueinfinitescroll_18d3fb29 === 'function') await nuxt_plugin_vueinfinitescroll_18d3fb29(app.context, inject)
-    if (typeof nuxt_plugin_vuestar_9db6b0a2 === 'function') await nuxt_plugin_vuestar_9db6b0a2(app.context, inject)
   }
 
   // If server-side, wait for async component to be resolved first

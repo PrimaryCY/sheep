@@ -90,6 +90,7 @@
     - crypto-js
     - vue-infinite-scroll
     - qiniu-js
+    - vue-star
 
 ---
 

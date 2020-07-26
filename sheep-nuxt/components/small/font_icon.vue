@@ -23,6 +23,18 @@
       </svg>
       <span>未回复</span>
     </div>
+		<div v-else-if="type===5" class="base visible">
+			<svg class="icon-min" aria-hidden="true">
+				<use xlink:href="#icon-like-visable-copy"></use>
+			</svg>
+			<span>可见</span>
+		</div>
+		<div v-else-if="type===6" class="base disabled">
+			<svg class="icon-min" aria-hidden="true">
+				<use xlink:href="#icon-like-disable-copy"></use>
+			</svg>
+			<span>不可见</span>
+		</div>
 </template>
 
 <script>
@@ -66,6 +78,15 @@
       background-color: #b02727;
       font-size: 10.5px;
     }
-
+		.visible{
+			font-size: 9px;
+			padding: 2px;
+			background-color: #b02727;
+		}
+		.disabled{
+			font-size: 9px;
+			padding: 2px;
+			background-color: #364050;
+		}
 
 </style>

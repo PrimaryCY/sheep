@@ -47,7 +47,7 @@
                              slot="icon"
                              @click="click_praise_or_tread(2)"
                              aria-hidden="true">
-                          <use xlink:href="#icon-icon_likegood"></use>
+                          <use xlink:href="#icon-cai-copy"></use>
                         </svg>
                       </star>
                     </no-ssr>
@@ -66,13 +66,14 @@
                 </el-col>
                 <el-col :span="2">
                   <div class="on cancel-select">
-                        <star
-                                ref="like"
-                                animate="animated bounceIn"
-                                color="#b53c57">
+                    <star
+                            ref="like"
+                            animate="animated bounceIn"
+                            color="#b53c57">
+
                           <el-popover
                                   placement="bottom"
-																	slot="icon"
+                                  slot="icon"
                                   popper-class="clear-padding"
                                   v-model="like_dialog"
                                   :visible-arrow="false"
@@ -82,13 +83,15 @@
                               <div class="list">
                                 <el-row
                                         class="item pointer"
+                                        :class="{is_like:i.is_like}"
                                         type="flex"
                                         tabindex="0"
+                                        @click.native="add_or_del_like(i)"
                                         v-for="i in collect" :key="i.id">
                                   <el-col :span="3">
                                     <img :src="i.image">
                                   </el-col>
-                                  <el-col :span="17" :offset="1">
+                                  <el-col :span="15" :offset="1">
                                     <div class="ellipsis">
                                       {{i.name}}
                                     </div>
@@ -97,19 +100,25 @@
                                     <font_icon  v-else :type="6">
                                     </font_icon>
                                   </el-col>
-                                  <el-col :span="3">
-                                  <span class="ellipsis" style="text-align: center">
-                                  {{i.total}}
-                                  </span>
+                                  <el-col :span="6">
+                                  <div class="ellipsis" style="text-align: center">
+                                    <el-rate
+                                          :value="Number(i.is_like)"
+                                          disabled
+                                          :colors="{1:'#b53c57'}"
+																					show-score
+                                          :score-template="`${i.total}`"
+                                          :max="1">
+                                    </el-rate>
+                                  </div>
                                   </el-col>
                                 </el-row>
-
                               </div>
                               <div class="add-like-category">
                                 <el-button v-show="!collect_form.flag"
                                            size="mini"
                                            type="text"
-                                           @click="collect_form.flag=!collect_form.flag">
+                                           @click="click_add_category_btn">
                                   新增收藏集
                                 </el-button>
                                 <div v-show="collect_form.flag" >
@@ -117,8 +126,10 @@
                                     <el-col :span="18">
                                       <el-input size="mini"
                                                 class="like-input"
+                                                ref="like-input"
                                                 placeholder="输入收藏集名称..."
                                                 v-model="collect_form.name"
+																								@keyup.enter.native="create_like_category"
                                                 type="text"></el-input>
                                     </el-col>
                                     <el-col :span="6">
@@ -133,13 +144,13 @@
                                 </div>
                               </div>
                             </div>
-                            <svg class="icon-mid compatibility-icon pointer"
-                                 slot="reference"
-                                 aria-hidden="true">
-                              <use xlink:href="#icon-shoucang"></use>
+                            <svg
+                                    slot="reference"
+                                    class="icon-mid compatibility-icon pointer"
+                                    aria-hidden="true">
+                              <use xlink:href="#icon-shoucang1"></use>
                             </svg>
                           </el-popover>
-
                         </star>
                     <span>
                       {{data.like_num}}
@@ -249,6 +260,7 @@
 
   import {api_post,
     api_category_post,
+    api_user_collect,
     api_user_collect_category,
     api_correlation_category,
     api_author_post} from '../../../api'
@@ -305,14 +317,14 @@
       font_icon
     },
     computed:{
-      ...mapState(['pack_up', 'user'])
+      ...mapState(['pack_up', 'user']),
     },
     inject:['blank_push'],
     async asyncData(context){
       let id,post_res,detail_recommend_list
       id = context.params.id
       let return_dict = {}
-      // try {
+      try {
         post_res = await api_post.retrieve(id)
         post_res = post_res.data
 
@@ -336,15 +348,15 @@
 					return_dict['author_post'] = au_post_res.data.data;
 					return_dict['category_post'] = cate_post_res.data.data;
         }
-      // }catch(e)
-      // {
-        // context.error({statusCode:500,message:'ssr internal server error'})
-      // }
+      }catch(e)
+      {
+        context.error({statusCode:500,message:'ssr internal server error'})
+      }
       return return_dict
     },
     methods:{
       click_praise_or_tread(flag){
-        // 点餐或者踩, flag=1为点赞,flag=2为踩
+        // 点赞或者踩, flag=1为点赞,flag=2为踩
         if(flag===1){
           if(this.$refs['tread'].active){
             this.$refs['tread'].toggle()
@@ -356,12 +368,46 @@
           }
         }
       },
+      async add_or_del_like(category){
+        // 用户收藏与取消收藏
+        let res = await api_user_collect.create({
+          resource_id:this.data.id,
+          category_id:category.id,
+        })
+        res = res.data
+        if(res.code!==2000){
+          return this.custom_notify(res.msg)
+        }
+        category.is_like=!category.is_like
+				this.custom_notify(res.data)
+        if(category.is_like){
+          category.total++
+          this.data.like_num++
+          this.data.is_like=true
+        }else {
+          category.total--
+          this.data.like_num--
+          let flag
+          for(let i of this.collect){
+            if(i.is_like){
+              flag = true
+              break
+            }
+            flag = false
+          }
+          this.data.is_like = flag
+        }
+        this.like_dialog = !this.like_dialog
+      },
       async click_like(){
+        // 点击收藏星星图标
         if(!this.user.username){
           this.like_dialog = false
           return this.blank_push({'name':'login'})
         }
-        let collect = await api_user_collect_category.list()
+        let collect = await api_user_collect_category.list({
+          resource_id: this.data.id,
+          type:1 })
         collect = collect.data
         if(collect.code!==2000){
           this.custom_notify(collect.msg)
@@ -374,7 +420,7 @@
         this.$notify({
           message:`<strong>${msg}</strong>`,
           dangerouslyUseHTMLString:true,
-          showClose:true
+          showClose:true,
         })
       },
       async create_like_category(){
@@ -420,10 +466,23 @@
           this.correlation_category = corr_res.data.data;
           this.category_post = cate_post_res.data.data;
         }
-      }
+      },
+      _pre_like_parise(){
+        // 页面加载预处理
+        if(!this.$refs['like'])return
+        this.$refs['like'].status = this.data.is_like
+      },
+      click_add_category_btn(){
+        // 点击新增收藏集按钮
+        this.collect_form.flag=!this.collect_form.flag
+        this.$nextTick(()=>{
+          this.$refs['like-input'].focus()
+        })
+      },
     },
     async created(){
       await this._get_404_data()
+      this._pre_like_parise()
     },
     mounted() {
       window.addEventListener('scroll', this.initHeight);
@@ -435,6 +494,15 @@
     destroyed() {
       window.removeEventListener('scroll', this.handleScroll)
     },
+    watch:{
+      "data.is_like":{
+        deep:true,
+        handler:function(n){
+          if(!this.$refs['like'])return
+          this.$refs['like'].status = n
+        }
+      }
+    }
   }
 </script>
 
@@ -466,20 +534,22 @@
       padding-bottom: 35px;
       .item{
         padding: 8px 10px;
+        outline: 0;
         img{
           width: 30px;
           height: 30px;
           vertical-align: middle;
         }
       }
+      .is_like{
+        background-color: #ecf5ff;
+      }
       .item:hover{
         background-color: #f5f7fa;
       }
-      .item:focus{
-        background-color: #ecf5ff;
-        outline: 0;
+      /*.item:focus{*/
         /*outline: -webkit-focus-ring-color auto 1px;*/
-      }
+      /*}*/
     }
 
     .add-like-category:hover{

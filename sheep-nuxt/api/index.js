@@ -62,7 +62,10 @@ export const api_option=common_crud('/v1/option/')
 收藏分类
 */
 export const api_user_collect_category=common_crud('/v1/web/user_collect_category')
-
+/*
+用户收藏
+ */
+export const api_user_collect=common_crud('/v1/web/user_collect')
 
 /*
 * 上传文件接口

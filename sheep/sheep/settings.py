@@ -64,10 +64,10 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.gzip.GZipMiddleware',
+    # 'django.middleware.gzip.GZipMiddleware',
     'django.middleware.security.SecurityMiddleware',
     # 'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    # 'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     # 'django.contrib.auth.middleware.AuthenticationMiddleware',
     # 'django.contrib.messages.middleware.MessageMiddleware',
@@ -108,8 +108,9 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': 'oracle',
         # 使用mysql的innodb引擎,MyISAM虽快但没有事务rollback
-        'OPTIONS': {'init_command': 'SET default_storage_engine=INNODB;',
-                    'charset': 'utf8mb4', },
+        'OPTIONS': {
+            # 'init_command': 'SET default_storage_engine=INNODB;',
+            'charset': 'utf8mb4', },
         "CONN_MAX_AGE": 600,
         'TEST': {
             'CHARSET': 'utf8mb4',
@@ -304,7 +305,7 @@ CACHES = {
             },
         }
     },
-    'post': {
+    'operate': {
         'BACKEND': "django_redis.cache.RedisCache",
         "LOCATION": REDIS_HOST + "11",
         'TIMEOUT': 2000,
@@ -321,7 +322,7 @@ CACHES = {
 }
 from django_redis import get_redis_connection
 USER_REDIS = get_redis_connection('user')
-POST_REDIS = get_redis_connection('post')
+OPERATE_REDIS = get_redis_connection('operate')
 
 # celery配置
 CELERY_BROKER_BACKEND = "redis"
@@ -420,7 +421,7 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
@@ -487,7 +488,7 @@ LOGGING = {
             'propagate': False,
         },
         'django.db.backends': {
-            'handlers': [],
+            'handlers': ['console'] if os.environ.get('PYCHARM_CONSOLE') else [],
             'level': 'DEBUG',
             'propagate': False,
         },
@@ -508,7 +509,6 @@ LOGGING = {
         },
     }
 }
-
 
 if DEBUG:
     EXTRA_MIDDLEWARE = [

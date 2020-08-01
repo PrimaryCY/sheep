@@ -17,6 +17,8 @@ import feedback from './pages/index_vue/feedback/feedback'
 import not_found from './pages/index_vue/not_found/not_found'
 import post_detail from './pages/index_vue/post_detail/post_detail'
 import search from './pages/index_vue/search/search'
+import my_collect from './pages/index_vue/my_collect/my_collect'
+import my_collect_detail from './pages/index_vue/my_collect_detail/my_collect_detail'
 
 // import NotFound from './views/notFound/notFound'
 import test from './pages/test'
@@ -86,6 +88,22 @@ const routes = [
             name:'search',
             component:search,
             meta:{
+            }
+          },
+          {
+            path:'my-collect',
+            name:'my_collect',
+            component:my_collect,
+            meta:{
+              is_login:true
+            }
+          },
+          {
+            path:'my-collect/:id',
+            name:'my_collect_detail',
+            component:my_collect_detail,
+            meta:{
+              is_login:true
             }
           },
           {

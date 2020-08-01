@@ -74,7 +74,7 @@ export default function (context, inject) {
         NProgress.done()
       }
 
-      // return Promise.reject(error)
+      return Promise.reject(error)
     }
   )
 }

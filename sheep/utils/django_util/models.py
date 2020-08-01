@@ -19,11 +19,7 @@ class CustomQuerySet(QuerySet):
         return rows
 
 
-class Manager(BaseManager.from_queryset(CustomQuerySet)):
-    pass
-
-
-class BaseModelMange(Manager):
+class BaseModelMange(BaseManager.from_queryset(CustomQuerySet)):
 
     def all(self):
         return self.filter().all()

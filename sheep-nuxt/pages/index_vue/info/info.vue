@@ -277,7 +277,7 @@
 				})
 				let portrait_res = await api_upload.upload(this.uploadData)
 				if(portrait_res.data.code!==2000){
-					this.$message(portrait_res.data.msg)
+					this.$message('上传失败!请重试!')
 					loading.close()
 					return
 				}

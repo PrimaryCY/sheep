@@ -46,7 +46,17 @@
       },
       ColorValue () {
         return this.toggleColor ? this.color : ''
-      }
+      },
+			status:{
+        get(){
+          return this.active
+				},
+				set(val){
+          this.active = val
+          this.toggleAnimate = val
+          this.toggleColor = val
+				}
+			}
     },
     mounted () {
       if (this.color) {

@@ -108,9 +108,9 @@
 									</svg>
 									个人中心
 								</a></li>
-								<li><a href="#">
+								<li :class="{current_page_item:active==='/my-collect'}" @click.prevent="push('/my-collect')"><a href="#">
 									<svg class="icon-min" aria-hidden="true">
-										<use xlink:href="#icon-shoucang"></use>
+										<use xlink:href="#icon-sidebar-shoucang-copy"></use>
 									</svg>
 									我的收藏
 								</a></li>

@@ -16,7 +16,7 @@ module.exports = {
     ],
     script:[
       {src:"http://libs.baidu.com/jquery/1.8.3/jquery.min.js"},
-      {src:"http://at.alicdn.com/t/font_1739386_b1v0j57qmu8.js"}
+      {src:"http://at.alicdn.com/t/font_1739386_3bmedkb9dpo.js"}
     ],
     bodyAttrs:{
         class:'left-sidebar is-desktop is-1200px'

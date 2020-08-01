@@ -12,14 +12,17 @@ from celery.contrib import rdb
 from django.conf import settings
 from django.db.models import F
 
+from apps.operate.models import CollectCategory
 from apps.user.models import User
 
 
-@shared_task()
-def test(arg=1):
-    result = None
+@shared_task(bind=True)
+def test(self, arg=1):
+    ...
+    result = 1000000
     # 断点调试
-    rdb.set_trace()
+    # if settings.DEBUG:
+    #     rdb.set_trace()
     print(User.objects.all().first().username)
     print('finish')
     return result
@@ -62,3 +65,16 @@ def after_login(user_id, ip):
 
     update_dict.pop('login_num')
     return update_dict
+
+
+@shared_task()
+def after_user_create(user_id):
+    """
+    创建用户之后的操作
+    :param user_id:
+    :return:
+    """
+    c = CollectCategory(user_id=user_id,
+                        name='默认收藏集',
+                        )
+    c.save()

@@ -20,5 +20,5 @@ class RecordLoggingMiddleware(MiddlewareMixin):
         user_id = getattr(user, 'id', '未登录')
         username = getattr(user, 'username', '未登录')
         logger.error(f'user:{user_id}-{username}')
-        logger.error(f'body:{request.body.decode()}')
+        logger.error(f'body:{request.data}')
         logger.error('*'*95)

@@ -162,7 +162,7 @@
 							let res = await api_upload.upload(self.upload_data)
               res = res.data
 							if (res.code !== 2000) {
-								self.$message(res.msg)
+								self.$message('上传失败!请重试!')
 								loading.close()
 								return;
 								}

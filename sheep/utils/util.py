@@ -25,24 +25,7 @@ class SetJsonEncoder(json.JSONEncoder):
             return json.JSONEncoder.default(self, obj)
 
 
-def sort_queryset(model, items:Iterable, sort_field: str = 'id'):
-    """
-    排序
-    :param model:
-    :param items:
-    :param sort_field:
-    :return:
-    """
-    assert issubclass(model, Model), (
-        '传入的不是ModelClass'
-    )
-    queryset = []
-    if items:
-        sku_ids = ','.join([str(i) for i in items])
-        field_sql = f"FIELD(`{sort_field}`,{sku_ids})"
-        queryset = model.objects.extra(select={'field_sql': field_sql},where=[f'id IN ({sku_ids})'],
-                                       order_by=['field_sql'])
-    return queryset
+
 
 
 class RedisTranscaction(object):

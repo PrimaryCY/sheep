@@ -34,11 +34,11 @@ router.register('correlation_category', CorrelationCategoryViewSet, basename='co
 router.register('user_post', UserPostViewSet, basename='user_post')
 # 个人收藏分类
 router.register('user_collect_category', UserCollectCategoryViewSet, basename='user_collect_category')
+# 个人收藏帖子
+router.register('user_collect', CollectViewSet, basename='user_collect')
 
 # 个人回复展示
 router.register('user_reply', UserReplyViewSet, basename='user_reply')
-# 个人收藏帖子
-router.register('user_collect', CollectViewSet, basename='user_collect')
 # 个人点赞
 router.register('user_praise', PraiseViewSet, basename='user_praise')
 # 个人关注

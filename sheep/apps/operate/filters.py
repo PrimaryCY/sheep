@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # author:CY
 # datetime:2019/12/20 15:24
+import django_filters
 from django.contrib.auth import get_user_model
 from django_filters import rest_framework as filters
 
 from apps.operate.models import CollectCategory, Collect, Praise, Focus
-from utils.util import sort_queryset
+from utils.django_util.util import field_sort_queryset
 
 
 User = get_user_model()
@@ -28,8 +29,10 @@ User = get_user_model()
 
 
 class CollectFilter(filters.FilterSet):
-    category_id = filters.NumberFilter(label='收藏分类id', required=True)
-    type = filters.ChoiceFilter(choices=Collect.TYPE_CHOICES, label='收藏资源分类', required=True)
+    category_id = django_filters.NumberFilter(label='文章资源分类', method='filter_category_id')
+
+    def filter_category_id(self, queryset, name, value):
+        queryset.model
 
     class Meta:
         model = Collect
@@ -59,7 +62,7 @@ class FocusFilter(filters.FilterSet):
         # type为其它值时, 查看关注我的人
         else:
             focus_ids = queryset.filter(focus_id=user_id).values_list('user_id', flat=True)
-        return sort_queryset(User, focus_ids)
+        return field_sort_queryset(User, focus_ids)
 
     class Meta:
         model = Focus

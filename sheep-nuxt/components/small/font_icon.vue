@@ -27,13 +27,13 @@
 			<svg class="icon-min" aria-hidden="true">
 				<use xlink:href="#icon-like-visable-copy"></use>
 			</svg>
-			<span>可见</span>
+			<span>公开</span>
 		</div>
 		<div v-else-if="type===6" class="base disabled">
 			<svg class="icon-min" aria-hidden="true">
 				<use xlink:href="#icon-like-disable-copy"></use>
 			</svg>
-			<span>不可见</span>
+			<span>私密</span>
 		</div>
 </template>
 
@@ -80,12 +80,12 @@
     }
 		.visible{
 			font-size: 9px;
-			padding: 2px;
+			padding: 3px;
 			background-color: #b02727;
 		}
 		.disabled{
 			font-size: 9px;
-			padding: 2px;
+			padding: 3px;
 			background-color: #364050;
 		}
 

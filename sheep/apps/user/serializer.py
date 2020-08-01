@@ -24,7 +24,7 @@ class LoginSerializer(serializers.Serializer):
     email_or_phone = serializers.CharField(label='邮箱或者手机号', write_only=True)
     password = serializers.CharField(label='密码', write_only=True)
     # code = serializers.CharField(label='验证码', write_only=True, required=False)
-    user = serializers.ReadOnlyField()
+    username = serializers.ReadOnlyField()
     token = serializers.ReadOnlyField()
 
     @property

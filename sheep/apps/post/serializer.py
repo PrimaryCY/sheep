@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 # author:CY
 # datetime:2019/12/3 18:51
-from typing import Any
-
 from django.contrib.auth import get_user_model
-from django.core.validators import URLValidator
 from django.forms import model_to_dict
 from rest_framework import serializers
-from rest_framework.response import Response
 from rest_framework.validators import UniqueValidator
 
 from apps.post.models import Category, Post, PostReply
@@ -71,19 +67,6 @@ class UserPostSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'code': RET.PARAMERR,'msg': '类别必须选择'})
         c = category.pop()
         return c
-
-    # is_like = serializers.SerializerMethodField(label='是否收藏')
-    # is_praise = serializers.SerializerMethodField(label='是否点赞')
-
-    # def get_is_like(self, obj):
-    #     from apps.operate.models import Collect
-    #     return Collect.select_is_like(self.context['request'].user.id,
-    #                                   1, obj.id)
-    #
-    # def get_is_praise(self, obj):
-    #     from apps.operate.models import Praise
-    #     return Praise.select_is_praise(self.context['request'].user.id,
-    #                                    1, obj.id)
 
     class Meta:
         model = Post
@@ -297,6 +280,19 @@ class RetrievePostSerializer(PostSerializer):
     author_info = serializers.SerializerMethodField(label='创建人信息')
     category = serializers.SerializerMethodField(label='分类')
     category_id = serializers.IntegerField(label='分类id', source='category')
+
+    is_like = serializers.SerializerMethodField(label='是否收藏')
+    is_praise = serializers.SerializerMethodField(label='是否点赞')
+
+    def get_is_like(self, obj):
+        from apps.operate.models import CollectRedisModel
+        user = self.context['request'].user
+        return CollectRedisModel.get_user_is_like(user, obj.id)
+
+    def get_is_praise(self, obj):
+        from apps.operate.models import Praise
+        return Praise.select_is_praise(self.context['request'].user.id,
+                                       1, obj.id)
 
     def get_author_info(self, obj):
         """帖子创建人信息"""

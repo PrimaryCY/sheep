@@ -45,7 +45,7 @@ export default function (context, inject) {
       switch(response.data.code) {
         case 4101:
           context.app.$cookies.set(settings.TOKEN_NAME,'',{maxAge:0})
-          Message('用户登录失效!')
+          // Message('用户登录失效!')
           context.redirect('/login')
           break
         case 4105:

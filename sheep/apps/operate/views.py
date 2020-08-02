@@ -12,8 +12,9 @@ from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.viewsets import GenericViewSet
 
-from apps.operate.filters import CollectFilter, PraiseFilter
-from apps.operate.tasks import after_collect
+from apps.operate.filters import PraiseFilter
+from apps.operate.tasks import after_collect, after_delete_user_category
+from apps.post.filters import PostFilter
 from apps.post.models import Post
 from apps.post.serializer import PostSerializer
 from apps.user.serializer import ListCreateUserSerializer
@@ -25,7 +26,8 @@ from utils.pagination import LimitOffsetPagination
 from utils.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from apps.operate.models import CollectCategory, TYPE_SERIALIZER_MAPPING, Praise, Focus, \
     CollectRedisModel
-from apps.operate.serializer import CollectCategorySerializer, CreateCollectSerializer, CreateFocusSerializer
+from apps.operate.serializer import CollectCategorySerializer, CreateCollectSerializer, \
+    CreateFocusSerializer, CollectPostSerializer
 
 
 User = get_user_model()
@@ -46,11 +48,9 @@ class UserCollectCategoryViewSet(ModelViewSet):
     def get_queryset(self):
         return CollectCategory.objects.filter(user_id=self.request.user.id).all()
 
-    @transaction.atomic()
     def perform_destroy(self, instance):
-        instance.is_active = False
-        instance.save()
-        CollectRedisModel(self.request.user.id, instance.id).delete()
+        CollectCategory.objects.filter(id=instance.id).update(is_active=False)
+        after_delete_user_category.delay(instance.user_id, instance.id)
 
 
 class CollectCategoryViewSet(ReadOnlyModelViewSet):
@@ -68,29 +68,29 @@ class CollectViewSet(CreateModelMixin,
     """用户个人收藏的帖子"""
     serializer_class = {
         'create': CreateCollectSerializer,
-        'list': PostSerializer
+        'list': CollectPostSerializer
     }
     c_serializer_class = CreateCollectSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter)
     pagination_class = LimitOffsetPagination
-    filter_class = None
+    filter_class = PostFilter
     search_fields = ('name',)
 
     def get_queryset(self):
-        category_id = self.request.query_params.get('category_id')
+        category_id = self.request.query_params.get('collect_id')
         if not category_id:
             raise ValidationError({'success': False,
                                    'code': RET.PARAMERR,
                                    'msg': error_map[RET.PARAMERR]})
         self.collect_dict = CollectRedisModel(self.request.user.id, category_id).get_all(self.request)
         collect_resource_ids = self.collect_dict.keys()
-        return field_sort_queryset(Post, collect_resource_ids)
+        return field_sort_queryset(Post.objects, collect_resource_ids)
 
     def paginate_queryset(self, queryset):
         queryset_list = super().paginate_queryset(queryset)
         for i in queryset_list:
             date_array = datetime.datetime.fromtimestamp(self.collect_dict.get(i.id))
-            i.created_time = date_array.strftime("%Y-%m-%d %H:%M")
+            i.created_like_time = date_array.strftime("%Y-%m-%d %H:%M")
         return queryset_list
 
     @transaction.atomic()

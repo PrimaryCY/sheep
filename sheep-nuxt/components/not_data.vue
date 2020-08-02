@@ -23,7 +23,9 @@
 				default: "80%"
 			},
 			list:{
-				required:true
+				default(){
+					return []
+				}
 			}
 		}
 	}

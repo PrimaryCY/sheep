@@ -33,13 +33,13 @@
 						<!-- Nav -->
 						<nav id="nav" class="mobileUI-site-nav">
 							<ul>
-								<li :class="{current_page_item:active==='/index'}" @click.prevent="push('/index')"><a href="#">
+								<li :class="{current_page_item:active==='index'}" @click.prevent="push('/index')"><a href="#">
 									<svg class="icon-min" aria-hidden="true">
 										<use xlink:href="#icon-shiyongwendang"></use>
 									</svg>
 									首页
 								</a></li>
-								<li :class="{current_page_item:active==='/feedback'}" @click.prevent="push('/feedback')"><a href="#">
+								<li :class="{current_page_item:active==='feedback'}" @click.prevent="push('/feedback')"><a href="#">
 									<svg class="icon-min" aria-hidden="true">
 										<use xlink:href="#icon-yijianfankui"></use>
 									</svg>
@@ -84,31 +84,31 @@
 						<!--Nav-->
 						<nav id="nav" class="mobileUI-site-nav">
 							<ul>
-								<li :class="{current_page_item:active==='/index'}" @click.prevent="push('/index')"><a href="#">
+								<li :class="{current_page_item:active==='index'}" @click.prevent="push('/index')"><a href="#">
 									<svg class="icon-min" aria-hidden="true">
 										<use xlink:href="#icon-shiyongwendang"></use>
 									</svg>
 									首页
 								</a></li>
-								<li :class="{current_page_item:active==='/my_post'}" @click.prevent="push('/my_post')"><a href="#">
+								<li :class="{current_page_item:active==='my_post'}" @click.prevent="push('/my_post')"><a href="#">
 									<svg class="icon-min" aria-hidden="true">
 										<use xlink:href="#icon-chuangzuo"></use>
 									</svg>
 									我的文章
 								</a></li>
-								<li :class="{current_page_item:active==='/my_question'}" @click.prevent="push('/my_question')"><a href="#">
+								<li :class="{current_page_item:active==='my_question'}" @click.prevent="push('/my_question')"><a href="#">
 									<svg class="icon-min" aria-hidden="true">
 										<use xlink:href="#icon-wenti--copy"></use>
 									</svg>
 									我的提问
 								</a></li>
-								<li :class="{current_page_item:active==='/info'}" @click.prevent="push('/info')"><a href="#">
+								<li :class="{current_page_item:active==='info'}" @click.prevent="push('/info')"><a href="#">
 									<svg class="icon-min" aria-hidden="true">
 										<use xlink:href="#icon-icon_zhanghao"></use>
 									</svg>
 									个人中心
 								</a></li>
-								<li :class="{current_page_item:active==='/my-collect'}" @click.prevent="push('/my-collect')"><a href="#">
+								<li :class="{current_page_item:['my_collect', 'my_collect_detail'].includes(active)}" @click.prevent="push('/my-collect')"><a href="#">
 									<svg class="icon-min" aria-hidden="true">
 										<use xlink:href="#icon-sidebar-shoucang-copy"></use>
 									</svg>
@@ -126,7 +126,7 @@
 									</svg>
 									我的浏览
 								</a></li>
-								<li :class="{current_page_item:active==='/feedback'}" @click.prevent="push('/feedback')"><a href="#">
+								<li :class="{current_page_item:active==='feedback'}" @click.prevent="push('/feedback')"><a href="#">
 									<svg class="icon-min" aria-hidden="true">
 										<use xlink:href="#icon-yijianfankui"></use>
 									</svg>
@@ -221,7 +221,7 @@
 				}
 			},
 			active(){
-				return this.$route.path
+				return this.$route.name
 			},
 		},
 		methods:{

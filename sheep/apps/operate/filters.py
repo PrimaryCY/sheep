@@ -28,17 +28,6 @@ User = get_user_model()
 #         fields = ('',)
 
 
-class CollectFilter(filters.FilterSet):
-    category_id = django_filters.NumberFilter(label='文章资源分类', method='filter_category_id')
-
-    def filter_category_id(self, queryset, name, value):
-        queryset.model
-
-    class Meta:
-        model = Collect
-        fields = ('category_id', 'type')
-
-
 class PraiseFilter(filters.FilterSet):
     type = filters.ChoiceFilter(choices=Collect.TYPE_CHOICES, label='点赞资源分类', required=True)
 

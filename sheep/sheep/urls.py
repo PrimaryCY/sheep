@@ -23,7 +23,7 @@ import api.urls
 
 urlpatterns = [
                   # 修改media文件路由
-                  path(r'media/<path:path>/', serve, {"document_root": settings.MEDIA_ROOT}),
+                  path(r'media/<path:path>', serve, {"document_root": settings.MEDIA_ROOT}),
                   # 导入rest framework
                   path(r'api_auth/', include('rest_framework.urls', namespace='rest_framework')),
                   path(r'api/', include(api.urls)),

@@ -1,6 +1,7 @@
-import datetime
+import math
 import random
 import time
+from datetime import datetime, timedelta
 
 from django.db import models
 from django.db.models import F
@@ -124,17 +125,20 @@ class CollectRedisModel(object):
         end_collect_time = request.query_params.get('end_collect_time')
         try:
             if start_collect_time:
-                start_collect_time = time.mktime(time.strptime(start_collect_time, '%Y-%m-%d'))
+                start_collect_time = datetime.strptime(start_collect_time, '%Y-%m-%d')
+                start_collect_time = math.floor(start_collect_time.replace().timestamp())
             if end_collect_time:
-                end_collect_time = time.mktime(time.strptime(start_collect_time, '%Y-%m-%d'))
+                end_collect_time = datetime.strptime(end_collect_time, '%Y-%m-%d') + \
+                                   timedelta(days=1)
+                end_collect_time = math.ceil(end_collect_time.replace().timestamp())
         except:
             raise ValidationError({'success': False, 'code': RET.PARAMERR, 'msg': error_map[RET.PARAMERR]})
 
-        return dict(self.con.zrangebyscore(self.redis_key,
-                                           min=start_collect_time or 1,
-                                           max=end_collect_time or int(time.time()),
-                                           withscores=True,
-                                           score_cast_func=int))
+        return {int(k): v for k, v in self.con.zrevrangebyscore(self.redis_key,
+                                                                min=start_collect_time or 1,
+                                                                max=end_collect_time or int(time.time()),
+                                                                withscores=True,
+                                                                score_cast_func=int)}
 
     def delete(self):
         """

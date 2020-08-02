@@ -99,7 +99,10 @@
 						</el-radio-group>
 					</el-form-item>
 					<el-form-item label="简介" prop="desc" size="mini">
-						<el-input type="textarea" v-model="collect_form.desc" :maxlength="500" show-word-limit></el-input>
+						<el-input type="textarea"
+											v-model="collect_form.desc"
+											:maxlength="500"
+											show-word-limit></el-input>
 					</el-form-item>
 					<el-form-item size="mini">
 						<el-button @click="edit_dialog=!edit_dialog">取消</el-button>
@@ -258,6 +261,10 @@
 		text-align: initial;
 		font-size: 10px;
 	}
+	/deep/ textarea{
+		min-height: 80px!important;
+	}
+
 	.upload-image{
 		text-align: center;
 		.image{
@@ -266,6 +273,7 @@
 			background-repeat: no-repeat;
 			line-height: 200px;
 			border-radius: 2px;
+			object-fit: cover;
 		}
 	}
 

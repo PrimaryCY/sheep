@@ -9,6 +9,7 @@ from rest_framework import serializers
 
 from apps.operate.models import CollectCategory, Collect, Praise, Focus, CollectRedisModel
 from apps.post.models import Post
+from apps.post.serializer import PostSerializer
 from sheep.constant import RET
 from utils.extra_fields import CurrentUserIdDefault
 
@@ -123,3 +124,12 @@ class CreateFocusSerializer(serializers.Serializer):
             obj.is_active = not F('is_active')
             obj.save()
         return obj
+
+
+class CollectPostSerializer(PostSerializer):
+    created_like_time = serializers.DateTimeField(read_only=True, label='收藏时间')
+    newest_user_id = None
+
+    class Meta:
+        model = Post
+        exclude = ("content", "html_content")

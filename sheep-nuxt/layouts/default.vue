@@ -36,6 +36,9 @@
     padding: 5px 11px!important;
     font-size: 10px!important;
   }
+  .el-range-input{
+    margin-left: 15px!important;
+  }
 
   /*修改vue star组件定位问题*/
   .VueStar{

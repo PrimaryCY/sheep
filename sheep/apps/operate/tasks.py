@@ -3,7 +3,18 @@
 # datetime:2020/7/31 15:14
 from celery import shared_task
 
-from apps.operate.models import Collect
+from apps.operate.models import Collect, CollectRedisModel
+
+
+@shared_task()
+def after_delete_user_category(user_id, category_id):
+    """
+    删除收藏集之后,删除redis中对应的key
+    :param user_id:
+    :param category_id:
+    :return:
+    """
+    CollectRedisModel(user_id, category_id).delete()
 
 
 @shared_task()

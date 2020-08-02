@@ -74,6 +74,11 @@
             最后回复来自于:xxxxasdadas
           </div>
         </el-col>
+        <el-col v-else-if="post.created_like_time" :span="6">
+          <div class="reply-txt ellipsis">
+            收藏于:{{post.created_like_time}}
+          </div>
+        </el-col>
       </el-row>
     </div>
   </div>
@@ -98,6 +103,7 @@
 
 <style scoped lang="scss">
     .article-list-item-mp{
+      text-align: initial;
       .article-list-item-warp{
         color: black;
         display: block;

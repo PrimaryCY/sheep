@@ -129,8 +129,9 @@
 
 	import tinymceEditor from '../../components/Tinymce/tinymce-editor'
 	import mavon_editor from '../../components/mavonEditor/mavon-editor'
-  import bubble_text from '@/components/common/bubble_text'
-	import {api_post_category, api_user_post, api_upload} from '@/api/index'
+	import bubble_text from '@/components/common/bubble_text'
+	// import {api_post_category} from '@/api/index'
+	import {api_user_post, api_upload} from '@/api/index'
 	import Backtop from "../../components/backtop"
 
 	export default {

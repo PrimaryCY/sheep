@@ -41,7 +41,7 @@
     },
     methods: {
     },
-    async asyncData(context){
+    async asyncData(){
       // let url = '/v1/web/user/'
       // await context.$axios(
       //   {

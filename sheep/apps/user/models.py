@@ -4,8 +4,9 @@ from typing import Union
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 from django.db.models import Sum, Count
+from django.conf import settings
 
-from sheep import settings
+from sheep.init_server import init_stdout
 from utils.django_util.models import BaseModel
 from utils.tools import rounding
 
@@ -136,3 +137,13 @@ class User(BaseModel, AbstractBaseUser):
         res['praise_total'] = post_aggregate['praise_num__sum']
         res['like_total'] = post_aggregate['like_num__sum']
         return res
+
+    @classmethod
+    @init_stdout('super user')
+    def create_default_super_user(cls):
+        assert settings.ADMIN_PHONE, (
+            "settings.ADMIN_PHONE必须有内容！详情请看sheep.local_setting_example.py文件."
+        )
+
+        for i, p in enumerate(settings.ADMIN_PHONE):
+            cls.objects.get_or_create(phone=p, is_phone=True, defaults={'username': f'admin-{i}'})

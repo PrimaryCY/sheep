@@ -145,6 +145,9 @@ class CollectRedisModel(object):
         删除该收藏集下的所有内容
         备份保存三十天
         """
+        post_ids = self.con.zrange(self.redis_key, 0, -1)
+        Post.objects.filter(id__in=post_ids).update(like_num=F('like_num')-1)
+
         back_key = f'{self.redis_key}-backup'
         try:
             with self.con.pipeline() as con:

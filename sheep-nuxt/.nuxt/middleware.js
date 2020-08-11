@@ -1,20 +1,6 @@
+const middleware = {}
 
-let files = require.context('@/middleware', false, /^\.\/(?!-)[^.]+\.(mjs|js)$/)
-let filenames = files.keys()
-
-function getModule (filename) {
-  let file = files(filename)
-  return file.default
-    ? file.default
-    : file
-}
-let middleware = {}
-
-// Generate the middleware
-for (let filename of filenames) {
-  let name = filename.replace(/^\.\//, '').replace(/\.(mjs|js)$/, '')
-  middleware[name] = getModule(filename)
-}
+middleware['user_auth'] = require('../middleware/user_auth.js')
+middleware['user_auth'] = middleware['user_auth'].default || middleware['user_auth']
 
 export default middleware
-

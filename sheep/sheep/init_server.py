@@ -45,6 +45,8 @@ class InitServer(object):
         # self.create_default_media_dir()
         from apps.post.models import Category
         from apps.other.models import FeedbackCategory
+        from apps.user.models import User
+        User.create_default_super_user()
         Category.create_default_category()
         FeedbackCategory.create_default_category()
 

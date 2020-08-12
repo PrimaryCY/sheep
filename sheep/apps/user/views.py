@@ -1,16 +1,16 @@
 from django.contrib.auth import get_user_model
+from django.db import transaction
 
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.settings import api_settings
 from rest_framework.viewsets import GenericViewSet
-from rest_framework.mixins import ListModelMixin
 
 from utils.mixins import CreateModelMixin, RetrieveModelMixin, UpdateModelMixin
 from utils.viewsets import ExtensionViewMixin
 from sheep import settings
 from apps.user.serializer import ListCreateUserSerializer, LoginSerializer, DeleteUserSerializer, AllUserSerializer, UpdateUserSerializer
 from sheep.constant import RET
+from apps.user.tasks import after_user_create
 
 User = get_user_model()
 
@@ -20,6 +20,7 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
     serializer_class = LoginSerializer
     permission_classes = ()
 
+    @transaction.atomic()
     def create(self, request, *args, **kwargs):
         """登录"""
         serializer = self.get_serializer(data=request.data)
@@ -95,6 +96,10 @@ class UserViewSet(CreateModelMixin,
         serializer.delete(request.user)
         data = {"success": True, "code": RET.OK, "data": "注销成功"}
         return Response(data, status=200)
+
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        after_user_create.delay(instance.id)
 
 
 class AllUserViewSet(RetrieveModelMixin,

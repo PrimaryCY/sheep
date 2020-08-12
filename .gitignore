@@ -9,7 +9,12 @@ __pycache__/
 # Distribution / packaging
 .Python
 
+logs/
+celerybeat-schedule.bak
+celerybeat-schedule.dat
+celerybeat-schedule.dir
 node_modules/
+sheep-vue/
 local_setting.py
 media/
 package-lock.json

@@ -2,8 +2,11 @@
 # author:CY
 # datetime:2019/6/18 15:16
 RdAllot = {
-    1-5: '私享',
+    1: '默认',
+    2: 'restframework-extengsions',
+    3: 'celery',
     10: '存储token',
+    11: '操作相关'
 }
 
 
@@ -32,11 +35,11 @@ error_map = {
     RET.NODATA                : u"无数据",
     RET.DATAEXIST             : u"数据已存在",
     RET.DATAERR               : u"数据错误",
-    RET.TOKENERR              : u"令牌失效",
+    RET.TOKENERR              : u"用户登录失效",
     RET.LOGINERR              : u"用户登录失败",
     RET.PARAMERR              : u"参数错误",
     RET.USERERR               : u"用户不存在或未激活",
-    RET.ROLEERR               : u"用户身份错误",
+    RET.ROLEERR               : u"用户无权限",
     RET.PWDERR                : u"密码错误",
     RET.REQERR                : u"非法请求或请求次数受限",
     RET.IPERR                 : u"IP受限",

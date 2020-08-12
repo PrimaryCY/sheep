@@ -1,10 +1,14 @@
 import datetime
+from typing import Union
 
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
+from django.db.models import Sum, Count
+from django.conf import settings
 
-from sheep import settings
-from utils.models import BaseModel
+from sheep.init_server import init_stdout
+from utils.django_util.models import BaseModel
+from utils.tools import rounding
 
 
 # 用户.
@@ -26,13 +30,34 @@ class User(BaseModel, AbstractBaseUser):
     is_anonymity = models.BooleanField(default=False, verbose_name='匿名')
     login_num = models.IntegerField(default=0, verbose_name='登录次数')
     brief = models.CharField(max_length=200, verbose_name='个人简介', null=True)
+    last_login_province = models.CharField(max_length=12, verbose_name='上次登录省份', null=False, default='')
+    last_login_city = models.CharField(max_length=24, verbose_name='上次登录城市', null=False, default='')
 
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'username'
 
+    @property
+    def website_age(self):
+        """
+        网站年龄
+        :return:
+        """
+        result = datetime.datetime.now() - self.created_time
+        return rounding(str(result.days/365))
+
+    @property
+    def age(self):
+        """
+        实际年龄
+        :return:
+        """
+        if not self.birth:
+            return '保密'
+        return datetime.date.today().year - self.birth.year
+
     # 用户默认数据
-    defautl_man_portrait = '123'
-    defautl_women_portrait = '321'
+    defautl_man_portrait = 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2519824424,1132423651&fm=26&gp=0.jpg'
+    defautl_women_portrait = 'https://dss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=283284588,2796778480&fm=26&gp=0.jpg'
 
     class Meta:
         verbose_name_plural = verbose_name = '用户表'
@@ -66,16 +91,6 @@ class User(BaseModel, AbstractBaseUser):
             self.set_password(self.password)
         super().save(force_insert, force_update, using, update_fields)
 
-    def after_login(self):
-        """
-        用户成功登录后的操作
-        :return:
-        """
-        self.login_num += 1
-        self.last_login = datetime.datetime.now()
-        self.save()
-        return self
-
     @staticmethod
     def generate_token_data(user) -> dict:
         """
@@ -95,4 +110,40 @@ class User(BaseModel, AbstractBaseUser):
         :param user_id:
         :return:
         """
-        return dict(cls.objects.filter(id=user_id).values('id', 'username').first())
+        return dict(cls.objects.filter(id=user_id).values('id', 'username', 'portrait').first())
+
+    @classmethod
+    def get_post_retrieve_author_info(cls, user_id: Union[int, object]):
+        """
+        获取文章作者信息
+        :param user_id:
+        :return:
+        """
+        from apps.post.models import Post
+
+        if isinstance(user_id, User):
+            user = user_id
+        else:
+            user = User.objects.filter(id=user_id).only('id', 'portrait', 'username', 'created_time', 'birth').first()
+            if not user:
+                return {}
+        res = dict(id=user.id,
+                   portrait=user.portrait,
+                   age=user.age,
+                   website_age=user.website_age,
+                   username=user.username)
+        post_aggregate = Post.objects.filter(author_id=user.id).aggregate(Sum('praise_num'), Sum('like_num'))
+        res['article_total'] = Post.objects.filter(author_id=user.id, post_type=1).only('id').count()
+        res['praise_total'] = post_aggregate['praise_num__sum']
+        res['like_total'] = post_aggregate['like_num__sum']
+        return res
+
+    @classmethod
+    @init_stdout('super user')
+    def create_default_super_user(cls):
+        assert settings.ADMIN_PHONE, (
+            "settings.ADMIN_PHONE必须有内容！详情请看sheep.local_setting_example.py文件."
+        )
+
+        for i, p in enumerate(settings.ADMIN_PHONE):
+            cls.objects.get_or_create(phone=p, is_phone=True, defaults={'username': f'admin-{i}'})

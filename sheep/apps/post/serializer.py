@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 # author:CY
 # datetime:2019/12/3 18:51
-from typing import Any
-
 from django.contrib.auth import get_user_model
-from django.core.validators import URLValidator
+from django.forms import model_to_dict
 from rest_framework import serializers
-from rest_framework.response import Response
 from rest_framework.validators import UniqueValidator
 
 from apps.post.models import Category, Post, PostReply
@@ -30,10 +27,11 @@ class PostCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ["id", "name", "parent_id", "level", "desc", 'author_id', 'image', 'child', 'parent']
+        fields = ["id", "name", "parent_id", "level", "desc", 'author_id', 'child', 'parent']
 
 
-class PostSerializer(serializers.HyperlinkedModelSerializer):
+# class PostSerializer(serializers.HyperlinkedModelSerializer):
+class UserPostSerializer(serializers.ModelSerializer):
     """帖子序列化器"""
     id = serializers.ReadOnlyField(label='帖子id')
     author_id = serializers.HiddenField(default=CurrentUserIdDefault(), label='创建人')
@@ -41,7 +39,7 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
     read_num = serializers.ReadOnlyField(label='浏览数量')
     like_num = serializers.ReadOnlyField(label='收藏数量')
     praise_num = serializers.ReadOnlyField(label='点赞数量')
-    is_active = serializers.ReadOnlyField(label='帖子状态')
+    status = serializers.ReadOnlyField(label='帖子状态')
     name = serializers.CharField(validators=[
         UniqueValidator(
             queryset=Post.objects.all(),
@@ -49,16 +47,20 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
         )
     ])
 
-    image = serializers.CharField(validators=[
-        URLValidator(message='图片地址不正确!')
-        ], label='封面', required=False, allow_null=True)
-    category = SerializerMethodAndWriteField(label='帖子分类')
+    category = serializers.ListField(label='帖子分类', write_only=True)
     content_type = RangeField(iterable=list(dict(Post.content_type_choices)),
-                        label='文章类型',
+                        label='文章书写类型',
                         required=True,
-                        error_messages='文章类型传递错误!',
+                        error_messages='文章书写类型传递错误!',
                         data_type=int
                         )
+
+    post_type = RangeField(iterable=list(dict(Post.post_type_choices)),
+                           label='文章类型',
+                           required=True,
+                           error_messages='文章类型传递错误!',
+                           data_type=int
+                           )
 
     def validate_category(self, category):
         if not category:
@@ -66,54 +68,52 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
         c = category.pop()
         return c
 
-    def get_category(self, category_id):
-        obj = Category.objects.filter(id=category_id).first()
-        return obj.get_ancestors(include_self=True).values_list('id', flat=True)
+    class Meta:
+        model = Post
+        exclude = ("content", "html_content")
+        # extra_kwargs = {
+        #     'url': {'view_name': 'v1:web:post-detail', 'lookup_field': 'pk'},
+        # }
+    # ud_url = serializers.HyperlinkedIdentityField(view_name='v1:web:user_post-detail', lookup_field='pk')
 
-    author_info = serializers.SerializerMethodField(label='创建人信息')
-    is_like = serializers.SerializerMethodField(label='是否收藏')
-    is_praise = serializers.SerializerMethodField(label='是否点赞')
 
-    def get_is_like(self, obj):
-        from apps.operate.models import Collect
-        return Collect.select_is_like(self.context['request'].user.id,
-                                      1, obj.id)
+class UpdateRetrieveUserPostSerializer(UserPostSerializer):
+    """个人文章查改方法的帖子序列化器"""
+    desc = serializers.ReadOnlyField(label='帖子简介')
+    html_content = serializers.CharField(write_only=True, label='html内容')
+    content = serializers.CharField(write_only=True, label='文字内容', error_messages={
+        'null': '文章内容必须要输入一些内容!',
+        'blank': '文章内容必须要输入一些内容!',
+    })
+    parse_content = serializers.SerializerMethodField(label='帖子编辑内容')
+    category_list = serializers.SerializerMethodField(label='类别列表')
 
-    def get_is_praise(self, obj):
-        from apps.operate.models import Praise
-        return Praise.select_is_praise(self.context['request'].user.id,
-                                       1, obj.id)
+    def get_category_list(self, obj):
+        category = Category.objects.filter(id=obj.category).first()
+        return category.get_ancestors(include_self=True).values_list('id', flat=True)
 
-    def get_author_info(self, obj):
-        """帖子创建人信息"""
-        user = User.objects.filter(id=obj.author_id).values('id', 'username').first()
-        if user:
-            return dict(user)
+    def get_parse_content(self, obj):
+        return obj.content if obj.content_type == 2 else obj.html_content
+
+    def validate(self, attrs):
+        content = attrs.get('content')
+        if content:
+            # 帖子简介
+            attrs['desc'] = content[:230]
+        return attrs
 
     class Meta:
         model = Post
-        exclude = ("content",)
+        exclude = ('newest_user_id',)
         extra_kwargs = {
-            'url': {'view_name': 'v1:web:all_post-detail', 'lookup_field': 'pk'},
-        }
-    ud_url = serializers.HyperlinkedIdentityField(view_name='v1:web:user_post-detail', lookup_field='pk')
-
-
-class RetrievePostSerializer(PostSerializer):
-    """retrieve方法的帖子序列化器"""
-
-    class Meta:
-        model = Post
-        fields = "__all__"
-        extra_kwargs = {
-            'url': {'view_name': 'v1:web:all_post-detail', 'lookup_field': 'pk'},
+            'url': {'view_name': 'v1:web:post-detail', 'lookup_field': 'pk'},
         }
 
 
 class UserPostReplySerializer(serializers.ModelSerializer):
     """个人中心帖子回复序列化器"""
     praise_num = serializers.ReadOnlyField(label='点赞数量')
-    is_active = serializers.ReadOnlyField(label='状态')
+    status = serializers.ReadOnlyField(label='状态')
 
     post_id = serializers.IntegerField(label='回复帖子id')
     replier_id = serializers.ReadOnlyField(label='回复用户id')
@@ -162,7 +162,7 @@ class UserPostReplySerializer(serializers.ModelSerializer):
 class PostReplySerializer(serializers.ModelSerializer):
     """帖子内回复序列化器"""
     praise_num = serializers.ReadOnlyField(label='点赞数量')
-    is_active = serializers.ReadOnlyField(label='状态')
+    status = serializers.ReadOnlyField(label='状态')
     replier_id = serializers.ReadOnlyField(label='回复用户id')
     author_id = serializers.HiddenField(default=CurrentUserIdDefault(), label='创建人')
     post_id = serializers.IntegerField(label='回复帖子id')
@@ -236,3 +236,92 @@ class RetrievePostReplySerializer(PostReplySerializer):
     class Meta:
         model = PostReply
         fields = ('id', 'author_id', 'child')
+
+
+class PostSerializer(serializers.ModelSerializer):
+    """帖子序列化器"""
+    id = serializers.ReadOnlyField(label='帖子id')
+    post_num = serializers.ReadOnlyField(label='评论数量')
+    read_num = serializers.ReadOnlyField(label='浏览数量')
+    like_num = serializers.ReadOnlyField(label='收藏数量')
+    praise_num = serializers.ReadOnlyField(label='点赞数量')
+    status = serializers.ReadOnlyField(label='帖子状态')
+    desc = serializers.ReadOnlyField(label='帖子简介')
+    name = serializers.CharField(label='帖子标题')
+    content_type = serializers.IntegerField(label='文章书写类型')
+    post_type = serializers.IntegerField(label='文章类型')
+
+    author_info = serializers.SerializerMethodField(label='创建人信息')
+    newest_user_id = serializers.SerializerMethodField(label='最新回复人')
+
+    def get_newest_user_id(self, post):
+        u_id = post.newest_user_id
+        if not u_id:
+            return u_id
+        return User.get_simple_user_info(u_id)
+
+    def get_author_info(self, obj):
+        """帖子创建人信息"""
+        if obj.author_id == self.context['request'].user.id:
+            user = self.context['request'].user
+            return dict(id=user.id,
+                        portrait=user.portrait,
+                        username=user.username)
+        user = User.get_simple_user_info(obj.author_id)
+        return user
+
+    class Meta:
+        model = Post
+        exclude = ("content", "html_content")
+
+
+class RetrievePostSerializer(PostSerializer):
+    """retrieve方法的帖子序列化器"""
+    author_info = serializers.SerializerMethodField(label='创建人信息')
+    category = serializers.SerializerMethodField(label='分类')
+    category_id = serializers.IntegerField(label='分类id', source='category')
+
+    is_like = serializers.SerializerMethodField(label='是否收藏')
+    is_praise = serializers.SerializerMethodField(label='是否点赞')
+
+    def get_is_like(self, obj):
+        from apps.operate.models import CollectRedisModel
+        user = self.context['request'].user
+        return CollectRedisModel.get_user_is_like(user, obj.id)
+
+    def get_is_praise(self, obj):
+        from apps.operate.models import Praise
+        return Praise.select_is_praise(self.context['request'].user.id,
+                                       1, obj.id)
+
+    def get_author_info(self, obj):
+        """帖子创建人信息"""
+        if obj.author_id == self.context['request'].user.id:
+            res = User.get_post_retrieve_author_info(self.context['request'].user)
+        else:
+            res = User.get_post_retrieve_author_info(obj.author_id)
+        return res
+
+    def get_category(self, obj):
+        c = Category.objects.filter(id=obj.category).only('name').first()
+        if not c:
+            return '不告诉你!'
+        return c.name
+
+    class Meta:
+        model = Post
+        exclude = ('content',)
+        extra_kwargs = {
+            'url': {'view_name': 'v1:web:post-detail', 'lookup_field': 'pk'},
+        }
+
+
+class CorrelationCategorySerializer(serializers.ModelSerializer):
+    article_total = serializers.SerializerMethodField(label='该分类下的文章总数')
+
+    def get_article_total(self, obj):
+        return Post.objects.filter(category=obj.id).only('id').count()
+
+    class Meta:
+        model = Category
+        fields = ["id", "name", "parent_id", "level", "article_total"]

@@ -7,12 +7,15 @@ import time
 import itertools
 import datetime
 from collections import Iterable, Mapping
+from decimal import Decimal, ROUND_HALF_UP
+from typing import Union
 
 from xpinyin import Pinyin
 
 pin = Pinyin()
 
-def getFlatten(arr:Iterable)->Iterable:
+
+def getFlatten(arr: Iterable)->Iterable:
     """
     获取扁平数组的第一个数组
     :param arr:
@@ -22,7 +25,7 @@ def getFlatten(arr:Iterable)->Iterable:
     return arr[0] if len(arr) else None
 
 
-def random_filename(filename:str)->str:
+def random_filename(filename: str)->str:
     """
     随机文件名
     :param filename: 原始文件名称
@@ -45,7 +48,7 @@ def get_day_zero_time() ->tuple:
     return now.strftime('%Y-%m-%d'),round(date_zero_time-time.time())
 
 
-def sort_pinyin(queryset:Iterable)->dict:
+def sort_pinyin(queryset: Iterable)->dict:
     """
     根据用户名称的首字母进行分类
     :param queryset:
@@ -63,6 +66,26 @@ def sort_pinyin(queryset:Iterable)->dict:
         dic[pinyin].append(user_dict)
     return dict(sorted(dic.items(),key=lambda x:x[0]))
 
+
+def stdout(s: str):
+    """
+    输出
+    :param s: 字符串
+    :return:
+    """
+    print(s.center(50, '*'))
+
+
+def rounding(num: Union[str, Decimal], reserve_decimal: str = '0.0') -> Decimal():
+    """
+    四舍五入
+    :param num:数字
+    :param reserve_decimal: 保留几位小数
+    :return:
+    """
+    if isinstance(num, (int, float)):
+        num = str(num)
+    return Decimal(num).quantize(Decimal(reserve_decimal), rounding=ROUND_HALF_UP)
 
 
 if __name__ == '__main__':

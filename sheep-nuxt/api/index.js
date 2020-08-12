@@ -1,0 +1,76 @@
+import common_crud from './common-crud'
+/*
+搜索
+ */
+export const api_s=common_crud('/v1/s/')
+/*
+轮播图
+ */
+export const api_banner=common_crud('/v1/web/banner/')
+/*
+热门
+*/
+export const api_hot=common_crud('/v1/web/hot/')
+/*
+所有文章
+ */
+export const api_post=common_crud('/v1/web/post/')
+/*
+详情页分类推荐
+*/
+export const api_category_post=common_crud('/v1/web/category_post')
+/*
+详情页相关分类
+*/
+export const api_correlation_category=common_crud('/v1/web/correlation_category')
+/*
+详情页作者推荐
+*/
+export const api_author_post=common_crud('/v1/web/author_post')
+/*
+登录相关
+ */
+export const api_login=common_crud('/v1/web/login/')
+
+/*
+用户修改相关
+ */
+export const api_user=common_crud('/v1/web/user/')
+
+/*
+获取所有帖子类别
+ */
+export const api_post_category=common_crud('/v1/web/post_category/')
+/*
+个人创建帖子,个人所有帖子
+ */
+export const api_user_post=common_crud('/v1/web/user_post/')
+/*
+获取反馈类别
+ */
+export const api_feedback_category=common_crud('/v1/feedback_category/')
+/*
+提交反馈相关
+ */
+export const api_feedback=common_crud('/v1/feedback/')
+
+/*
+获取远端公共配置
+ */
+export const api_option=common_crud('/v1/option/')
+/*
+收藏分类
+*/
+export const api_user_collect_category=common_crud('/v1/web/user_collect_category')
+/*
+用户收藏
+ */
+export const api_user_collect=common_crud('/v1/web/user_collect')
+
+/*
+* 上传文件接口
+* post请求:{file:文件对象}
+* 响应:{'code':2000,'msg':'ok',url:文件存储后的url}
+* */
+export const api_upload=common_crud('/v1/upload/')
+

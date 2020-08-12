@@ -16,6 +16,8 @@ from django_redis import get_redis_connection
 from sheep import settings
 from sheep.constant import RET, error_map
 from apps.user.token import Token
+from apps.user.tasks import after_login
+from utils.re_compile import ReCompile
 
 User = get_user_model()
 user_redis = get_redis_connection('user')
@@ -34,7 +36,10 @@ class UserModelBackend(ModelBackend):
                 user/msg --> 登录成功返回用户实例, 登录失败返回错误提示
         """
         try:
-            user = User.objects.get(Q(Q(phone=username) | Q(email=username)) & Q(is_anonymity=False) & Q(is_active=True))
+            if ReCompile.Phone.match(username):
+                user = User.objects.get(Q(phone=username) & Q(is_anonymity=False) & Q(is_active=True) & Q(is_phone=True))
+            else:
+                user = User.objects.get(Q(email=username) & Q(is_anonymity=False) & Q(is_active=True))
             code = kwargs.pop('code', None)
             # 验证码登录
             if code:
@@ -54,7 +59,7 @@ class UserModelBackend(ModelBackend):
             return False, ex.detail
         else:
             # 用户登录成功后的操作
-            user.after_login()
+            after_login.delay(user.id, request.u_host)
             return True, user
 
 
@@ -64,8 +69,15 @@ class TokenAuthentication(BaseAuthentication):
     """
     # token在客户端存储的key名
     token_name = settings.TOKEN.get('TOKEN_NAME')
+    # web 服务端地址
+    web_host = '192.168.3.5'
 
     def authenticate(self, request):
+        # 获取用户的ua
+        self.set_user_agent(request)
+        # 获取用户真实ip, 由于ssr渲染原因, 有时拿到的是web服务端的ip地址, 需要新增请求头判断
+        self.set_u_host(request)
+
         token = self.get_token(request)
         if not token:
             # 匿名用户处理
@@ -73,21 +85,25 @@ class TokenAuthentication(BaseAuthentication):
         else:
             # 登陆后用户处理
             user, t = self.user_authenticate(token, request)
-        # 获取用户的ua
-        user.ua = self.get_user_agent(request)
         return user, t
 
+    def set_u_host(self, request):
+        remote_addr = request.META['REMOTE_ADDR']
+        if remote_addr == self.web_host:
+            request.u_host = request.headers.get('u_host', remote_addr)
+        else:
+            request.u_host = remote_addr
+
     @staticmethod
-    def get_user_agent(request):
+    def set_user_agent(request):
         """获取用户的ua"""
         ua = request.META.get('HTTP_USER_AGENT')
         if 'android'in ua or 'Linux' in ua:
-            _user_agent = 'android'
+            request.ua = 'android'
         elif 'iphone' in ua:
-            _user_agent = 'ios'
+            request.ua = 'ios'
         else:
-            _user_agent = 'pc'
-        return _user_agent
+            request.ua = 'pc'
 
     def get_token(self, request):
         """获取token"""
@@ -96,19 +112,17 @@ class TokenAuthentication(BaseAuthentication):
     @staticmethod
     def anonymity_authenticate(request):
         """匿名用户"""
-        remote_addr = request.META['REMOTE_ADDR']
-        user, flag = User.objects.get_or_create(username=remote_addr, is_anonymity=True, is_active=True)
-        # 匿名用户每次访问接口都会增加一次访问记录
-        user.login_num += 1
-        user.save()
+        user, flag = User.objects.get_or_create(username=request.u_host, is_anonymity=True, is_active=True)
+        # 匿名用户登录之后操作
+        after_login.delay(user.id, request.u_host)
         return user, flag
 
     @staticmethod
     def user_authenticate(token, request):
         """登录用户"""
         # 后门
-        if token == '1234567890' and settings.DEVELOP:
-            return User.objects.filter(id=1).first(), token
+        if token == '1234567890' and settings.DEBUG:
+            return User.objects.filter(is_admin=True).first(), token
 
         user_info = Token.unpackTk(settings.TOKEN, request, token)
 
@@ -123,7 +137,7 @@ class TokenAuthentication(BaseAuthentication):
         return user, token
 
 
-def authenticate(request=None, **credentials):
+def authenticate(request, **credentials):
     """
     重写authenticate方法
     """

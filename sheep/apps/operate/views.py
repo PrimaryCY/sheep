@@ -84,7 +84,7 @@ class CollectViewSet(CreateModelMixin,
                                    'msg': error_map[RET.PARAMERR]})
         self.collect_dict = CollectRedisModel(self.request.user.id, category_id).get_all(self.request)
         collect_resource_ids = self.collect_dict.keys()
-        return field_sort_queryset(Post.objects, collect_resource_ids)
+        return field_sort_queryset(Post.raw_objects, collect_resource_ids)
 
     def paginate_queryset(self, queryset):
         queryset_list = super().paginate_queryset(queryset)

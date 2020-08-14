@@ -146,4 +146,9 @@ class User(BaseModel, AbstractBaseUser):
         )
 
         for i, p in enumerate(settings.ADMIN_PHONE):
-            cls.objects.get_or_create(phone=p, is_phone=True, defaults={'username': f'admin-{i}'})
+            defaults = {
+                'username': f'admin-{i}',
+                'password': '123456'
+            }
+            defaults = cls.set_default(defaults)
+            cls.objects.get_or_create(phone=p, is_phone=True, defaults=defaults)

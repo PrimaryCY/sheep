@@ -109,9 +109,9 @@
 								:need_border_top="false"
 								:list="collect_data.results">
 					<template v-slot:item-content="data">
-						<common_post_item
+						<collect_post_item
 										:post="data.item">
-						</common_post_item>
+						</collect_post_item>
 					</template>
 				</list>
 				<div class="collect-pagination">
@@ -127,31 +127,31 @@
 </template>
 
 <script>
-	import {mapState} from 'vuex'
+    import {mapState} from 'vuex'
 
   import {
     api_user_collect_category,
 		api_user_collect
   } from '../../../api'
 	import not_data from '@/components/not_data'
-  import list from '@/components/list/list'
-  import common_post_item from '@/components/list/item/common_post_item'
+    import list from '@/components/list/list'
+    import collect_post_item from '@/components/list/item/collect_post_item'
 	import {pickerOptions} from '../../../utils/util'
-  import pagination from '../../../components/pagination'
+    import pagination from '../../../components/pagination'
 
 
   export default {
-    name: 'my_collect_detail',
+        name: 'my_collect_detail',
 		data(){
-      return {
-        pickerOptions,
-        not_found:false,
-        collect_desc:{
+            return {
+          pickerOptions,
+          not_found:false,
+          collect_desc:{
 					name:'读取中...',
 					desc:'数据正在快马加鞭的赶过来!'
 				},
-				collect_data:[],
-				params:{
+          collect_data:{},
+          params:{
           limit:10,
           offset:0,
           collect_id: this.$route.params.id,
@@ -181,53 +181,53 @@
 			async _get_collect_data(){
 				// 获取收藏集内的文章/问答数据
 				this.move_to_top()
-        let loading = this.openLoading({
-          text:'加载中...',
-          target:'#l'
-        })
-        let res = await api_user_collect.list(this.params)
-        res =res.data
-        if(res.code !== 2000){
-          loading.close()
-          return this.$message(res.msg)
-        }
-        this.collect_data = res.data
-        loading.close()
+                let loading = this.openLoading({
+                text:'加载中...',
+                target:'#l'
+                })
+                let res = await api_user_collect.list(this.params)
+                res =res.data
+                if(res.code !== 2000){
+                    loading.close()
+                    return this.$message(res.msg)
+                }
+                this.collect_data = res.data
+                loading.close()
 			},
 			filter_collect(){
-        // 点击查询
-        if(this.form.collect_time_range){
-          this.params.start_collect_time=this.form.collect_time_range[0]
-          this.params.end_collect_time=this.form.collect_time_range[1]
-        }else{
-          this.params.start_collect_time=null
-          this.params.end_collect_time=null
-        }
-        if(this.form.post_category){
-          this.params.category=this.form.post_category[this.form.post_category.length-1]
-        }else {
-          this.params.category=null
-        }
-        this.params.search = this.form.search
-				this.params.post_type = this.form.post_type
-        this._get_collect_data()
-			}
-		},
+                // 点击查询
+                if(this.form.collect_time_range){
+                  this.params.start_collect_time=this.form.collect_time_range[0]
+                  this.params.end_collect_time=this.form.collect_time_range[1]
+                }else{
+                  this.params.start_collect_time=null
+                  this.params.end_collect_time=null
+                }
+                if(this.form.post_category){
+                  this.params.category=this.form.post_category[this.form.post_category.length-1]
+                }else {
+                  this.params.category=null
+                }
+                this.params.search = this.form.search
+                        this.params.post_type = this.form.post_type
+                this._get_collect_data()
+                    }
+                },
 		created () {
-      if(process.server)return
-			this._get_collect_desc()
-			this._get_collect_data()
-    },
-    computed:{
-      ...mapState(['option'])
-    },
+              if(process.server)return
+                    this._get_collect_desc()
+                    this._get_collect_data()
+                },
+        computed:{
+          ...mapState(['option'])
+        },
 		inject:['push', 'move_to_top'],
 		components:{
-      not_data,
-			list,
-			common_post_item,
-			pagination
-		}
+          not_data,
+                list,
+                collect_post_item,
+                pagination
+            }
   }
 </script>
 

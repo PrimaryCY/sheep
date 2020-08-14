@@ -92,7 +92,7 @@
                                     <img :src="i.image">
                                   </el-col>
                                   <el-col :span="15" :offset="1">
-                                    <div class="ellipsis">
+                                    <div class="ellipsis" style="margin-bottom: 5px">
                                       {{i.name}}
                                     </div>
                                     <font_icon  v-if="i.is_show" :type="5">

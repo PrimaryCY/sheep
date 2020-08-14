@@ -373,8 +373,8 @@
 				}
 			}
 			.add{
-				width: 270px;
-				height: 350px;
+				/*width: 270px;*/
+				/*height: 350px;*/
 				cursor: pointer;
 				div{
 					line-height: 350px;

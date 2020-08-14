@@ -15,6 +15,7 @@ import sys
 import time
 from multiprocessing import cpu_count
 
+from redis.client import StrictRedis
 from celery.schedules import crontab
 from django_redis import get_redis_connection
 
@@ -101,6 +102,14 @@ TEMPLATES = [
 
 DATABASES = {
     'default': {
+        # 'ENGINE': 'djdbpool.db.backends.mysql',
+        # 'POOL': {  # 更多的配置请参考DBUtils的配置
+        #    'minsize': 5, # 初始化时，连接池中至少创建的空闲的链接，0表示不创建，不填默认为5
+        #    'maxsize': 5,  # 连接池中最多闲置的链接，0不限制，不填默认为0
+        #    'maxconnections': 5, # 连接池允许的最大连接数，0表示不限制连接数, 默认为0
+        #    'blocking': True, # 连接池中如果没有可用连接后，是否阻塞等待。True:等待；False:不等待然后报错, 默认False
+        # },
+
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'sheep',
         'HOST': '127.0.0.1',
@@ -111,14 +120,13 @@ DATABASES = {
         'OPTIONS': {
             # 'init_command': 'SET default_storage_engine=INNODB;',
             'charset': 'utf8mb4', },
-        "CONN_MAX_AGE": 600,
+        "CONN_MAX_AGE": 1000,
         'TEST': {
             'CHARSET': 'utf8mb4',
             'COLLATION': 'utf8_general_ci',
         }
     },
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -321,8 +329,8 @@ CACHES = {
     },
 }
 from django_redis import get_redis_connection
-USER_REDIS = get_redis_connection('user')
-OPERATE_REDIS = get_redis_connection('operate')
+USER_REDIS: StrictRedis = get_redis_connection('user')
+OPERATE_REDIS: StrictRedis = get_redis_connection('operate')
 
 # celery配置
 CELERY_BROKER_BACKEND = "redis"

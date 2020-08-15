@@ -12,5 +12,5 @@ from django_celery_results.models import TaskResult
 def clear_celery_results():
     with transaction.atomic():
         result = TaskResult.objects.get_all_expired(settings.CELERY_RESULT_EXPIRES)
-        mod_row = result.update(is_active=False)
+        mod_row = result.update(worker='DELETE')
     return mod_row

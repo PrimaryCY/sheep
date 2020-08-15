@@ -4,7 +4,7 @@ import Vue from 'vue'
 let settings={
 }
 
-settings.DEBUG=true
+settings.DEBUG= process.env.NODE_ENV !== 'production';
 
 if(settings.DEBUG){
   //socket的url地址
@@ -12,7 +12,7 @@ if(settings.DEBUG){
   //后台url地址
   settings.SERVER_URL='http://127.0.0.1:8000/api'
 }else {
-  settings.SERVER_URL='http://192.168.3.5:8000/api'
+  settings.SERVER_URL='http://49.235.206.243:8000/api'
   settings.SOCKET_URL='http://192.168.105.228:5000'
 }
 

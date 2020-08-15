@@ -33,7 +33,8 @@
     "qiniu-js": "3.0.3",
     "tinymce": "^5.2.1",
     "vue-infinite-scroll": "2.0.2",
-    "vue-particles": "^1.0.9"
+    "vue-particles": "^1.0.9",
+    "webpack-cli": "^3.3.12"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^2.0.0",

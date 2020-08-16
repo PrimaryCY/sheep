@@ -16,7 +16,9 @@ class BannerViewSet(GenericViewSet):
     """轮播图,点赞数最多的前5条"""
     serializer_class = BannerSerializer
     permission_classes = ()
-    queryset = Post.objects.filter(image__isnull=False).order_by('praise_num').values('id', 'image', 'name')[:5]
+
+    def get_queryset(self):
+        return Post.objects.filter(image__isnull=False).order_by('praise_num').values('id', 'image', 'name')[:5]
 
     @only_data_cache_response(timeout=120*60)
     def list(self, request, *args, **kwargs):
@@ -29,7 +31,9 @@ class HotViewSet(ListModelMixin,
     """热门,浏览数最多的前15条"""
     serializer_class = HotSerializer
     permission_classes = ()
-    queryset = Post.objects.order_by('read_num').values('id', 'name', 'post_type', 'read_num', 'image')[:10]
+    
+    def get_queryset(self):
+        return Post.objects.order_by('read_num').values('id', 'name', 'post_type', 'read_num', 'image')[:10]
 
     @only_data_cache_response()
     def list(self, request, *args, **kwargs):

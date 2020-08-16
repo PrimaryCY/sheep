@@ -145,7 +145,10 @@
         rules:{
           category:[{required:true,message:'你忘了选反馈类别了呢😋!',trigger:'blur'}],
           html_content:[{required:true,message:'你忘了输入问题详细内容呢😘!',trigger:'blur'}],
-          contact_way:[{required:true,message:'亲,留个微信号吧😙!',trigger:'blur'}]
+          contact_way:[
+              {required:true,message:'亲,留个微信号吧😙!',trigger:'blur'},
+              {max: 30, message: '联系方式最多只能30个字符呢🙈', trigger: 'blur' }
+          ]
         },
         params:{
           limit:10,

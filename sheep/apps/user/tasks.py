@@ -9,6 +9,8 @@ from requests.exceptions import RequestException
 
 from celery import shared_task
 from celery.contrib import rdb
+from celery import result
+
 from django.conf import settings
 from django.db.models import F
 
@@ -55,7 +57,7 @@ def after_login(user_id, ip):
     if not user.last_login_province or not user.is_anonymity:
         params = copy.copy(settings.BD_API_MAP_PARAMS)
         params['ip'] = ip if ip != '127.0.0.1' else ''
-        data = send_bd_location_ip.delay(params=params).get()
+        data = send_bd_location_ip(params=params)
         if data:
             addr_detail = data['content']['address_detail']
             update_dict['last_login_province'] = addr_detail['province']

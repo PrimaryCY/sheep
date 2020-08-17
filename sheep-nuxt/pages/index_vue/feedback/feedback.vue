@@ -199,7 +199,7 @@
               'text':'提交中',
               'target':'.el-tabs__content',
             }
-          )
+          );
           this.form.content = this.$refs['tinymce'].get_content()
           let res = await api_feedback.create(this.form)
           res = res.data

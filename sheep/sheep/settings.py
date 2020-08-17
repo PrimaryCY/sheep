@@ -373,6 +373,11 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'apps.other.tasks.clear_celery_results',
         'schedule': crontab(minute=f"*/{CELERY_RESULT_EXPIRES}"),
     },
+    'real-clear-celery-results': {
+        # 真实清除
+        'task': 'apps.other.tasks.real_clear_celery_results',
+        'schedule': crontab(minute=f"*/{CELERY_RESULT_EXPIRES*5}"),
+    },
 }
 
 # Token配置

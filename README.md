@@ -53,6 +53,8 @@
 
 ### <font color=#ca0c16>项目展示</font>
 
+**项目地址(仅部分完成,持续更新中):http://49.235.206.243/index**
+
 <p align="center" >
 <img name='register' src="https://img-blog.csdnimg.cn/20200427115631329.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzQ4NTUwMg==,size_16,color_FFFFFF,t_70"/>
 
@@ -142,8 +144,6 @@ _后台部分:_
 cd sheep
 # 安装django依赖
 pip3 install -r requirements.txt
-# 生成数据库迁移文件
-python manage.py makemigrations
 # 执行迁移文件
 python manage.py migrate
 

@@ -7,7 +7,8 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin
 
 from apps.other.serializer import UploadHistorySerializer, OptionSerializer, FeedbackCategorySerializer, \
-    ListFeedbackSerializer, CreateFeedbackSerializer, UpdateFeedbackSerializer, CeleryResultsSerializer, UploadTokenSerializer
+    ListFeedbackSerializer, CreateFeedbackSerializer, UpdateFeedbackSerializer, CeleryResultsSerializer, \
+    UploadTokenSerializer
 from apps.other.filters import FeedbackFilter, UploadHistoryFilter
 from apps.other.models import UploadHistoryModel, Feedback, FeedbackCategory
 from apps.user.permission import IsLoginUser, IsAdminUser
@@ -25,7 +26,7 @@ class UploadTokenViewSet(CreateModelMixin,
     serializer_class = UploadTokenSerializer
     permission_classes = ()
 
-    @QiNiuCacheResponse(timeout=settings.QI_NIU_CLOUD.get('expires')-200)
+    @QiNiuCacheResponse(timeout=settings.QI_NIU_CLOUD.get('expires') - 200)
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -36,8 +37,8 @@ class UploadTokenViewSet(CreateModelMixin,
 
 
 class UploadHistoryViewSet(GenericViewSet,
-                            ListModelMixin,
-                            CreateModelMixin):
+                           ListModelMixin,
+                           CreateModelMixin):
     """上传文件历史纪录视图"""
     pagination_class = LimitOffsetPagination
     serializer_class = UploadHistorySerializer
@@ -47,6 +48,7 @@ class UploadHistoryViewSet(GenericViewSet,
     filter_fields = ('user_id', 'url')
     ordering_fields = "__all__"
     queryset = UploadHistoryModel.objects.all()
+
 
 
 class OptionViewSet(GenericViewSet):

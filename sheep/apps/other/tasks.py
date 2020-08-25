@@ -16,8 +16,13 @@ def clear_celery_results():
     return mod_row
 
 
+
+
+
 @shared_task()
 def real_clear_celery_results():
     with transaction.atomic():
         del_row = TaskResult.objects.filter(worker='DELETE').delete()
     return del_row
+
+

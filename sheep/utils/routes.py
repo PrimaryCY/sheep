@@ -28,5 +28,5 @@ class CustomRouter(DefaultRouter):
 
     def __init__(self, *args, **kwargs):
         self.extra_routes.extend(self.routes)
-        self.routes=self.extra_routes
+        self.routes = self.extra_routes
         super().__init__(*args,**kwargs)

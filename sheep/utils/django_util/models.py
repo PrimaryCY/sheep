@@ -6,6 +6,7 @@ from typing import Iterable
 from django.db import models
 from django.db.models import QuerySet
 from django.db.models.manager import BaseManager
+from django.db.transaction import atomic
 
 from utils.django_util.signals import pre_ud_save, aft_ud_save
 

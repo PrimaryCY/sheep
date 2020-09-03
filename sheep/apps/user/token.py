@@ -10,7 +10,12 @@ from typing import Union
 
 class Token(object):
 
-    # token存入redis中的唯一标识
+    """
+    user_info = {
+        'username': 1
+    }
+    user_info.get(key) 👇
+    """
     key = 'username'
     # request中的ua属性映射,根据框架的选择有不同的mapping
     ua_map = {
@@ -25,8 +30,9 @@ class Token(object):
                         TOKEN = {
                             'FRAME': 'django'
                             'TOKEN_SECURITY_KEY': b'pBy0j5_m6qqTOXElHSs0OlfV5qiYhqHkEvwLtdrXZ5o=',
-                            'TOKEN_EXPIRES': 7*24*3600,
-                            'TOKEN_REDIS': None
+                            'TOKEN_EXPIRES': 7*24*3600, #redis的key过期时间
+                            'TOKEN_REDIS': None,        #连接redis的实例
+                            'TOKEN_UNIQUE': True,       #是否单点登录
                         }
         :param request:请求对象
         """
@@ -38,9 +44,10 @@ class Token(object):
         )
         self.security_key = config.get('TOKEN_SECURITY_KEY')
         self.frame = config.get('FRAME').lower()
+        self.token_unique = config.get('TOKEN_UNIQUE', True)
 
         if config.get('TOKEN_REDIS'):
-            #设置token过期时间,默认七天
+            # 设置token过期时间,默认七天
             self.expires = config.get('TOKEN_EXPIRES', 7*24*3600)
             self.redis = config.get('TOKEN_REDIS')
 
@@ -69,13 +76,16 @@ class Token(object):
     def redis_key(self):
         """获取redis中存入的key名,来控制可以几端登录"""
         if not hasattr(self, '_redis_key'):
-            ua = self.get_ua()
-            if 'android'in ua or 'Linux' in ua:
-                self._redis_key = f'tk_android_{self.data.get(self.key)}'
-            elif 'iphone' in ua:
-                self._redis_key = f'tk_ios_{self.data.get(self.key)}'
-            else:
+            if self.token_unique:
                 self._redis_key = f'tk_pc_{self.data.get(self.key)}'
+            else:
+                ua = self.get_ua()
+                if 'android'in ua or 'Linux' in ua:
+                    self._redis_key = f'tk_android_{self.data.get(self.key)}'
+                elif 'iphone' in ua:
+                    self._redis_key = f'tk_ios_{self.data.get(self.key)}'
+                else:
+                    self._redis_key = f'tk_pc_{self.data.get(self.key)}'
         return self._redis_key
 
     @property
@@ -85,34 +95,42 @@ class Token(object):
             self._token = Fernet(self.security_key)
         return self._token
 
-    def _generate_token(self)->str:
+    def _generate_token(self) -> str:
         """生成token"""
         wait_token = msgpack.dumps(self.data)
         return (self.token.encrypt(wait_token)).decode()[::-1]
 
-    def _encryptTk(self, data: Mapping)-> Union[str, bool]:
+    def _encryptTk(self, data: Mapping) -> Union[str, bool]:
         """
         加密token
         """
         assert isinstance(data, Mapping), (
             "data必须是一个字典类型|类字典类型的数据"
         )
+
         self.data = dict(data)
         token = self._generate_token()
         if self.redis:
             assert data.get(self.key, None), (
-                '传入的属性必须要有唯一标识属性ID!')
+                '传入的属性必须要有唯一标识属性ID来作为redis的key!')
+
             res = self.redis.setex(self.redis_key, self.expires, token)
             if not res:return False
         return token
 
-    def _deleteTk(self, data:Mapping)->bool:
+    def _deleteTk(self, data: Mapping) -> bool:
         """删除token"""
+        assert isinstance(data, Mapping), (
+            "data必须是一个字典类型|类字典类型的数据"
+        )
+
         if self.redis:
+            assert data.get(self.key, None), (
+                '传入的属性必须要有唯一标识属性ID来作为redis的key!')
             self.data = data
             return self.redis.delete(self.redis_key)
 
-    def _unpackTk(self, token:str)->Union[dict,bool]:
+    def _unpackTk(self, token: str) -> Union[dict, bool]:
         """
         :return:dict
         """
@@ -153,7 +171,7 @@ class Token(object):
         :param config: 配置文件,dict形式
         :param request:request的请求实例
         :param token: token字符串
-        :return: 解密成功返回user对象
+        :return: 解密成功返回user_info对象
                  解密失败返回false布尔值
         """
         return cls(config, request)._unpackTk(token)

@@ -2,7 +2,7 @@
 # author:CY
 # datetime:2019/12/13 13:54
 from django.conf.urls import include
-from django.urls import path
+from django.urls import path, re_path
 
 from utils.routes import CustomRouter
 from apps.user.views import UserViewSet, LoginViewSet

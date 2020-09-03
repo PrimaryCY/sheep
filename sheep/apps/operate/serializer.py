@@ -11,7 +11,7 @@ from apps.operate.models import CollectCategory, Collect, Praise, Focus, Collect
 from apps.post.models import Post
 from apps.post.serializer import PostSerializer
 from sheep.constant import RET
-from utils.extra_fields import CurrentUserIdDefault
+from utils.extra_fields import CurrentUserIdDefault, RangeField
 
 
 User = get_user_model()
@@ -78,27 +78,51 @@ class CreateCollectSerializer(serializers.Serializer):
 
 class CreatePraiseSerializer(serializers.Serializer):
     """用户点赞序列化器"""
-    is_active = serializers.ReadOnlyField(label='状态')
     resource_id = serializers.IntegerField(label='资源id')
-    type = serializers.ChoiceField(choices=Collect.TYPE_CHOICES, label='点赞类型')
-    created_time = serializers.DateTimeField(read_only=True, label='点赞时间')
+    praise_or_trample = serializers.IntegerField(label='点赞或是踩')
+    t = RangeField(iterable=list(Praise.PRAISE_TYPE_CHOICE), data_type=int)
 
     def validate(self, attr):
-        type = attr.get('type')
         resource_id = attr.get('resource_id')
-        resource = Praise.TYPE_MODEL[type].objects.filter(id=resource_id).only('id').first()
+        resource = Post.objects.filter(id=resource_id).only('id').exists()
         if not resource:
             raise serializers.ValidationError({'code': RET.PARAMERR, 'msg': '不存在该资源!'})
         return attr
 
     def create(self, validated_data: dict):
-        type = validated_data.get('type')
+        user_id = self.context['request'].user.id
         resource_id = validated_data.get('resource_id')
-        obj, created = Collect.raw_objects.get_or_create(resource_id=resource_id, type=type, defaults=validated_data)
-        if not created:
-            obj.is_active = not F('is_active')
-            obj.save()
-        return obj
+        praise_or_trample = validated_data.get('praise_or_trample')
+        t = validated_data.get('t')
+        return_num = Praise.add_or_del_praise_num(user_id=user_id,
+                                                  resource_id=resource_id,
+                                                  praise_or_trample=praise_or_trample,
+                                                  t=t)
+
+        temp = {
+            1: '💕点赞成功！',
+            0: '💔取消成功...',
+            -1: '👎的漂亮！'
+        }
+        self._data = {
+            "success": True,
+            "code": RET.OK,
+            "data": {
+                'msg': temp.get(praise_or_trample),
+                'return_num': return_num
+            }
+        }
+        return validated_data
+
+
+class ListPraiseSerializer(PostSerializer):
+    """点赞/踩列表页序列化器"""
+    update_praise_time = serializers.DateTimeField(read_only=True, label='点赞/踩时间')
+    newest_user_id = None
+
+    class Meta:
+        model = Post
+        exclude = ("content", "html_content")
 
 
 class CreateFocusSerializer(serializers.Serializer):
@@ -127,6 +151,7 @@ class CreateFocusSerializer(serializers.Serializer):
 
 
 class CollectPostSerializer(PostSerializer):
+    """收藏列表页序列化器"""
     created_like_time = serializers.DateTimeField(read_only=True, label='收藏时间')
     newest_user_id = None
 

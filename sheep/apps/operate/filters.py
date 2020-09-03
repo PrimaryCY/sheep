@@ -4,6 +4,7 @@
 import django_filters
 from django.contrib.auth import get_user_model
 from django_filters import rest_framework as filters
+from django_filters.rest_framework import FilterSet
 
 from apps.operate.models import CollectCategory, Collect, Praise, Focus
 from utils.django_util.util import field_sort_queryset
@@ -28,12 +29,10 @@ User = get_user_model()
 #         fields = ('',)
 
 
-class PraiseFilter(filters.FilterSet):
-    type = filters.ChoiceFilter(choices=Collect.TYPE_CHOICES, label='点赞资源分类', required=True)
+class PraiseFilter(FilterSet):
+    start_update_time = django_filters.DateFilter(field_name='update_time', lookup_expr='gte', label='开始创建')
+    end_update_time = django_filters.DateFilter(field_name='update_time', lookup_expr='lte', label='结束创建')
 
-    class Meta:
-        model = Praise
-        fields = ('type', )
 
 
 class FocusFilter(filters.FilterSet):

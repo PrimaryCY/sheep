@@ -97,7 +97,7 @@ class TokenAuthentication(BaseAuthentication):
     @staticmethod
     def set_user_agent(request):
         """获取用户的ua"""
-        ua = request.META.get('HTTP_USER_AGENT')
+        ua = request.META.get('HTTP_USER_AGENT', [])
         if 'android'in ua or 'Linux' in ua:
             request.ua = 'android'
         elif 'iphone' in ua:

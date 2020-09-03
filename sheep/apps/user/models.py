@@ -110,7 +110,8 @@ class User(BaseModel, AbstractBaseUser):
         :param user_id:
         :return:
         """
-        return dict(cls.objects.filter(id=user_id).values('id', 'username', 'portrait').first())
+        user = cls.objects.filter(id=user_id).values('id', 'username', 'portrait').first()
+        return dict(user) if user else {'username': "用户未找到"}
 
     @classmethod
     def get_post_retrieve_author_info(cls, user_id: Union[int, object]):
@@ -148,7 +149,8 @@ class User(BaseModel, AbstractBaseUser):
         for i, p in enumerate(settings.ADMIN_PHONE):
             defaults = {
                 'username': f'admin-{i}',
-                'password': '123456'
+                'password': '123456',
+                'phone': p
             }
             defaults = cls.set_default(defaults)
             cls.objects.get_or_create(phone=p, is_phone=True, defaults=defaults)

@@ -2,8 +2,10 @@
 # author:CY
 # datetime:2020/7/31 15:14
 from celery import shared_task
+from django.db.models import F
 
-from apps.operate.models import Collect, CollectRedisModel
+from apps.operate.models import Collect, CollectRedisModel, Praise
+from apps.post.models import Post
 
 
 @shared_task()
@@ -32,3 +34,21 @@ def after_collect(category_id, resource_id, is_active, *args, **kwargs):
     Collect.after_collect(category_id,
                           resource_id,
                           is_active)
+
+
+@shared_task()
+def after_praise_or_trample(operation: int, user_id: int, resource_id: int, praise_or_trample: int, t: int):
+    """
+    点赞redis之后的持久化到mysql操作
+    :param user_id:
+    :param resource_id:
+    :param operation:
+    :param praise_or_trample:
+    :param t:
+    :return:
+    """
+    model = Praise.PRAISE_TYPE_MODEL_MAPPING[t]
+    model.objects.filter(id=resource_id).update(praise_num=F('praise_num')+operation)
+    Praise.objects.update_or_create(defaults={
+        'praise_or_trample': praise_or_trample
+    }, user_id=user_id, resource_id=resource_id, t=t)

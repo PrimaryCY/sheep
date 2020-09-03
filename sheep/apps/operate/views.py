@@ -12,23 +12,21 @@ from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.viewsets import GenericViewSet
 
-from apps.operate.filters import PraiseFilter
 from apps.operate.tasks import after_collect, after_delete_user_category
+from apps.operate.filters import PraiseFilter
 from apps.post.filters import PostFilter
 from apps.post.models import Post
-from apps.post.serializer import PostSerializer
 from apps.user.serializer import ListCreateUserSerializer
 from sheep.constant import RET, error_map
 from utils.viewsets import ExtensionViewMixin
-from utils.django_util.util import field_sort_queryset
+from utils.django_util.util import field_sort_queryset, raw_sort_queryset
 from utils.mixins import CreateModelMixin
 from utils.pagination import LimitOffsetPagination
 from utils.viewsets import ModelViewSet, ReadOnlyModelViewSet
-from apps.operate.models import CollectCategory, TYPE_SERIALIZER_MAPPING, Praise, Focus, \
+from apps.operate.models import CollectCategory, Praise, Focus, \
     CollectRedisModel
 from apps.operate.serializer import CollectCategorySerializer, CreateCollectSerializer, \
-    CreateFocusSerializer, CollectPostSerializer
-
+    CreateFocusSerializer, CollectPostSerializer, ListPraiseSerializer, CreatePraiseSerializer
 
 User = get_user_model()
 
@@ -100,42 +98,27 @@ class CollectViewSet(CreateModelMixin,
 
 
 class PraiseViewSet(CreateModelMixin,
+                    ExtensionViewMixin,
                     ListModelMixin,
                     GenericViewSet):
     """用户点赞视图"""
-    r_serializer_class = None
-    c_serializer_class = CreateCollectSerializer
+    serializer_class = {
+        'list': ListPraiseSerializer,
+        'create': CreatePraiseSerializer
+    }
     filter_backends = (DjangoFilterBackend,)
     pagination_class = LimitOffsetPagination
-    filterset_class = PraiseFilter
+    filter_class = PraiseFilter
+    # 仅支持用户看到自己点赞的文章
+    queryset = Praise.objects.filter(t=1)
 
-    # 资源类型和serializer的映射
-    TYPE_SERIALIZER = TYPE_SERIALIZER_MAPPING
-
-    @property
-    def type(self):
-        """request的get参数type的值"""
-        if not hasattr(self, '_type'):
-            self._type = int(self.request.query_params.get('type'))
-        return self._type
-
-    def get_queryset(self):
-        return Praise.objects.filter(user_id=self.request.user.id)
-
-    def get_serializer_class(self):
-        if self.action == 'create':
-            return self.c_serializer_class
-        return self.TYPE_SERIALIZER[self.type]
-
-    def filter_queryset(self, queryset: QuerySet):
-        queryset = super().filter_queryset(queryset)
-        return Praise.TYPE_MODEL[self.type].objects.filter(id=queryset.values_list('resource_id', flat=True)).all()
-
-    @transaction.atomic()
-    def perform_create(self, serializer):
-        instance = serializer.save()
-        # 增加或减少对应资源的点赞数
-        Praise.add_or_del_praise_num(instance)
+    def paginate_queryset(self, queryset):
+        queryset_list = super().paginate_queryset(queryset)
+        post_ids = {i.resource_id: i.update_time for i in queryset_list}
+        real_post = raw_sort_queryset(Post, post_ids.keys())
+        for i in real_post:
+            i.update_praise_time = post_ids.get(i.id)
+        return real_post
 
 
 class FocusViewSet(ListModelMixin,

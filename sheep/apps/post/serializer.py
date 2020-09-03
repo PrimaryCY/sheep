@@ -292,7 +292,7 @@ class RetrievePostSerializer(PostSerializer):
     def get_is_praise(self, obj):
         from apps.operate.models import Praise
         return Praise.select_is_praise(self.context['request'].user.id,
-                                       1, obj.id)
+                                       obj.id, 1)
 
     def get_author_info(self, obj):
         """帖子创建人信息"""

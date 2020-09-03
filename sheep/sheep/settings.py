@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/2.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
-
 import os
 import sys
 import time
@@ -92,10 +91,19 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
             ],
         },
     },
 ]
+
+
+# 配置微博开放平台授权(使用其它平台注意更改关键字)
+SOCIAL_AUTH_WEIBO_KEY = ''
+SOCIAL_AUTH_WEIBO_SECRET = ''
+
+# 登录成功后跳转页面
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/index/'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -121,9 +129,10 @@ DATABASES = {
             # 'init_command': 'SET default_storage_engine=INNODB;',
             'charset': 'utf8mb4', },
         "CONN_MAX_AGE": 1000,
+        'CHARSET': 'utf8mb4',
+        'COLLATION': 'utf8mb4_general_ci',
         'TEST': {
-            'CHARSET': 'utf8mb4',
-            'COLLATION': 'utf8_general_ci',
+            'NAME': 'test_sheep',
         }
     },
 }

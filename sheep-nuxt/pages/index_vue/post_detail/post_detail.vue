@@ -25,7 +25,6 @@
                 </el-col>
                 <el-col :span="4">
                   <div class="on cancel-select">
-                    <no-ssr>
                       <star
                               ref="praise"
                               animate="animated bounceIn"
@@ -36,21 +35,18 @@
                           <use xlink:href="#icon-icon_likegood"></use>
                         </svg>
                       </star>
-                    </no-ssr>
                     <span>&nbsp;{{data.praise_num}}&nbsp;</span>
-                    <no-ssr>
                       <star
                               ref="tread"
                               animate="animated bounceIn"
                               color="#b53c57">
                         <svg class="icon-mid pointer compatibility-icon"
                              slot="icon"
-                             @click="click_praise_or_tread(2)"
+                             @click="click_praise_or_tread(-1)"
                              aria-hidden="true">
                           <use xlink:href="#icon-cai-copy"></use>
                         </svg>
                       </star>
-                    </no-ssr>
                   </div>
                 </el-col>
                 <el-col :span="2">
@@ -263,6 +259,7 @@
     api_user_collect,
     api_user_collect_category,
     api_correlation_category,
+    api_user_praise,
     api_author_post} from '../../../api'
   import tinymceEditor from '../../../components/Tinymce/tinymce-editor'
   import post_detail_list from '../../../components/list/post-detail-list'
@@ -310,11 +307,11 @@
       }
     },
     components:{
-      tinymceEditor,
-			post_detail_list,
-      post_detail_item,
-      star,
-      font_icon
+        tinymceEditor,
+        post_detail_list,
+        post_detail_item,
+        star,
+        font_icon
     },
     computed:{
       ...mapState(['pack_up', 'user']),
@@ -355,17 +352,47 @@
       return return_dict
     },
     methods:{
-      click_praise_or_tread(flag){
-        // 点赞或者踩, flag=1为点赞,flag=2为踩
-        if(flag===1){
+      async click_praise_or_tread(flag){
+          console.log(flag );
+          let data = {
+              t:1,
+              resource_id: this.data.id
+          };
+          if(this.data.is_praise === flag){
+              console.log('取消点赞/踩');
+              data['praise_or_trample'] = 0;
+              let res = await api_user_praise.create(data);
+              res = res.data;
+              if(res.code !== 2000)return;
+              this.data.praise_num += res.data.return_num;
+              this.custom_notify(res.data.msg);
+              this.data.is_praise = 0
+          }
+         else if(flag===1){
           if(this.$refs['tread'].active){
-            this.$refs['tread'].toggle()
+              this.$refs['tread'].toggle();
           }
+          console.log('点赞');
+          data['praise_or_trample'] = 1;
+          let res = await api_user_praise.create(data);
+          res = res.data;
+          if(res.code !== 2000)return;
+          this.data.praise_num += res.data.return_num;
+          this.custom_notify(res.data.msg);
+          this.data.is_praise = 1
 
-        }else if(flag===2){
+        }else if(flag===-1){
           if(this.$refs['praise'].active){
-            this.$refs['praise'].toggle()
+              this.$refs['praise'].toggle();
           }
+          console.log('踩');
+          data['praise_or_trample'] = -1;
+          let res = await api_user_praise.create(data);
+          res = res.data;
+          if(res.code !== 2000)return;
+          this.data.praise_num += res.data.return_num;
+          this.custom_notify(res.data.msg);
+          this.data.is_praise = -1
         }
       },
       async add_or_del_like(category){
@@ -467,10 +494,15 @@
           this.category_post = cate_post_res.data.data;
         }
       },
-      _pre_like_parise(){
+      _pre_like_praise(){
         // 页面加载预处理
-        if(!this.$refs['like'])return
-        this.$refs['like'].status = this.data.is_like
+          if(!this.$refs['like'])return;
+          this.$refs['like'].status = this.data.is_like;
+          if(this.data.is_praise === 1){
+              this.$refs['praise'].status = true;
+          }else if(this.data.is_praise === -1){
+              this.$refs['tread'].status = true;
+          }
       },
       click_add_category_btn(){
         // 点击新增收藏集按钮
@@ -482,7 +514,7 @@
     },
     async created(){
       await this._get_404_data()
-      this._pre_like_parise()
+      this._pre_like_praise()
     },
     mounted() {
       window.addEventListener('scroll', this.initHeight);
@@ -498,10 +530,28 @@
       "data.is_like":{
         deep:true,
         handler:function(n){
-          if(!this.$refs['like'])return
+          if(!this.$refs['like'])return;
           this.$refs['like'].status = n
         }
-      }
+      },
+        // "data.is_praise":{
+        //     deep:true,
+        //     handler:function(n){
+        //         if(n === 1){
+        //             console.log('点赞');
+        //             if(this.$refs['tread'].active) this.$refs['tread'].toggle();
+        //             this.$refs['praise'].status = true;
+        //         }else if(n === -1){
+        //             console.log('踩');
+        //             if(this.$refs['praise'].active) this.$refs['praise'].toggle();
+        //             this.$refs['tread'].status = true;
+        //         }else {
+        //             console.log('取消');
+        //             if(this.$refs['praise'].active) this.$refs['praise'].toggle();
+        //             if(this.$refs['tread'].active) this.$refs['tread'].toggle();
+        //         }
+        //     }
+        // },
     }
   }
 </script>

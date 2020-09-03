@@ -53,7 +53,10 @@
 
 ### <font color=#ca0c16>项目展示</font>
 
-**项目地址(仅部分完成,持续更新中):http://49.235.206.243/index**
+**项目地址(仅部分完成,持续更新中):**
+
+- http://49.235.206.243/index		ip地址
+- http://www.sheep.beer		 		域名地址
 
 <p align="center" >
 <img name='register' src="https://img-blog.csdnimg.cn/20200427115631329.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzQ4NTUwMg==,size_16,color_FFFFFF,t_70"/>
@@ -113,13 +116,13 @@
 
 ### <font color=#ca0c16>关系型数据库选型
 
-    - mysql
+    - mysql@5.7
 
 ---
 
 ### <font color=#ca0c16>非关系型数据库选型
 
-    - redis
+    - redis@3.2.12
 
 ---
 
@@ -127,7 +130,7 @@
 
 _celery部分:_
 
-```
+```bash
 # linux|macos:
 celery -B -A sheep.celery worker -l info
 
@@ -140,10 +143,12 @@ celery -A sheep.celery worker -l info --pool=eventlet
 
 _后台部分:_
 
-```
+```bash
 cd sheep
+
 # 安装django依赖
 pip3 install -r requirements.txt
+
 # 执行迁移文件
 python manage.py migrate
 
@@ -158,7 +163,7 @@ daphne sheep.asgi:application
 
 _前端部分:_
 
-```
+```bash
 # 开发环境:
 cd sheep-nuxt
 npm install
@@ -171,4 +176,4 @@ npm run build
 npm run start
 ```
 
-#
+

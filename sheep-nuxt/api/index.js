@@ -66,6 +66,10 @@ export const api_user_collect_category=common_crud('/v1/web/user_collect_categor
 用户收藏
  */
 export const api_user_collect=common_crud('/v1/web/user_collect')
+/*
+用户点赞或踩
+ */
+export const api_user_praise=common_crud('v1/web/user_praise');
 
 /*
 * 上传文件接口

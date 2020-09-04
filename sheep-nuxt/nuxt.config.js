@@ -81,12 +81,20 @@ module.exports = {
   ** Build configuration
   */
   build: {
-    /*
-    ** You can extend webpack config here
-    */
-    extend (config, ctx) {
-    },
-    vendor:['axios','tinymce/tinymce','@tinymce/tinymce-vue'],
-    maxChunkSize: 300000
+      analyze: true,
+      extractCSS: true,
+      optimization :{
+          splitChunks: {
+              chunks: 'all',
+              automaticNameDelimiter: '.',
+              name: 'sheep',
+              maxSize : 256000
+          }
+      },
+      extend (config, ctx) {
+
+      },
+      vendor:['axios','tinymce/tinymce','@tinymce/tinymce-vue', 'element-ui'],
+      maxChunkSize: 300000
   }
 }

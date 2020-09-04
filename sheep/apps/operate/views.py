@@ -109,6 +109,7 @@ class PraiseViewSet(CreateModelMixin,
     filter_backends = (DjangoFilterBackend,)
     pagination_class = LimitOffsetPagination
     filter_class = PraiseFilter
+    permission_classes = ()
     # 仅支持用户看到自己点赞的文章
     queryset = Praise.objects.filter(t=1)
 

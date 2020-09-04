@@ -39,7 +39,7 @@ def after_collect(category_id, resource_id, is_active, *args, **kwargs):
 @shared_task()
 def after_praise_or_trample(operation: int, user_id: int, resource_id: int, praise_or_trample: int, t: int):
     """
-    点赞redis之后的持久化到mysql操作
+    点赞redis之后的持久化到mysql操作,并且修改对应资源的praise总数
     :param user_id:
     :param resource_id:
     :param operation:
@@ -49,6 +49,9 @@ def after_praise_or_trample(operation: int, user_id: int, resource_id: int, prai
     """
     model = Praise.PRAISE_TYPE_MODEL_MAPPING[t]
     model.objects.filter(id=resource_id).update(praise_num=F('praise_num')+operation)
-    Praise.objects.update_or_create(defaults={
-        'praise_or_trample': praise_or_trample
-    }, user_id=user_id, resource_id=resource_id, t=t)
+    if praise_or_trample == 0:
+        Praise.objects.filter(user_id=user_id, resource_id=resource_id).delete()
+    else:
+        Praise.objects.update_or_create(defaults={
+            'praise_or_trample': praise_or_trample
+        }, user_id=user_id, resource_id=resource_id, t=t)

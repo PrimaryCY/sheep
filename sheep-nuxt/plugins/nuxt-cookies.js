@@ -13,7 +13,13 @@ export default({app}, inject)=> {
       data,
       secure_key
     ).toString();
-    Nuxt_cookies.set(keyName, cipherText, opts)
+
+    let opt = {
+      path: '/'
+    };
+    Object.assign(opt, opts);
+
+    Nuxt_cookies.set(keyName, cipherText, opt)
   }
 
   Nuxt_cookies.secure_get = function (keyName) {

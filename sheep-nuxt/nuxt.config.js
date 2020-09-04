@@ -1,3 +1,5 @@
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
+
 
 module.exports = {
   mode: 'universal',
@@ -81,18 +83,21 @@ module.exports = {
   ** Build configuration
   */
   build: {
-      analyze: true,
+      analyze: false,
       extractCSS: true,
       optimization :{
           splitChunks: {
               chunks: 'all',
               automaticNameDelimiter: '.',
               name: 'sheep',
+              minSize: 200000,
               maxSize : 256000
           }
       },
       extend (config, ctx) {
-
+          config.plugins.unshift(new LodashModuleReplacementPlugin);
+          // rules[2].use[0] is babel-loader
+          config.module.rules[2].use[0].options.plugins = ['lodash']
       },
       vendor:['axios','tinymce/tinymce','@tinymce/tinymce-vue', 'element-ui'],
       maxChunkSize: 300000

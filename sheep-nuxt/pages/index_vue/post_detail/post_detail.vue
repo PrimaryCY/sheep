@@ -405,7 +405,8 @@
         if(res.code!==2000){
           return this.custom_notify(res.msg)
         }
-        category.is_like=!category.is_like
+          // eslint-disable-next-line require-atomic-updates
+          category.is_like=!category.is_like
 				this.custom_notify(res.data)
         if(category.is_like){
           category.total++

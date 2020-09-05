@@ -80,21 +80,21 @@ module.exports = {
   /*
   ** Build configuration
   */
-  build: {
-      analyze: true,
-      extractCSS: true,
-      optimization :{
-          splitChunks: {
-              chunks: 'all',
-              automaticNameDelimiter: '.',
-              name: 'sheep',
-              maxSize : 256000
-          }
-      },
-      extend (config, ctx) {
-
-      },
-      vendor:['axios','tinymce/tinymce','@tinymce/tinymce-vue', 'element-ui'],
-      maxChunkSize: 300000
-  }
+    build: {
+        analyze: true,
+        extractCSS: true,
+        optimization :{
+            splitChunks: {
+                chunks: 'all',
+                automaticNameDelimiter: '.',
+                name: 'sheep',
+                minSize: 200000,
+                maxSize : 256000
+            }
+        },
+        extend (config, ctx) {
+        },
+        vendor:['axios','tinymce/tinymce','@tinymce/tinymce-vue', 'element-ui'],
+        maxChunkSize: 300000
+    }
 }

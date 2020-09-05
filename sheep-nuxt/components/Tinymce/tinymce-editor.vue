@@ -22,7 +22,7 @@
     plugins = require('./plugins.js')
     plugins = plugins.default
     require('tinymce/themes/silver')
-    require('tinymce/icons/default')
+    // require('tinymce/icons/default')
   }
 
 

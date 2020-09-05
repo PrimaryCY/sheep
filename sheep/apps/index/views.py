@@ -33,7 +33,7 @@ class HotViewSet(ListModelMixin,
     permission_classes = ()
 
     def get_queryset(self):
-        return Post.objects.order_by('read_num').values('id', 'name', 'post_type', 'read_num', 'image')[:10]
+        return Post.objects.order_by('-read_num').values('id', 'name', 'post_type', 'read_num', 'image')[:10]
 
     @only_data_cache_response()
     def list(self, request, *args, **kwargs):

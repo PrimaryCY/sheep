@@ -5,6 +5,7 @@ from celery import shared_task
 from django.db.models import F
 
 from apps.operate.models import Collect, CollectRedisModel, Praise
+from apps.user.models import User
 from apps.post.models import Post
 
 
@@ -49,6 +50,10 @@ def after_praise_or_trample(operation: int, user_id: int, resource_id: int, prai
     """
     model = Praise.PRAISE_TYPE_MODEL_MAPPING[t]
     model.objects.filter(id=resource_id).update(praise_num=F('praise_num')+operation)
+    # 匿名用户不持久化到mysql
+    if User.objects.filter(id=user_id, is_anonymity=True).exists():
+        return
+
     if praise_or_trample == 0:
         Praise.objects.filter(user_id=user_id, resource_id=resource_id).delete()
     else:

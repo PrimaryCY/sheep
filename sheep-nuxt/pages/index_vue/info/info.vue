@@ -281,8 +281,6 @@
 					loading.close()
 					return
 				}
-				console.log(123)
-				console.log(portrait_res)
 				this.edit.portrait=portrait_res.data.data.url
 				let user_res = await api_user.partial_update(null,this.edit)
 				if(user_res.data.code!==2000){

@@ -4,7 +4,7 @@
 from typing import Iterable
 
 from django.db import models
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
 from django.db.models.manager import BaseManager
 from django.db.transaction import atomic
 
@@ -19,19 +19,27 @@ class CustomQuerySet(QuerySet):
         aft_ud_save.send(sender=self.model, queryset=self, rows=rows)
         return rows
 
+    def _chain(self, **kwargs):
+        qs = super()._chain(**kwargs)
+        fields = {i.name for i in qs.model._meta.fields}
+        if 'is_active' in fields and not kwargs.get('is_active'):
+            qs.query.add_q(Q(is_active=True))
+        elif 'status' in fields and not kwargs.get('status'):
+            qs.query.add_q(Q(status=0))
+        return qs
+
 
 class BaseModelMange(BaseManager.from_queryset(CustomQuerySet)):
 
-    def all(self):
-        return self.filter().all()
+    ...
 
-    def filter(self, *args, **kwargs):
-        fields = {i.name for i in self.model._meta.fields}
-        if 'is_active' in fields and not kwargs.get('is_active'):
-            kwargs['is_active'] = True
-        elif 'status' in fields and not kwargs.get('status'):
-            kwargs['status'] = 0
-        return super().filter(*args, **kwargs)
+    # def filter(self, *args, **kwargs):
+    #     fields = {i.name for i in self.model._meta.fields}
+    #     if 'is_active' in fields and not kwargs.get('is_active'):
+    #         kwargs['is_active'] = True
+    #     elif 'status' in fields and not kwargs.get('status'):
+    #         kwargs['status'] = 0
+    #     return super().filter(*args, **kwargs)
 
 
 class BaseModel(models.Model):

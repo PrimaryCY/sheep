@@ -70,7 +70,7 @@ class TokenAuthentication(BaseAuthentication):
     # token在客户端存储的key名
     token_name = settings.TOKEN.get('TOKEN_NAME')
     # web 服务端地址
-    web_host = '192.168.3.5'
+    # web_host = '192.168.3.5'
 
     def authenticate(self, request):
         # 获取用户的ua
@@ -89,10 +89,11 @@ class TokenAuthentication(BaseAuthentication):
 
     def set_u_host(self, request):
         remote_addr = request.META['REMOTE_ADDR']
-        if remote_addr == self.web_host:
-            request.u_host = request.headers.get('u_host', remote_addr)
-        else:
-            request.u_host = remote_addr
+        # if remote_addr == self.web_host:
+        #     request.u_host = request.headers.get('u_host', remote_addr)
+        # else:
+        #     request.u_host = remote_addr
+        request.u_host = request.headers.get('u_host', remote_addr)
 
     @staticmethod
     def set_user_agent(request):

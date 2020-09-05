@@ -30,6 +30,7 @@
     "mavon-editor": "2.8.3",
     "nprogress": "0.2.0",
     "nuxt": "2.14.4",
+    "prettier": "2.1.1",
     "qiniu-js": "3.0.3",
     "tinymce": "5.2.1",
     "vue-infinite-scroll": "2.0.2",
@@ -45,5 +46,8 @@
     "node-sass": "4.14.1",
     "nodemon": "1.18.9",
     "sass-loader": "8.0.2"
+  },
+  "optionalDependencies": {
+    "fsevents": "*"
   }
 }

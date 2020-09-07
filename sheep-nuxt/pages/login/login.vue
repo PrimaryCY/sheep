@@ -190,7 +190,7 @@
                     if (this.loginData.remember_me) {
                         this.$cookies.secure_set('un', data.email_or_phone, {maxAge: this.$settings.TOKEN_EXPIRE})
                     }
-                    this.$router.replace({'name': 'index'})
+                    this.$router.replace(this.$route.query.from ||{'name': 'index'})
                 } else if (res.msg.indexOf('邮箱') !== -1) {
                     this.loginError.email_or_phone = res.msg
                 } else if (res.msg.indexOf('密码') !== -1) {

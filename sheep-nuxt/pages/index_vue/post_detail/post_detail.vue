@@ -355,6 +355,7 @@
         },
         methods: {
             async click_praise_or_tread(flag) {
+                // 用户点赞与点踩
                 console.log(flag)
                 let data = {
                     t: 1,
@@ -432,7 +433,20 @@
                 // 点击收藏星星图标
                 if (!this.user.username) {
                     this.like_dialog = false
-                    return this.blank_push({'name': 'login'})
+                    const h = this.$createElement;
+                    return this.$msgbox({
+                        title: '收藏👋',
+                        message: h('p', null, [
+                            h('i', { style: 'color: teal' }, '未登录用户暂不可以收藏🙈')
+                        ]),
+                        showCancelButton: true,
+                        confirmButtonText: '现在去登录➡️',
+                        cancelButtonText: '取消',
+                    }).then(() => {
+                        return this.blank_push({'name': 'login', 'query':{
+                            from:this.$route.path
+                            }})
+                    }).catch(() => {});
                 }
                 let collect = await api_user_collect_category.list({
                     resource_id: this.data.id,

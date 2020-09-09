@@ -2,6 +2,7 @@ import math
 import random
 import time
 import functools
+import logging
 from datetime import datetime, timedelta
 
 from django.db import models
@@ -15,6 +16,8 @@ from apps.post.serializer import PostSerializer
 from sheep.constant import RET, error_map
 from utils.django_util.models import BaseModel
 
+
+logger = logging.getLogger('django')
 # 废弃
 TYPE_CHOICES_MAPPING = (
         (1, '帖子'),
@@ -273,6 +276,7 @@ class Praise(BaseModel):
             if is_praise == 0:
                 return_num = num = +2 if is_not_praise else +1
                 p_after_praise_or_trample(num)
+        logger.info(f'add_or_del_praise_num--user_id:{user_id}')
         return return_num
 
     @classmethod
@@ -284,6 +288,7 @@ class Praise(BaseModel):
         :param t
         :return: int
         """
+        logger.info(f'select_is_praise--user_id{user_id}')
         resource_praise_like = cls.resource_praise_like.format(resource_id=resource_id, t=t)
         resource_praise_not_like = cls.resource_praise_not_like.format(resource_id=resource_id, t=t)
         is_praise = cls.con.getbit(resource_praise_like, user_id)

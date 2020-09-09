@@ -168,18 +168,18 @@
 
                 </div>
                 <!-- Recent Posts -->
-                <section class="is-recent-posts">
-                    <header>
-                        <h2>Recent Posts</h2>
-                    </header>
-                    <ul>
-                        <li><a href="#">Nothing happened</a></li>
-                        <li><a href="#">My Dearest Cthulhu</a></li>
-                        <li><a href="#">The Meme Meme</a></li>
-                        <li><a href="#">Now Full Cyborg</a></li>
-                        <li><a href="#">Temporal Flux</a></li>
-                    </ul>
-                </section>
+<!--                <section class="is-recent-posts">-->
+<!--                    <header>-->
+<!--                        <h2>Recent Posts</h2>-->
+<!--                    </header>-->
+<!--                    <ul>-->
+<!--                        <li><a href="#">Nothing happened</a></li>-->
+<!--                        <li><a href="#">My Dearest Cthulhu</a></li>-->
+<!--                        <li><a href="#">The Meme Meme</a></li>-->
+<!--                        <li><a href="#">Now Full Cyborg</a></li>-->
+<!--                        <li><a href="#">Temporal Flux</a></li>-->
+<!--                    </ul>-->
+<!--                </section>-->
 
                 <!-- Recent Comments -->
                 <section class="is-recent-comments">

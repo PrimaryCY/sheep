@@ -9,7 +9,9 @@ module.exports = {
             {charset: 'utf-8'},
             {name: 'viewport', content: 'width=device-width, initial-scale=1'},
             {hid: 'description', name: 'description', content: process.env.npm_package_description || ''},
-            {'http-equiv': "Content-Security-Policy", content: "upgrade-insecure-requests"}
+            // 全站升级https请求，还需要nginx配置
+            // 暂时关闭，七牛云https图片要收费
+            // {'http-equiv': "Content-Security-Policy", content: "upgrade-insecure-requests"}
         ],
         link: [
             {rel: 'icon', type: 'image/x-icon', href: '/favicon.png'},

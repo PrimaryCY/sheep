@@ -17,6 +17,8 @@ from apps.operate.filters import PraiseFilter
 from apps.post.filters import PostFilter
 from apps.post.models import Post
 from apps.user.serializer import ListCreateUserSerializer
+from apps.post.serializer import PostSerializer
+from apps.user.permission import IsLoginUser
 from sheep.constant import RET, error_map
 from utils.viewsets import ExtensionViewMixin
 from utils.django_util.util import field_sort_queryset, raw_sort_queryset
@@ -24,9 +26,10 @@ from utils.mixins import CreateModelMixin
 from utils.pagination import LimitOffsetPagination
 from utils.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from apps.operate.models import CollectCategory, Praise, Focus, \
-    CollectRedisModel
+    CollectRedisModel, BrowsingHistoryRedisMode
 from apps.operate.serializer import CollectCategorySerializer, CreateCollectSerializer, \
-    CreateFocusSerializer, CollectPostSerializer, ListPraiseSerializer, CreatePraiseSerializer
+    CreateFocusSerializer, CollectPostSerializer, ListPraiseSerializer, CreatePraiseSerializer, \
+    BrowsingHistorySerializer
 
 User = get_user_model()
 
@@ -120,6 +123,29 @@ class PraiseViewSet(CreateModelMixin,
         for i in real_post:
             i.update_praise_time, i.praise_or_trample = post_ids.get(i.id)
         return real_post
+
+
+class BrowsingHistoryViewSet(ListModelMixin,
+                     GenericViewSet):
+    """用户浏览记录视图"""
+    serializer_class = BrowsingHistorySerializer
+    pagination_class = LimitOffsetPagination
+    permission_classes = (IsLoginUser,)
+    filter_backends = (DjangoFilterBackend, SearchFilter)
+    filter_class = PostFilter
+    search_fields = ('name',)
+
+    def get_queryset(self):
+        self.history_dict = BrowsingHistoryRedisMode(self.request.user.id).get_all(self.request)
+        collect_resource_ids = self.history_dict.keys()
+        return field_sort_queryset(Post.raw_objects, collect_resource_ids)
+
+    def paginate_queryset(self, queryset):
+        queryset_list = super().paginate_queryset(queryset)
+        for i in queryset_list:
+            date_array = datetime.datetime.fromtimestamp(self.history_dict.get(i.id))
+            i.created_history_time = date_array.strftime("%Y-%m-%d %H:%M")
+        return queryset_list
 
 
 class FocusViewSet(ListModelMixin,

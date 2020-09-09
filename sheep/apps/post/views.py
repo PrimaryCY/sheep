@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.mixins import ListModelMixin
 
 from apps.post.models import Category, Post, PostReply
+from apps.post.tasks import after_retrieve_post
 from apps.post.filters import PostFilter, AllPostFilter, AuthorPostFilter, CategoryPostFilter, CorrelationCategoryFilter
 from utils.drf_extensions.util import limit_offset_list_cache_key_func
 from utils.viewsets import ModelViewSet, CreateModelMixin, DestroyModelMixin, GenericViewSet, ReadOnlyModelViewSet
@@ -57,13 +58,6 @@ class UserPostViewSet(ModelViewSet):
         if self.action == 'list':
             return Post.raw_objects.filter(author_id=self.request.user.id).all()
         return Post.objects.filter(author_id=self.request.user.id).all()
-
-    def retrieve(self, request, *args, **kwargs):
-        """重写retrieve方法  增加阅读数"""
-        instance = self.get_object()
-        instance.add_read_num(instance.id)
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
 
     def perform_destroy(self, instance):
         instance.status = 1
@@ -136,7 +130,10 @@ class AllPostViewSet(ReadOnlyModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         """重写retrieve方法  增加阅读数"""
         instance = self.get_object()
-        instance.add_read_num(instance.id)
+        user = self.request.user
+        after_retrieve_post.delay(resource_id=instance.id,
+                                  user_id=user.id,
+                                  is_anonymity=user.is_anonymity)
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 

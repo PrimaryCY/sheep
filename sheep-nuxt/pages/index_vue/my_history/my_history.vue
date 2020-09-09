@@ -1,37 +1,12 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <div class="wrap">
-        <div v-if="not_found" class="not-found-body">
+        <div class="detail-body">
             <div class="header">
-                <el-page-header @back="push({name:'my_collect'})" title="返回">
-                    <div class="title-wrap" slot="content">
-                        <h1 class="title">
-                            未找到
-                        </h1>
-                        <!--						<div class="byline desc">-->
-                        <!--						</div>-->
-                    </div>
-                </el-page-header>
-            </div>
-            <el-divider>❌</el-divider>
-            <not_data text="没有该收藏集!"></not_data>
-        </div>
-        <div v-else class="detail-body">
-            <div class="header">
-                <el-page-header @back="push({name:'my_collect'})" title="返回">
-                    <div class="title-wrap" slot="content">
-                        <h1 class="title">
-                            {{collect_desc.name}}
-                        </h1>
-                        <div v-if="collect_desc.desc" class="byline desc">
-                            {{collect_desc.desc}}
-                        </div>
-                    </div>
-                </el-page-header>
+                <page-heaeder
+                        text="我的浏览">
+                </page-heaeder>
             </div>
             <el-divider>
-                <img v-show="collect_desc.image"
-                     :src="collect_desc.image"
-                     class="collect-image">
             </el-divider>
             <div id="l" class="content">
                 <el-form label-position="left" ref="filter_collect">
@@ -40,7 +15,7 @@
                             <el-form-item
                                     label-width="60px"
                                     label="关键字:">
-                                <el-input placeholder="文章名称"
+                                <el-input placeholder="文章/问题名称"
                                           clearable
                                           size="small"
                                           maxlength="100"
@@ -72,15 +47,16 @@
                         <el-col :span="12">
                             <el-form-item
                                     label-width="75px"
-                                    label="收藏日期:">
+                                    label="浏览日期:">
                                 <el-date-picker
-                                        v-model="form.collect_time_range"
-                                        type="daterange"
+                                        v-model="form.time_range"
+                                        type="datetimerange"
                                         align="right"
                                         unlink-panels
+                                        format="yyyy-MM-dd hh:mm"
+                                        value-format="yyyy-MM-dd-hh:mm"
                                         range-separator="至"
                                         start-placeholder="开始日期"
-                                        value-format="yyyy-MM-dd"
                                         end-placeholder="结束日期"
                                         size="small"
                                         :picker-options="pickerOptions">
@@ -104,10 +80,6 @@
                                             value="2"
                                     ></el-option>
                                 </el-select>
-<!--                                <el-radio-group v-model="form.post_type">-->
-<!--                                    <el-radio :label="1">文章</el-radio>-->
-<!--                                    <el-radio :label="2">提问</el-radio>-->
-<!--                                </el-radio-group>-->
                             </el-form-item>
                         </el-col>
                         <el-col :span="5">
@@ -120,19 +92,19 @@
                 </el-form>
                 <list
                         :need_border_top="false"
-                        :list="collect_data.results">
+                        :list="data.results">
                     <template v-slot:item-content="data">
-                        <collect_post_item
+                        <history_post_item
                                 :post="data.item">
-                        </collect_post_item>
+                        </history_post_item>
                     </template>
                 </list>
                 <div class="collect-pagination">
                     <pagination
-                            @change="_get_collect_data"
+                            @change="_get_history_data"
                             :pagination_config="{layout:'total, sizes, prev, pager, next',background:true}"
                             :params="params"
-                            :pager="collect_data"></pagination>
+                            :pager="data"></pagination>
                 </div>
             </div>
         </div>
@@ -143,18 +115,17 @@
     import {mapState} from 'vuex'
 
     import {
-        api_user_collect_category,
-        api_user_collect
+        api_user_history
     } from '../../../api'
-    import not_data from '@/components/not_data'
     import list from '@/components/list/list'
-    import collect_post_item from '@/components/list/item/collect_post_item'
+    import history_post_item from "../../../components/list/item/history_post_item"
+    import pageHeaeder from "../../../components/common/pageHeaeder"
     import {pickerOptions} from '../../../utils/util'
     import pagination from '../../../components/pagination'
 
 
     export default {
-        name: 'my_collect_detail',
+        name: 'my_history',
         data() {
             return {
                 pickerOptions,
@@ -163,7 +134,7 @@
                     name: '读取中...',
                     desc: '数据正在快马加鞭的赶过来!'
                 },
-                collect_data: {},
+                data: {},
                 params: {
                     limit: 10,
                     offset: 0,
@@ -177,44 +148,30 @@
             }
         },
         methods: {
-            async _get_collect_desc() {
-                // 获取收藏集简介,标题之类的
-                let id = this.$route.params.id
-                let res = await api_user_collect_category.retrieve(id)
-                res = res.data
-                if (res.code === 404) {
-                    return this.not_found = true
-                } else if (res.code !== 2000) {
-                    // loading.close()
-                    return this.$message(res.msg)
-                }
-                this.collect_desc = res.data
-                this.not_found = false
-            },
-            async _get_collect_data() {
-                // 获取收藏集内的文章/问答数据
+            async _get_history_data() {
+                // 获取用户历史浏览记录
                 this.move_to_top()
                 let loading = this.openLoading({
                     text: '加载中...',
                     target: '#l'
                 })
-                let res = await api_user_collect.list(this.params)
+                let res = await api_user_history.list(this.params)
                 res = res.data
                 if (res.code !== 2000) {
                     loading.close()
                     return this.$message(res.msg)
                 }
-                this.collect_data = res.data
+                this.data = res.data
                 loading.close()
             },
             filter_collect() {
                 // 点击查询
-                if (this.form.collect_time_range) {
-                    this.params.start_collect_time = this.form.collect_time_range[0]
-                    this.params.end_collect_time = this.form.collect_time_range[1]
+                if (this.form.time_range) {
+                    this.params.start_time = this.form.time_range[0]
+                    this.params.end_time = this.form.time_range[1]
                 } else {
-                    this.params.start_collect_time = null
-                    this.params.end_collect_time = null
+                    this.params.start_time = null
+                    this.params.end_time = null
                 }
                 if (this.form.post_category) {
                     this.params.category = this.form.post_category[this.form.post_category.length - 1]
@@ -223,59 +180,33 @@
                 }
                 this.params.search = this.form.search
                 this.params.post_type = this.form.post_type
-                this._get_collect_data()
+                this._get_history_data()
             }
         },
         created() {
             if (process.server) return
-            this._get_collect_desc()
-            this._get_collect_data()
+            this._get_history_data()
         },
         computed: {
             ...mapState(['option'])
         },
         inject: ['push', 'move_to_top'],
         components: {
-            not_data,
             list,
-            collect_post_item,
-            pagination
+            pagination,
+            pageHeaeder,
+            history_post_item
         }
     }
 </script>
 
 <style scoped lang="scss">
-    /deep/ .el-page-header__title {
-        align-self: center;
-    }
 
     .wrap {
-        .not-found-body {
-            width: 100%;
-        }
 
         .detail-body {
             width: 100%;
         }
-
-        .header {
-            margin-top: 5vh;
-            margin-bottom: 5vh;
-
-            .title-wrap {
-                text-align: left;
-
-                .title {
-                    font-weight: bold;
-                    font-size: 24px;
-                }
-
-                .desc {
-                    font-size: 10px;
-                }
-            }
-        }
-
         .collect-image {
             width: 50px;
             height: 50px;

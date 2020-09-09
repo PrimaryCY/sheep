@@ -30,10 +30,12 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
         headers = self.get_success_headers(serializer.data)
         data = {"success": True, "code": RET.OK, "msg": "登录成功", "data": serializer.data}
         res = Response(data, status=200, headers=headers)
-        res.set_cookie(settings.TOKEN.get('TOKEN_NAME'),
-                       serializer.data.get('token'),
-                       expires=settings.TOKEN.get('TOKEN_EXPIRS'),
-                       httponly=True)
+        # 线上环境不设置cookie，因为有概率会覆盖nuxt的cookie设置
+        if settings.DEBUG:
+            res.set_cookie(settings.TOKEN.get('TOKEN_NAME'),
+                           serializer.data.get('token'),
+                           expires=settings.TOKEN.get('TOKEN_EXPIRS'),
+                           httponly=True)
         return res
 
     def bulk_delete(self, request, *args, **kwargs):

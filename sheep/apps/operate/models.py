@@ -304,6 +304,51 @@ class Praise(BaseModel):
         return self.resource_id
 
 
+class BrowsingHistoryRedisMode(object):
+    """浏览记录model"""
+    REDIS_KEY = 'his-u-{user_id}'
+    con = settings.OPERATE_REDIS
+
+    def __init__(self, user_id):
+        self._u = user_id
+        self.redis_key = self.REDIS_KEY.format(user_id=user_id)
+
+    def create_history(self, resource_id):
+        """
+        添加浏览记录,最多保存100条浏览记录
+        :param resource_id: 资源id
+        :return:
+        """
+        with self.con.pipeline() as con:
+            con.zadd(self.redis_key, {resource_id: int(time.time())})
+            con.zremrangebyrank(self.redis_key, 101, -1)
+            con.execute()
+
+    def get_all(self, request):
+        """
+        获取用户历史浏览记录
+        :param request:
+        :return:
+        """
+        start_time = request.query_params.get('start_time')
+        end_time = request.query_params.get('end_time')
+        try:
+            if start_time:
+                start_time = datetime.strptime(start_time, '%Y-%m-%d-%H:%M')
+                start_time = math.floor(start_time.replace().timestamp())
+            if end_time:
+                end_time = datetime.strptime(end_time, '%Y-%m-%d-%H:%M')
+                end_time = math.ceil(end_time.replace().timestamp())
+        except:
+            raise ValidationError({'success': False, 'code': RET.PARAMERR, 'msg': error_map[RET.PARAMERR]})
+
+        return {int(k): v for k, v in self.con.zrevrangebyscore(self.redis_key,
+                                                                min=start_time or 1,
+                                                                max=end_time or int(time.time()),
+                                                                withscores=True,
+                                                                score_cast_func=int)}
+
+
 class Focus(BaseModel):
     """用户关注"""
     user_id = models.PositiveIntegerField(db_index=True, verbose_name='用户')

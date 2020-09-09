@@ -72,7 +72,7 @@
                 </el-col>
                 <el-col v-else :span="5">
                     <div class="reply-txt ellipsis">
-                        收藏于:{{post.created_like_time}}
+                        浏览于:{{post.created_history_time}}
                     </div>
                 </el-col>
             </el-row>

@@ -1,5 +1,8 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <div class="my_post">
+        <page-heaeder
+                text="我的点赞">
+        </page-heaeder>
         <div class="header-filter">
             <el-form  label-position="left">
                 <el-row type="flex" :gutter="20">
@@ -73,6 +76,7 @@
     import pagination from '../../../components/pagination'
     import list from '../../../components/list/list'
     import common_post_item from '../../../components/list/item/common_post_item'
+    import pageHeaeder from "../../../components/common/pageHeaeder"
     import {pickerOptions} from '../../../utils/util'
 
     export default {
@@ -133,7 +137,8 @@
         components:{
             pagination,
             list,
-            common_post_item
+            common_post_item,
+            pageHeaeder
         },
         inject:['blank_push', 'move_to_top']
     }

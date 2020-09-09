@@ -50,7 +50,7 @@
         </el-col>
         <el-col :span="2">
           <svg class="icon-min" aria-hidden="true">
-            <use xlink:href="#icon-icon_likegood"></use>
+              <use :xlink:href="post.praise_num < 0 ? '#icon-cai-copy':'#icon-icon_likegood'"></use>
           </svg>
           :{{post.praise_num}}
         </el-col>

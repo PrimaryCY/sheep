@@ -159,3 +159,13 @@ class CollectPostSerializer(PostSerializer):
     class Meta:
         model = Post
         exclude = ("content", "html_content")
+
+
+class BrowsingHistorySerializer(PostSerializer):
+    """用户浏览记录序列化器"""
+    created_history_time = serializers.DateTimeField(read_only=True, label='浏览时间')
+    newest_user_id = None
+
+    class Meta:
+        model = Post
+        exclude = ("content", "html_content")

@@ -20,9 +20,10 @@ import search from './pages/index_vue/search/search'
 import my_collect from './pages/index_vue/my_collect/my_collect'
 import my_collect_detail from './pages/index_vue/my_collect_detail/my_collect_detail'
 import my_praise from './pages/index_vue/my_praise/my_praise'
+import my_history from "./pages/index_vue/my_history/my_history"
 
 // import NotFound from './views/notFound/notFound'
-import test from './pages/test'
+// import test from './pages/test'
 
 // import setting from './conf/settings'
 
@@ -116,6 +117,11 @@ const routes = [
                         component: my_praise
                     },
                     {
+                        path: 'my-history',
+                        name: 'my_history',
+                        component: my_history
+                    },
+                    {
                         path: '',
                         redirect: 'index'
                     },
@@ -153,20 +159,15 @@ const routes = [
                 meta: {}
             },
             // {
-            //   path:'/test',
-            //   name:'test',
-            //   component: test
-            // },
-            // {
             //   path:'*',
             //   component:NotFound
             // }
         ],
     },
-    {
-        path: '/test',
-        component: test
-    }
+    // {
+    //     path: '/test',
+    //     component: test
+    // }
 ]
 
 export function createRouter() {

@@ -135,7 +135,8 @@
                                 </svg>
                                 我的回复
                             </a></li>
-                            <li><a href="#">
+                            <li :class="{current_page_item:active==='my_history'}"
+                                @click.prevent="push('/my-history')"><a href="#">
                                 <svg class="icon-min" aria-hidden="true">
                                     <use xlink:href="#icon-bofangjilu"></use>
                                 </svg>

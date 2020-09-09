@@ -8,7 +8,8 @@ from utils.routes import CustomRouter
 from apps.user.views import UserViewSet, LoginViewSet
 from apps.post.views import PostCategoryViewSet, UserPostViewSet, UserReplyViewSet, \
     PostReplyViewSet, AllPostViewSet, CategoryPostViewSet, AuthorPostViewSet, CorrelationCategoryViewSet
-from apps.operate.views import UserCollectCategoryViewSet, CollectCategoryViewSet, CollectViewSet, PraiseViewSet, FocusViewSet
+from apps.operate.views import UserCollectCategoryViewSet, CollectCategoryViewSet, CollectViewSet, PraiseViewSet, \
+    FocusViewSet, BrowsingHistoryViewSet
 from apps.index.views import BannerViewSet, HotViewSet
 
 router = CustomRouter()
@@ -36,11 +37,14 @@ router.register('user_post', UserPostViewSet, basename='user_post')
 router.register('user_collect_category', UserCollectCategoryViewSet, basename='user_collect_category')
 # 个人收藏帖子
 router.register('user_collect', CollectViewSet, basename='user_collect')
+# 个人点赞
+router.register('user_praise', PraiseViewSet, basename='user_praise')
+# 个人浏览历史记录
+router.register('user_history', BrowsingHistoryViewSet, basename='user_history')
+
 
 # 个人回复展示
 router.register('user_reply', UserReplyViewSet, basename='user_reply')
-# 个人点赞
-router.register('user_praise', PraiseViewSet, basename='user_praise')
 # 个人关注
 router.register('user_focus', FocusViewSet, basename='user_focus')
 

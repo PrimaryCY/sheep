@@ -70,6 +70,10 @@ export const api_user_collect=common_crud('/v1/web/user_collect')
 用户点赞或踩
  */
 export const api_user_praise=common_crud('v1/web/user_praise');
+/*
+用户历史浏览记录
+ */
+export const api_user_history=common_crud('v1/web/user_history');
 
 /*
 * 上传文件接口

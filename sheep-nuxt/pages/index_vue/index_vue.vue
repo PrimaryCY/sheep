@@ -122,6 +122,13 @@
                                 </svg>
                                 我的收藏
                             </a></li>
+                            <li :class="{current_page_item:active==='my_praise'}"
+                                @click.prevent="push('/my-praise')"><a href="#">
+                                <svg class="icon-min" aria-hidden="true">
+                                    <use xlink:href="#icon-icon_likegood"></use>
+                                </svg>
+                                我的点赞
+                            </a></li>
                             <li><a href="#">
                                 <svg class="icon-min" aria-hidden="true">
                                     <use xlink:href="#icon-icon_community_line"></use>
@@ -384,7 +391,7 @@
     }
 
     #content {
-        min-height: 100em;
+        min-height: 103em;
         /* 去除动画,动画卡顿*/
         /*transition: margin-left 0.25s ease-in-out;*/
     }

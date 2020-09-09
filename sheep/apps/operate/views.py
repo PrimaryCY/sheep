@@ -115,10 +115,10 @@ class PraiseViewSet(CreateModelMixin,
 
     def paginate_queryset(self, queryset):
         queryset_list = super().paginate_queryset(queryset)
-        post_ids = {i.resource_id: i.update_time for i in queryset_list}
+        post_ids = {i.resource_id: (i.update_time, i.praise_or_trample) for i in queryset_list}
         real_post = raw_sort_queryset(Post, post_ids.keys())
         for i in real_post:
-            i.update_praise_time = post_ids.get(i.id)
+            i.update_praise_time, i.praise_or_trample = post_ids.get(i.id)
         return real_post
 
 

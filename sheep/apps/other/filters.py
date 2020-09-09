@@ -5,12 +5,13 @@ import django_filters
 from django.db import models
 from django_filters import FilterSet
 
+from utils.django_filter_util.restframework import BaseFilterSet
 from apps.other.models import Feedback, UploadHistoryModel
 
 
-class FeedbackFilter(FilterSet):
-    start_created_time = django_filters.DateFilter(field_name='created_time', lookup_expr='gte', label='开始创建')
-    end_created_time = django_filters.DateFilter(field_name='created_time', lookup_expr='lte', label='结束创建')
+class FeedbackFilter(BaseFilterSet):
+    start_created_time = django_filters.DateTimeFilter(field_name='created_time', lookup_expr='gte', label='开始创建')
+    end_created_time = django_filters.DateTimeFilter(field_name='created_time', lookup_expr='lte', label='结束创建')
     category_id = django_filters.NumberFilter(field_name='category_id', label='反馈类别')
     author_id = django_filters.NumberFilter(field_name='author_id', label='创建人')
     has_reply = django_filters.BooleanFilter(method='filter_has_reply', label='只看有回复')

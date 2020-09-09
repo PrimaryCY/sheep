@@ -88,6 +88,10 @@ class TokenAuthentication(BaseAuthentication):
         return user, t
 
     def set_u_host(self, request):
+        # 从rewuest.META中获取请求头时候
+        #  1.request.META的key必须大写，且前缀必须是"HTTP"，例如你的key为username，那么应该写成：request.META.get("HTTP_USERNAME")
+        #  2.后面如果连接符是横线“-”，会自动转换成下划线“_”。例如你的header的key为api-auth，
+        #  那在Django中应该使用request.META.get("HTTP_API_AUTH")来获取请求头的数据。
         remote_addr = request.META['REMOTE_ADDR']
         if remote_addr in self.web_host:
             request.u_host = request.headers.get('u-host', remote_addr)

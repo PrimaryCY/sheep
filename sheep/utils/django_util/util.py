@@ -42,4 +42,4 @@ def raw_sort_queryset(model, items: Iterable):
     )
     queryset = model.objects.filter(id__in=items).all()
     query_dict = {i.id: i for i in queryset}
-    return [query_dict[i] for i in items]
+    return [query_dict[i] for i in items if i in query_dict]

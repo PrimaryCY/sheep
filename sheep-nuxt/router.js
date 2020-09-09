@@ -19,6 +19,7 @@ import post_detail from './pages/index_vue/post_detail/post_detail'
 import search from './pages/index_vue/search/search'
 import my_collect from './pages/index_vue/my_collect/my_collect'
 import my_collect_detail from './pages/index_vue/my_collect_detail/my_collect_detail'
+import my_praise from './pages/index_vue/my_praise/my_praise'
 
 // import NotFound from './views/notFound/notFound'
 import test from './pages/test'
@@ -27,163 +28,165 @@ import test from './pages/test'
 
 
 const routes = [
-  // {
-  //   path:'/',
-  //   redirect:'/index_vue',
-  // },
-  {
-    path:'',
-    component:app,
-    children:[
-      // 首页模板
-      {
+    // {
+    //   path:'/',
+    //   redirect:'/index_vue',
+    // },
+    {
         path: '',
-        component: index_vue,
-        meta:{
-          keepAlive:true,
-        },
-        children:[
-          {
-            // 首页
-            path:'index/',
-            name:'index',
-            component:index,
-          },
-          {
-            // 个人信息
-            path:'info/',
-            name:'info',
-            component:info,
-            meta:{
-              is_login:true
-            }
-          },
-          {
-            // 我的文章
-            path:'my_post',
-            name:'my_post',
-            component:my_post,
-            meta:{
-              is_login:true
-            }
-          },
-          {
-            //
-            path:'my_question',
-            name:'my_question',
-            component:my_question,
-            meta:{
-              is_login:true
-            }
-          },
-          {
-            path:'feedback',
-            name:'feedback',
-            component:feedback,
-            meta:{
-            }
-          },
-          {
-            path:'search',
-            name:'search',
-            component:search,
-            meta:{
-            }
-          },
-          {
-            path:'my-collect',
-            name:'my_collect',
-            component:my_collect,
-            meta:{
-              is_login:true
-            }
-          },
-          {
-            path:'my-collect/:id',
-            name:'my_collect_detail',
-            component:my_collect_detail,
-            meta:{
-              is_login:true
-            }
-          },
-          {
-            path:'post-detail/:id',
-            name:'post_detail',
-            component:post_detail
-          },
-          {
-            path:'',
-            redirect:'index'
-          },
-          {
-            path:'not-found/',
-            name:"not_found",
-            component:not_found
-          }
-        ]
-      },
-      {
-        // 创建帖子
-        path:'/postings/',
-        name:'postings',
-        component:postings,
-        meta:{
-          no_back_top:true,
-          is_login:true
-        }
-      },
-      {
-        // 修改帖子
-        path:'/postings/:id',
-        name:'postings_detail',
-        component:postings,
-        meta:{
-          no_back_top:true,
-          is_login:true
-        }
-      },
-      {
-        path:'/login',
-        name:'login',
-        component: login,
-        meta:{
-        }
-      },
-      // {
-      //   path:'/test',
-      //   name:'test',
-      //   component: test
-      // },
-      // {
-      //   path:'*',
-      //   component:NotFound
-      // }
-    ],
-  },
-  {
-    path:'/test',
-    component:test
-  }
+        component: app,
+        children: [
+            // 首页模板
+            {
+                path: '',
+                component: index_vue,
+                meta: {
+                    keepAlive: true,
+                },
+                children: [
+                    {
+                        // 首页
+                        path: 'index/',
+                        name: 'index',
+                        component: index,
+                    },
+                    {
+                        // 个人信息
+                        path: 'info/',
+                        name: 'info',
+                        component: info,
+                        meta: {
+                            is_login: true
+                        }
+                    },
+                    {
+                        // 我的文章
+                        path: 'my_post',
+                        name: 'my_post',
+                        component: my_post,
+                        meta: {
+                            is_login: true
+                        }
+                    },
+                    {
+                        // 我的提问
+                        path: 'my_question',
+                        name: 'my_question',
+                        component: my_question,
+                        meta: {
+                            is_login: true
+                        }
+                    },
+                    {
+                        path: 'feedback',
+                        name: 'feedback',
+                        component: feedback,
+                        meta: {}
+                    },
+                    {
+                        path: 'search',
+                        name: 'search',
+                        component: search,
+                        meta: {}
+                    },
+                    {
+                        path: 'my-collect',
+                        name: 'my_collect',
+                        component: my_collect,
+                        meta: {
+                            is_login: true
+                        }
+                    },
+                    {
+                        path: 'my-collect/:id',
+                        name: 'my_collect_detail',
+                        component: my_collect_detail,
+                        meta: {
+                            is_login: true
+                        }
+                    },
+                    {
+                        path: 'post-detail/:id',
+                        name: 'post_detail',
+                        component: post_detail
+                    },
+                    {
+                        path: 'my-praise',
+                        name: 'my_praise',
+                        component: my_praise
+                    },
+                    {
+                        path: '',
+                        redirect: 'index'
+                    },
+                    {
+                        path: 'not-found/',
+                        name: "not_found",
+                        component: not_found
+                    }
+                ]
+            },
+            {
+                // 创建帖子
+                path: '/postings/',
+                name: 'postings',
+                component: postings,
+                meta: {
+                    no_back_top: true,
+                    is_login: true
+                }
+            },
+            {
+                // 修改帖子
+                path: '/postings/:id',
+                name: 'postings_detail',
+                component: postings,
+                meta: {
+                    no_back_top: true,
+                    is_login: true
+                }
+            },
+            {
+                path: '/login',
+                name: 'login',
+                component: login,
+                meta: {}
+            },
+            // {
+            //   path:'/test',
+            //   name:'test',
+            //   component: test
+            // },
+            // {
+            //   path:'*',
+            //   component:NotFound
+            // }
+        ],
+    },
+    {
+        path: '/test',
+        component: test
+    }
 ]
 
-export function createRouter () {
-  const router = new VueRouter({
-    mode: 'history',
-    // base: process.env.BASE_URL,
-    routes
-  })
-  router.beforeEach((to, from, next) => {
-    if(to.meta.is_login){
-      if(!process.$cookies.secure_get(settings.TOKEN_NAME)){
-        next({
-          path: '/login',
-          query: {redirect: to.fullPath}   //登录成功后重定向到当前页面
-        })
-      }
-    }
-    next()
-  })
-  return router
+export function createRouter() {
+    const router = new VueRouter({
+        mode: 'history',
+        // base: process.env.BASE_URL,
+        routes
+    })
+    router.beforeEach((to, from, next) => {
+        if (to.meta.is_login) {
+            if (!process.$cookies.secure_get(settings.TOKEN_NAME)) {
+                next({
+                    path: '/login',
+                    query: {redirect: to.fullPath}   //登录成功后重定向到当前页面
+                })
+            }
+        }
+        next()
+    })
+    return router
 }
 
 

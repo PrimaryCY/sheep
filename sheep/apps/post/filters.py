@@ -6,12 +6,11 @@ from rest_framework.exceptions import ValidationError
 import django_filters
 
 from apps.post.models import Category
+from utils.django_filter_util.restframework import BaseFilterSet
 from sheep.constant import RET, error_map
 
 
-class PostFilter(FilterSet):
-    start_created_time = django_filters.DateFilter(field_name='created_time', lookup_expr='gte', label='开始创建')
-    end_created_time = django_filters.DateFilter(field_name='created_time', lookup_expr='lte', label='结束创建')
+class PostFilter(BaseFilterSet):
     category = django_filters.NumberFilter(field_name='category')
     post_type = django_filters.NumberFilter(field_name='post_type')
 

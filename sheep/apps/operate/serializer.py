@@ -118,6 +118,7 @@ class CreatePraiseSerializer(serializers.Serializer):
 class ListPraiseSerializer(PostSerializer):
     """点赞/踩列表页序列化器"""
     update_praise_time = serializers.DateTimeField(read_only=True, label='点赞/踩时间')
+    praise_or_trample = serializers.IntegerField(read_only=True, label='点赞状态')
     newest_user_id = None
 
     class Meta:

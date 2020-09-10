@@ -58,10 +58,14 @@ def after_login(user_id, ip):
         params = copy.copy(settings.BD_API_MAP_PARAMS)
         params['ip'] = ip if ip != '127.0.0.1' else ''
         data = send_bd_location_ip(params=params)
+        # 百度定位api获取不到外国的ip定位
         if data:
             addr_detail = data['content']['address_detail']
             update_dict['last_login_province'] = addr_detail['province']
             update_dict['last_login_city'] = addr_detail['city']
+        else:
+            update_dict['last_login_province'] = '外国'
+            update_dict['last_login_city'] = "某个城市"
 
     User.objects.filter(id=user_id).update(**update_dict)
 

@@ -27,12 +27,12 @@ export default function (context, inject) {
             }
             if (process.server) {
                 // 为了解决ssr渲染后端还能查询到匿名用户,新增header:u-host
-                request.headers['u-host'] = context.req.headers['x-client-source-ip'] ||
+                request.headers['u-host'] = context.req.headers['x-forwarded-for'] ||
                     context.req.headers['x-real-ip'] ||
                     context.req.connection.remoteAddress;
                 console.log('remoteAddr:'+ context.req.connection.remoteAddress)
                 console.log('x-real-ip:'+context.req.headers['x-real-ip'])
-                console.log('x-client-source-ip:'+context.req.headers['x-client-source-ip'])
+                console.log('x-forwarded-for:'+context.req.headers['x-forwarded-for'])
                 console.log('u-host:'+request.headers['u-host'])
             }
             if (context.app.$cookies.secure_get(settings.TOKEN_NAME) && !request.headers.tk) {

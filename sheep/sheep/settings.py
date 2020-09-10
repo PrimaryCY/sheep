@@ -387,6 +387,11 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'apps.other.tasks.real_clear_celery_results',
         'schedule': crontab(minute=f"*/{CELERY_RESULT_EXPIRES*5}"),
     },
+    'delete_trash_post': {
+        # 定时删除垃圾文章
+        'task': 'apps.post.tasks.delete_trash_post',
+        'schedule': crontab(minute=0, hour=0),
+    },
 }
 
 # Token配置

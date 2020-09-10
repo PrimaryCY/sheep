@@ -183,7 +183,7 @@
                     <no-ssr placeholder="Loading...">
                         <tinymce-editor v-model="reply_form.html_content"
                                         ref="tinymce"
-                                        :height="260"
+                                        :height="160"
                                         :menubar="false"
                                         toolbar="reply_toolbar"
                                         :statusbar="false"

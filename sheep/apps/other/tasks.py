@@ -16,9 +16,6 @@ def clear_celery_results():
     return mod_row
 
 
-
-
-
 @shared_task()
 def real_clear_celery_results():
     with transaction.atomic():

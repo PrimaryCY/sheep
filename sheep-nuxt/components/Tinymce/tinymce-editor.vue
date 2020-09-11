@@ -19,6 +19,7 @@
 
     if (process.client) {
         tinymce = require('tinymce/tinymce')
+        window.tinymce = tinymce
         plugins = require('./plugins.js')
         plugins = plugins.default
         require('tinymce/themes/silver')
@@ -97,8 +98,10 @@
                     emoticons_database_url: '/tinymce/plugins/emojis/emojis.js',
                     language_url: '/tinymce/langs/zh_CN.js',
                     language: 'zh_CN',
+                    convert_urls: false,        // 禁止转换URL路径为相对路径，百度地图插件需要用到
                     nonbreaking_force_tab: true, // tab缩进
                     theme: 'silver',
+                    suffix:'.min',              //使用min.js的插件
                     // skin_url: require('tinymce/skins/ui/oxide-dark/skin.css'),//暗色系
                     height: this.height,
                     min_height: this.height,

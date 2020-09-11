@@ -191,6 +191,33 @@
                         ></tinymce-editor>
                     </no-ssr>
                 </div>
+                <div class="divider-line">
+                    <el-divider></el-divider>
+                </div>
+                <div class="article-reply">
+                    <div class="create-reply">
+                        <no-ssr placeholder="Loading...">
+                            <tinymce-editor v-model="reply_form.html_content"
+                                            ref="tinymce"
+                                            :height="160"
+                                            :menubar="false"
+                                            toolbar="reply_toolbar"
+                                            :statusbar="false"
+                                            :placeholder="reply_form.placeholder"
+                            ></tinymce-editor>
+                        </no-ssr>
+                        <el-button
+                                class="reply-button"
+                                :disabled="!reply_form.html_content.trim().length"
+                                type="primary">
+                            回复
+                        </el-button>
+                    </div>
+                    <reply>
+
+                    </reply>
+                </div>
+
             </div>
             <div v-else-if="data.post_type===2"></div>
         </div>
@@ -254,7 +281,6 @@
 
 <script>
     import {mapState} from 'vuex'
-    // import VueStar from 'vue-star'
 
     import {
         api_post,
@@ -268,8 +294,9 @@
     import tinymceEditor from '../../../components/Tinymce/tinymce-editor'
     import post_detail_list from '../../../components/list/post-detail-list'
     import post_detail_item from '@/components/list/item/post-detail-item'
+    import reply from "../../../components/reply";
     import font_icon from '@/components/small/font_icon'
-    import star from '@/components/common/star'
+    import star from '@/components/common/star';
     import {get_tree_first_node} from '../../../utils/util'
 
 
@@ -288,7 +315,8 @@
                     author_info: {}
                 },
                 reply_form: {  //评论
-                    placeholder: '请输入回复内容...'
+                    placeholder: '请输入回复内容...',
+                    html_content:''
                 },
                 correlation_category: {  //相关分类
                     results: []
@@ -315,7 +343,8 @@
             post_detail_list,
             post_detail_item,
             star,
-            font_icon
+            font_icon,
+            reply
         },
         computed: {
             ...mapState(['pack_up', 'user']),
@@ -512,7 +541,7 @@
                 }
             },
             _pre_like_praise() {
-                // 页面加载预处理
+                // 页面加载预处理点赞状态收藏状态
                 if (!this.$refs['like']) return
                 this.$refs['like'].status = this.data.is_like
                 if (this.data.is_praise === 1) {
@@ -745,6 +774,15 @@
                             border: initial;
                             font-weight: initial;
                             vertical-align: initial;
+                        }
+                    }
+                }
+
+                .article-reply{
+                    text-align: right;
+                    create-reply{
+                        .reply-button{
+
                         }
                     }
                 }

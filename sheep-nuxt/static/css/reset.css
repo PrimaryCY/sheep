@@ -181,3 +181,7 @@ body {
 .clear-padding{
     padding: initial!important;
 }
+
+.divider-line{
+    padding: 20px 0 15px 0;
+}

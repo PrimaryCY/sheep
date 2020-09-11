@@ -91,6 +91,30 @@
                         </el-tag>
                     </a>
                 </div>
+                <bubble_text
+                        style="margin: 20px"
+                        v-if="one_category===0"
+                        text="轮播图每两小时刷新，热门推荐每半小时刷新，推荐页数据每十分钟刷新🍔︎"
+                        position="right">
+                    <template v-slot:user>
+                        <div class="dialog_reply">
+                            <img src="@/static/img/admin_portrait.jpg">
+<!--                            <span>小羊</span>-->
+                        </div>
+                    </template>
+                </bubble_text>
+                <bubble_text
+                        style="margin: 20px"
+                        v-if="one_category===0"
+                        text="轮播图按点赞数，热门按浏览数，推荐页按收藏数排序🍔︎"
+                        position="right">
+                    <template v-slot:user>
+                        <div class="dialog_reply">
+                            <img src="@/static/img/admin_portrait.jpg">
+                            <!--                            <span>小羊</span>-->
+                        </div>
+                    </template>
+                </bubble_text>
                 <list
                         :need_border_top="false"
                         :list="posts.results">
@@ -132,6 +156,7 @@
         api_post,
         api_hot
     } from '../../../api'
+    import bubble_text from "../../../components/common/bubble_text"
     import sidebar_list from '../../../components/list/sidebar-list'
     import list from '../../../components/list/list'
     import common_post_item from '../../../components/list/item/common_post_item'
@@ -255,11 +280,24 @@
             list,
             common_post_item,
             hexagon_loading,
+            bubble_text
         }
     }
 </script>
 
 <style scoped lang="scss">
+    /* 提示图标 */
+    .dialog_reply {
+        img {
+            display: block;
+        }
+
+        span {
+            font-size: 12px;
+        }
+    }
+
+
     /* 吸顶 */
     .is_fixed {
         position: fixed;

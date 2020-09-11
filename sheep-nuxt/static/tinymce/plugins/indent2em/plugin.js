@@ -86,7 +86,7 @@
 		};
 
 		var register = function (editor) {
-			console.log(editor.ui.registry.getAll().icons)
+			// console.log(editor.ui.registry.getAll().icons)
 			editor.ui.registry.getAll().icons.indent2em || editor.ui.registry.addIcon('indent2em','<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M170.666667 563.2v-102.4H887.466667v102.4zM170.666667 836.266667v-102.4H887.466667v102.4zM512 290.133333v-102.4H887.466667v102.4zM238.933333 341.333333V136.533333l204.8 102.4z" fill="#2c2c2c" p-id="5210"></path></svg>');
 			editor.ui.registry.addButton('indent2em', {
 				tooltip: '首行缩进',

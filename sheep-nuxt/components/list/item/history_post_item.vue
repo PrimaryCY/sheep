@@ -191,6 +191,14 @@
             color: #1a1a1a;
             font-weight: 500;
         }
+
+        .delete_msg {
+            font-weight: bold;
+            border: 0 !important;
+            color: #F56C6C;
+            text-align: end;
+            text-align: right;
+        }
     }
 
 </style>

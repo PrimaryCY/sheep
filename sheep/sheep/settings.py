@@ -33,6 +33,7 @@ SECRET_KEY = 'nog-m-%lwpued&hxe6v^c9+m_b=dfe!7atv@^vmq&_*-980h=n'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+PDB_DEBUG = True
 
 ALLOWED_HOSTS = ['*',]
 

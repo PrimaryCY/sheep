@@ -2,17 +2,17 @@
     <div class="reply">
         <div v-clickoutside="hideReplyBtn" @click="inputFocus" class="my-reply">
             <el-avatar class="header-img" :size="40" :src="myHeader"></el-avatar>
-            <div class="reply-info" >
+            <div class="reply-info">
 
                     <no-ssr placeholder="Loading...">
-                        <tinymce-editor v-model="reply_form.html_content"
+                        <tinymce-editor v-model="replyComment"
                                         id="replyInput"
-                                        ref="tinymce"
+                                        ref="tinymce-reply"
                                         :height="160"
                                         :menubar="false"
                                         toolbar="reply_toolbar"
                                         :statusbar="false"
-                                        :placeholder="reply_form.placeholder"
+                                        :placeholder="replyPlaceholder"
                         ></tinymce-editor>
                     </no-ssr>
 
@@ -74,7 +74,19 @@
             <div  v-show="_inputShow(i)" class="my-reply my-comment-reply">
                 <el-avatar class="header-img" :size="40" :src="myHeader"></el-avatar>
                 <div class="reply-info" >
-                    <div tabindex="0" contenteditable="true" spellcheck="false" placeholder="输入评论..."   @input="onDivInput($event)"  class="reply-input reply-comment-input"></div>
+<!--                    <div tabindex="0" contenteditable="true" spellcheck="false" placeholder="输入评论..."   @input="onDivInput($event)"  class="reply-input reply-comment-input"></div>-->
+                    <no-ssr placeholder="Loading...">
+                        <tinymce-editor v-model="replyComment"
+                                        tabindex="0"
+                                        ref="tinymce"
+                                        :height="160"
+                                        :menubar="false"
+                                        toolbar="reply_toolbar"
+                                        :statusbar="false"
+                                        @input="onDivInput($event)"
+                                        :placeholder="replyPlaceholder"
+                        ></tinymce-editor>
+                    </no-ssr>
                 </div>
                 <div class=" reply-btn-box">
                     <el-button class="reply-btn" size="medium" @click="sendCommentReply(i,j)" type="primary">发表评论</el-button>
@@ -115,10 +127,10 @@
         name:'reply',
         data(){
             return{
-                reply_form: {},
                 btnShow: false,
                 index:'0',
                 replyComment:'',
+                replyPlaceholder:'评论千万条，友善第一条',
                 myName:'Lana Del Rey',
                 myHeader:'https://ae01.alicdn.com/kf/Hd60a3f7c06fd47ae85624badd32ce54dv.jpg',
                 myId:19870621,
@@ -309,6 +321,9 @@
                 }
             }
         },
+        computed:{
+
+        }
     }
 </script>
 <style lang="css" scoped>

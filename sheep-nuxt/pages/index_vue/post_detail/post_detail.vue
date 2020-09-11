@@ -294,7 +294,7 @@
     import tinymceEditor from '../../../components/Tinymce/tinymce-editor'
     import post_detail_list from '../../../components/list/post-detail-list'
     import post_detail_item from '@/components/list/item/post-detail-item'
-    import reply from "../../../components/reply";
+    import reply from "../../../components/common/reply";
     import font_icon from '@/components/small/font_icon'
     import star from '@/components/common/star';
     import {get_tree_first_node} from '../../../utils/util'

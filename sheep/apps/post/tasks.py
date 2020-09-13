@@ -23,4 +23,4 @@ def delete_trash_post():
     定时删除垃圾文章删除
     :return:
     """
-    Post.objects.filter(praise_num__lt=50).update(status=3)
+    Post.objects.filter(praise_num__lt=-50).update(status=3)

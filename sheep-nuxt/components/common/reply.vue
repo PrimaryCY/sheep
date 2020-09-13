@@ -5,7 +5,7 @@
             <div class="reply-info">
 
                     <no-ssr placeholder="Loading...">
-                        <tinymce-editor v-model="replyComment"
+                        <tinymce-editor
                                         id="replyInput"
                                         ref="tinymce-reply"
                                         :height="160"
@@ -76,7 +76,7 @@
                 <div class="reply-info" >
 <!--                    <div tabindex="0" contenteditable="true" spellcheck="false" placeholder="输入评论..."   @input="onDivInput($event)"  class="reply-input reply-comment-input"></div>-->
                     <no-ssr placeholder="Loading...">
-                        <tinymce-editor v-model="replyComment"
+                        <tinymce-editor
                                         tabindex="0"
                                         ref="tinymce"
                                         :height="160"
@@ -228,12 +228,13 @@
                 this.btnShow = true
             },
             hideReplyBtn(){
-                let replyInput;
+                // let replyInput;
                 this.btnShow = false
-                replyInput.style.padding= "10px"
-                replyInput.style.border ="none"
+                // replyInput.style.padding= "10px"
+                // replyInput.style.border ="none"
             },
             showReplyInput(i,name,id){
+                // 显示输入框并且隐藏其他输入框
                 this.comments[this.index].inputShow = false
                 this.index =i
                 this.comments[i].inputShow = true
@@ -291,7 +292,8 @@
                 }
             },
             onDivInput: function(e) {
-                this.replyComment = e.target.innerHTML;
+                console.log(e)
+                this.replyComment = e;
             },
             dateStr(date){
                 //获取js 时间戳

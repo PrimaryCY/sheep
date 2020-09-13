@@ -53,6 +53,7 @@ module.exports = {
         {src: '~/plugins/vue-infinite-scroll', ssr: false},
         {src: '~/plugins/axios', ssr: true},
         {src: '@/plugins/util', ssr: true},
+        {src: '~/plugins/ant', ssr: true},
     ],
     router: {
         // middleware: 'user_auth'    // 是js文件名字

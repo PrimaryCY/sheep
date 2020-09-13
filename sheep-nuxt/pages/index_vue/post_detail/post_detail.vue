@@ -178,44 +178,70 @@
                     <div class="updatetime-text">
                         -------------&nbsp;&nbsp;&nbsp;最后更新于&nbsp;{{data.update_time}}
                     </div>
-                    <el-divider></el-divider>
-
-                    <no-ssr placeholder="Loading...">
-                        <tinymce-editor v-model="reply_form.html_content"
-                                        ref="tinymce"
-                                        :height="160"
-                                        :menubar="false"
-                                        toolbar="reply_toolbar"
-                                        :statusbar="false"
-                                        :placeholder="reply_form.placeholder"
-                        ></tinymce-editor>
-                    </no-ssr>
                 </div>
                 <div class="divider-line">
                     <el-divider></el-divider>
                 </div>
                 <div class="article-reply">
-                    <div class="create-reply">
-                        <no-ssr placeholder="Loading...">
-                            <tinymce-editor v-model="reply_form.html_content"
-                                            ref="tinymce"
-                                            :height="160"
-                                            :menubar="false"
-                                            toolbar="reply_toolbar"
-                                            :statusbar="false"
-                                            :placeholder="reply_form.placeholder"
-                            ></tinymce-editor>
-                        </no-ssr>
-                        <el-button
-                                class="reply-button"
-                                :disabled="!reply_form.html_content.trim().length"
-                                type="primary">
-                            回复
-                        </el-button>
-                    </div>
-                    <reply>
+                   <reply_input
+                           :avatar="user.portrait"
+                   >
+                   </reply_input>
 
-                    </reply>
+                    <a-list
+                            class="reply-list"
+                            :header="`共 ${comments.length} 条`"
+                            item-layout="horizontal"
+                            :locale="{emptyText: '暂无评论'}"
+                            :data-source="comments"
+                            :loading="comments.loading"
+                    >
+                        <a-list-item slot="renderItem" slot-scope="item">
+
+                            <a-comment :author="item.author" :avatar="item.avatar">
+                                <template slot="actions">
+                                    <span @click="comments_input=item.id">回复</span>
+                                </template>
+                                <div slot="content">
+                                    {{ item.content }}
+                                </div>
+                                <a-tooltip slot="datetime" :title="item.datetime.format('YYYY-MM-DD HH:mm:ss')">
+                                    <span>{{ item.datetime.fromNow() }}</span>
+                                </a-tooltip>
+
+                                <a-comment>
+                                    <span slot="actions">
+                                        <div @click="comments_input=item.id">
+                                            回复
+                                        </div>
+                                    </span>
+                                    <a slot="author">回复标题</a>
+                                    <a-avatar
+                                            slot="avatar"
+                                            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                                            alt="Han Solo"
+                                    />
+                                    <div slot="content">
+                                        We supply a series of design principles, practical patterns and high quality
+                                        design
+                                        resources (Sketch and Axure).
+                                    </div>
+                                    <reply_input
+                                            :avatar="user.portrait"
+                                            :reply_name="item.author"
+                                            v-show="comments_input===item.id">
+                                    </reply_input>
+                                </a-comment>
+                                <reply_input
+                                        :avatar="user.portrait"
+                                        :reply_name="item.author"
+                                        v-show="comments_input===item.id">
+                                </reply_input>
+                            </a-comment>
+                        </a-list-item>
+                    </a-list>
+
+
                 </div>
 
             </div>
@@ -280,6 +306,7 @@
 </template>
 
 <script>
+    import moment from 'moment'
     import {mapState} from 'vuex'
 
     import {
@@ -291,12 +318,11 @@
         api_user_praise,
         api_author_post
     } from '../../../api'
-    import tinymceEditor from '../../../components/Tinymce/tinymce-editor'
+    import reply_input from "../../../components/reply/reply_input"
     import post_detail_list from '../../../components/list/post-detail-list'
     import post_detail_item from '@/components/list/item/post-detail-item'
-    import reply from "../../../components/common/reply";
     import font_icon from '@/components/small/font_icon'
-    import star from '@/components/common/star';
+    import star from '@/components/common/star'
     import {get_tree_first_node} from '../../../utils/util'
 
 
@@ -309,6 +335,26 @@
         name: 'post_detail',
         data() {
             return {
+                comments_input:0,
+                comments: [             //评论内容
+                    {
+                        id:1,
+                        author: 'Han Solo',
+                        avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+                        content:
+                            'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
+                        datetime: moment().subtract(1, 'days'),
+                    },
+                    {
+                        id:2,
+                        author: 'li SI',
+                        avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+                        content:
+                            'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
+                        datetime: moment().subtract(2, 'days'),
+                    },
+                ],
+                moment,
                 response: {    //文章内容具体响应,包含code值
                 },
                 data: {        // 文章内容
@@ -316,7 +362,7 @@
                 },
                 reply_form: {  //评论
                     placeholder: '请输入回复内容...',
-                    html_content:''
+                    html_content: ''
                 },
                 correlation_category: {  //相关分类
                     results: []
@@ -339,12 +385,11 @@
             }
         },
         components: {
-            tinymceEditor,
             post_detail_list,
             post_detail_item,
             star,
             font_icon,
-            reply
+            reply_input
         },
         computed: {
             ...mapState(['pack_up', 'user']),
@@ -462,20 +507,23 @@
                 // 点击收藏星星图标
                 if (!this.user.username) {
                     this.like_dialog = false
-                    const h = this.$createElement;
+                    const h = this.$createElement
                     return this.$msgbox({
                         title: '收藏👋',
                         message: h('p', null, [
-                            h('i', { style: 'color: teal' }, '未登录用户暂不可以收藏🙈')
+                            h('i', {style: 'color: teal'}, '未登录用户暂不可以收藏🙈')
                         ]),
                         showCancelButton: true,
                         confirmButtonText: '现在去登录➡️',
                         cancelButtonText: '取消',
                     }).then(() => {
-                        return this.blank_push({'name': 'login', 'query':{
-                            from:this.$route.path
-                            }})
-                    }).catch(() => {});
+                        return this.blank_push({
+                            'name': 'login', 'query': {
+                                from: this.$route.path
+                            }
+                        })
+                    }).catch(() => {
+                    })
                 }
                 let collect = await api_user_collect_category.list({
                     resource_id: this.data.id,
@@ -580,24 +628,6 @@
                     this.$refs['like'].status = n
                 }
             },
-            // "data.is_praise":{
-            //     deep:true,
-            //     handler:function(n){
-            //         if(n === 1){
-            //             console.log('点赞');
-            //             if(this.$refs['tread'].active) this.$refs['tread'].toggle();
-            //             this.$refs['praise'].status = true;
-            //         }else if(n === -1){
-            //             console.log('踩');
-            //             if(this.$refs['praise'].active) this.$refs['praise'].toggle();
-            //             this.$refs['tread'].status = true;
-            //         }else {
-            //             console.log('取消');
-            //             if(this.$refs['praise'].active) this.$refs['praise'].toggle();
-            //             if(this.$refs['tread'].active) this.$refs['tread'].toggle();
-            //         }
-            //     }
-            // },
         }
     }
 </script>
@@ -778,12 +808,11 @@
                     }
                 }
 
-                .article-reply{
+                .article-reply {
                     text-align: right;
-                    create-reply{
-                        .reply-button{
-
-                        }
+                    .reply-list{
+                        text-align: left;
+                        width: 100%;
                     }
                 }
             }

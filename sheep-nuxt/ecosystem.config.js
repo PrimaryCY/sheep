@@ -11,3 +11,7 @@ module.exports = {
         }
     ]
 }
+
+/* 启动:
+pm2 start ecosystem.config.js
+*/

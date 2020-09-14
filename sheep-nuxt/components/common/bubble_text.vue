@@ -79,6 +79,8 @@
     img {
         width: 45px;
         height: 45px;
+        object-fit: cover;
+        border-radius: 5px;
     }
 
     .receiver {

@@ -428,6 +428,7 @@
     }
 
     .avatar {
+        border-radius: 5px;
         width: 580px;
         height: 263px;
         display: block;

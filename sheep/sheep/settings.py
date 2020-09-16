@@ -372,8 +372,6 @@ CELERY_TASK_TIME_LIMIT = 3 * 60
 CELERY_TASK_SOFT_TIME_LIMIT = 2 * 60 + 30
 CELERY_REDIS_CONNECT_RETRY = True
 CELERY_TASK_SEND_SENT_EVENT = True
-# 使用django_celery_beat可以自定义添加定时任务
-CELERYBEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_ENABLE_UTC = False
@@ -394,6 +392,8 @@ CELERY_RESULT_CACHE_MAX = 3
 # 不再使用mysql管理celery状态，使用flower管理更清晰
 # CELERY_RESULT_BACKEND = "django-db"
 
+# 使用django_celery_beat可以自定义添加定时任务
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 DJANGO_CELERY_BEAT_TZ_AWARE = False
 CELERY_BEAT_SCHEDULE = {
     # 废弃
@@ -443,6 +443,16 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.logging.LoggingPanel',
     'debug_toolbar.panels.redirects.RedirectsPanel',
 ]
+if DEBUG:
+    EXTRA_MIDDLEWARE = [
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    ]
+    EXTRA_INSTALL_APPS = [
+        'debug_toolbar',
+    ]
+    MIDDLEWARE.extend(EXTRA_MIDDLEWARE)
+    INSTALLED_APPS.extend(EXTRA_INSTALL_APPS)
+
 
 # 日志配置
 LOG_DIR = os.path.join(BASE_DIR, 'logs')
@@ -556,15 +566,6 @@ LOGGING = {
     }
 }
 
-if DEBUG:
-    EXTRA_MIDDLEWARE = [
-        'debug_toolbar.middleware.DebugToolbarMiddleware',
-    ]
-    EXTRA_INSTALL_APPS = [
-        'debug_toolbar',
-    ]
-    MIDDLEWARE.extend(EXTRA_MIDDLEWARE)
-    INSTALLED_APPS.extend(EXTRA_INSTALL_APPS)
 
 # 百度api
 BD_API_LOCATION_IP_URL = "http://api.map.baidu.com/location/ip"

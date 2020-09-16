@@ -44,7 +44,7 @@ def task_failure_log(sender=None, headers=None, body=None,**kwargs):
 
 
 # 启动flower
-# celery flower -A sheep.celery --persistent=True
+# celery flower -A sheep.celery --config flowerconfig --basic_auth=cy:123456
 
 # linux:
 # celery -B -A sheep.celery worker -l info

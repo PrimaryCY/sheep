@@ -137,6 +137,11 @@
 _celery部分:_
 
 ```bash
+# 以下操作均在sheep目录下进行
+
+# 启动flower，basic_auth是用户认证
+celery flower -A sheep.celery --config flowerconfig --basic_auth=cy:123456
+
 # linux|macos:
 celery -B -A sheep.celery worker -l info
 
@@ -145,6 +150,7 @@ celery -B -A sheep.celery worker -l info
 celery -A sheep.celery beat
 # 新打开cmd窗口,异步任务
 celery -A sheep.celery worker -l info --pool=eventlet
+
 ```
 
 _后台部分:_
@@ -179,7 +185,7 @@ npm run dev
 cd sheep-nuxt
 npm install
 npm run build
-npm run start
+npm run start 或者使用pm2启动 pm2 start ecosystem.config.js
 ```
 
 

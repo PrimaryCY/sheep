@@ -100,6 +100,11 @@ class UpdateRetrieveUserPostSerializer(UserPostSerializer):
         if content:
             # 帖子简介
             attrs['desc'] = content[:230]
+
+        post_type = attrs.get('post_type')
+        if post_type == 2 and not content.endswith('?'):
+            attrs['content'] = f'{content}?'
+
         return attrs
 
     class Meta:

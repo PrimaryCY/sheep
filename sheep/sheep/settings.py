@@ -18,7 +18,6 @@ from redis.client import StrictRedis
 from celery.schedules import crontab
 from django_redis import get_redis_connection
 
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE_DIR)
@@ -35,7 +34,7 @@ SECRET_KEY = 'nog-m-%lwpued&hxe6v^c9+m_b=dfe!7atv@^vmq&_*-980h=n'
 DEBUG = True
 PDB_DEBUG = True
 
-ALLOWED_HOSTS = ['*',]
+ALLOWED_HOSTS = ['*', ]
 
 # Application definition
 
@@ -53,6 +52,7 @@ INSTALLED_APPS = [
     'mptt',
     'corsheaders',
     'django_celery_results',
+    'django_celery_beat',
     # celery自动导入不支持 apps.user.apps.UserConfig这种方式
     'commands',
     'apps.user.apps.UserConfig',
@@ -77,7 +77,6 @@ MIDDLEWARE = [
     'middleware.record_logging.RecordLoggingMiddleware'
 ]
 
-
 ROOT_URLCONF = 'sheep.urls'
 
 TEMPLATES = [
@@ -97,7 +96,6 @@ TEMPLATES = [
         },
     },
 ]
-
 
 # 配置微博开放平台授权(使用其它平台注意更改关键字)
 SOCIAL_AUTH_WEIBO_KEY = ''
@@ -172,7 +170,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = False
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
@@ -252,7 +249,7 @@ REST_FRAMEWORK = \
     {
         'DEFAULT_PERMISSION_CLASSES': (
             'apps.user.permission.IsLoginUser',
-                                      ),
+        ),
         'DEFAULT_AUTHENTICATION_CLASSES': (
             'apps.user.authentication.TokenAuthentication',
         ),
@@ -276,7 +273,7 @@ REST_FRAMEWORK = \
 # REST_FRAMEWORK_EXTENSIONS 设置
 REST_FRAMEWORK_EXTENSIONS = {
     "DEFAULT_USE_CACHE": "restframework_extensions",
-    "DEFAULT_CACHE_RESPONSE_TIMEOUT": 30*60
+    "DEFAULT_CACHE_RESPONSE_TIMEOUT": 30 * 60
 }
 
 REDIS_HOST = 'redis://127.0.0.1:6379/'
@@ -309,6 +306,19 @@ CACHES = {
             }
         }
     },
+    'celery': {
+        'BACKEND': "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_HOST + "4",
+        'TIMEOUT': 2000,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+            "PARSER_CLASS": "redis.connection.HiredisParser",
+            'CONNECTION_POOL_KWARGS': {
+                "max_connections": 100,
+            },
+        }
+    },
     'user': {
         'BACKEND': "django_redis.cache.RedisCache",
         "LOCATION": REDIS_HOST + "10",
@@ -338,7 +348,9 @@ CACHES = {
         }
     },
 }
+
 from django_redis import get_redis_connection
+
 USER_REDIS: StrictRedis = get_redis_connection('user')
 OPERATE_REDIS: StrictRedis = get_redis_connection('operate')
 
@@ -355,12 +367,13 @@ CELERY_TIMEZONE = TIME_ZONE
 # 每个worker最多执行内核数*10个任务就会被销毁，可防止内存泄露
 CELERY_WORKER_MAX_TASKS_PER_CHILD = cpu_count() * 10
 # 硬超时,会被强杀
-CELERY_TASK_TIME_LIMIT = 3*60
+CELERY_TASK_TIME_LIMIT = 3 * 60
 # 软超时,会抛异常
-CELERY_TASK_SOFT_TIME_LIMIT = 2*60+30
+CELERY_TASK_SOFT_TIME_LIMIT = 2 * 60 + 30
 CELERY_REDIS_CONNECT_RETRY = True
 CELERY_TASK_SEND_SENT_EVENT = True
-# CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
+# 使用django_celery_beat可以自定义添加定时任务
+CELERYBEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_ENABLE_UTC = False
@@ -372,22 +385,28 @@ CELERY_DEFAULT_EXCHANGE_TYPE = 'topic'
 CELERY_DEFAULT_ROUTING_KEY = 'default'
 
 # celery-result 配置
-CELERY_RESULT_BACKEND = "django-db"
 CELERY_RESULT_SERIALIZER = 'json'
-# CELERY_RESULT_BACKEND = REDIS_HOST + "4"
-CELERY_RESULT_EXPIRES = 60*24*2
+CELERY_RESULT_BACKEND = REDIS_HOST + "4"
+CELERY_RESULT_EXPIRES = 60 * 24 * 2
 CELERY_RESULT_CACHE_MAX = 3
+
+# 废弃
+# 不再使用mysql管理celery状态，使用flower管理更清晰
+# CELERY_RESULT_BACKEND = "django-db"
+
+DJANGO_CELERY_BEAT_TZ_AWARE = False
 CELERY_BEAT_SCHEDULE = {
-    'clear-celery-results': {
-        # 由于选用数据库作为result的存储后端,result不会自动清除,所以手写一个定时任务清除
-        'task': 'apps.other.tasks.clear_celery_results',
-        'schedule': crontab(minute=f"*/{CELERY_RESULT_EXPIRES}"),
-    },
-    'real-clear-celery-results': {
+    # 废弃
+    # 'clear-celery-results': {
+    # 由于选用数据库作为result的存储后端,result不会自动清除,所以手写一个定时任务清除
+    # 'task': 'apps.other.tasks.clear_celery_results',
+    # 'schedule': crontab(minute=f"*/{CELERY_RESULT_EXPIRES}"),
+    # },
+    # 'real-clear-celery-results': {
         # 真实清除
-        'task': 'apps.other.tasks.real_clear_celery_results',
-        'schedule': crontab(minute=f"*/{CELERY_RESULT_EXPIRES*5}"),
-    },
+        # 'task': 'apps.other.tasks.real_clear_celery_results',
+        # 'schedule': crontab(minute=f"*/{CELERY_RESULT_EXPIRES * 5}"),
+    # },
     'delete_trash_post': {
         # 定时删除垃圾文章
         'task': 'apps.post.tasks.delete_trash_post',
@@ -399,11 +418,10 @@ CELERY_BEAT_SCHEDULE = {
 TOKEN = {
     'FRAME': 'django',
     'TOKEN_SECURITY_KEY': b'pBy0j5_m6qqTOXElHSs0OlfV5qiYhqHkEvwLtdrXZ5o=',
-    'TOKEN_EXPIRES': 7*24*3600,
+    'TOKEN_EXPIRES': 7 * 24 * 3600,
     'TOKEN_REDIS': USER_REDIS,
     'TOKEN_NAME': 'token'
 }
-
 
 # django-debug-toolbar配置
 # 调试工具的ip

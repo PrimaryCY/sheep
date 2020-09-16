@@ -63,6 +63,9 @@ coverage.xml
 *.mo
 *.pot
 
+# flower
+flower.db
+
 # Django stuff:
 *.log
 local_settings.py

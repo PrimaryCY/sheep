@@ -10,9 +10,6 @@ __pycache__/
 .Python
 
 logs/
-celerybeat-schedule.bak
-celerybeat-schedule.dat
-celerybeat-schedule.dir
 node_modules/
 sheep-vue/
 local_setting.py
@@ -62,6 +59,13 @@ coverage.xml
 # Translations
 *.mo
 *.pot
+
+#celery
+celerybeat-schedule.bak
+celerybeat-schedule.dat
+celerybeat-schedule.dir
+celerybeat-schedule.db
+celerybeat.pid
 
 # flower
 flower.db

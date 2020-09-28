@@ -125,7 +125,6 @@ class User(BaseModel, AbstractBaseUser):
         users = cls.objects.filter(id__in=args).values('id', 'username', 'portrait')
         return {item['id']: item for item in users}
 
-
     @classmethod
     def generate_anonymity_user(cls, username):
         """
@@ -133,8 +132,8 @@ class User(BaseModel, AbstractBaseUser):
         :param username:
         :return:
         """
-        user, flag = cls.objects.get_or_create(username=username,
-                                               portrait=cls.defautl_man_portrait,
+        user, flag = cls.objects.get_or_create(defaults={'portrait': cls.defautl_man_portrait,},
+                                               username=username,
                                                is_anonymity=True,
                                                is_active=True)
         return user, flag

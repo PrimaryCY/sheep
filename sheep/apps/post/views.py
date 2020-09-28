@@ -1,19 +1,24 @@
 from django.db import transaction
+from django.db.transaction import on_commit
+from django.forms import model_to_dict
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import serializers
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework.mixins import ListModelMixin
 
-from apps.post.models import Category, Post, PostReply
-from apps.post.tasks import after_retrieve_post
+from apps.operate.models import Praise
+from apps.post.models import Category, Post, PostReply, User
+from apps.post.tasks import after_retrieve_post, after_create_post_reply, after_delete_post_reply
 from apps.post.filters import PostFilter, AllPostFilter, AuthorPostFilter, CategoryPostFilter, CorrelationCategoryFilter
+from sheep.constant import RET
 from utils.drf_extensions.util import limit_offset_list_cache_key_func
-from utils.viewsets import ModelViewSet, CreateModelMixin, DestroyModelMixin, GenericViewSet, ReadOnlyModelViewSet
+from utils.viewsets import ModelViewSet, CreateModelMixin, DestroyModelMixin, GenericViewSet, ReadOnlyModelViewSet, \
+    ExtensionViewMixin
 from utils.pagination import LimitOffsetPagination
 from utils.drf_extensions.decorators import only_data_cache_response
 from apps.post.serializer import PostCategorySerializer, UserPostSerializer, PostReplySerializer, \
-    RetrievePostReplySerializer, UpdateRetrieveUserPostSerializer, PostSerializer, RetrievePostSerializer, CorrelationCategorySerializer
+    UpdateRetrieveUserPostSerializer, PostSerializer, RetrievePostSerializer, CorrelationCategorySerializer
 from apps.user.permission import IsAdminUser, IsLoginUser
 
 
@@ -65,50 +70,83 @@ class UserPostViewSet(ModelViewSet):
 
 
 class UserReplyViewSet(ReadOnlyModelViewSet,
+                       CreateModelMixin,
                        DestroyModelMixin):
     """个人帖子回复视图"""
-    serializer_class = PostReplySerializer
+    serializer_class = {
+        "create": PostReplySerializer,
+    }
     pagination_class = LimitOffsetPagination
     filter_backends = (OrderingFilter,)
     ordering_fields = ('create_time', 'praise_num')
 
     def get_queryset(self):
-        return PostReply.objects.filter(author_id=self.request.user.id, post_id__isnull=False).all()
+        if self.action == 'destory':
+            return PostReply.objects.filter(author_id=self.request.user.id, parent__isnull=True).all()
+        return PostReply.objects.filter(author_id=self.request.user.id).all()
+
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        if not instance.parent:
+            on_commit(lambda: after_create_post_reply.delay(instance.post_id,
+                                                            instance.author_id))
 
     @transaction.atomic()
     def perform_destroy(self, instance):
-        if not (instance.author_id == self.request.user.id and
-                instance.get_descendant_count() <= 0):
-            raise serializers.ValidationError({'code': ...})
         super().perform_destroy(instance)
-        # 减少帖子回复数量
-        Post.del_post_num(instance.post_id)
+        if not instance.parent:
+            on_commit(lambda: after_delete_post_reply.delay(instance.post_id))
 
 
-class PostReplyViewSet(ReadOnlyModelViewSet,
-                       CreateModelMixin):
-    """帖子回复视图"""
-    serializer_class = PostReplySerializer
-    retrieve_serialize_class = RetrievePostReplySerializer
+class PostReplyViewSet(GenericViewSet):
+    """所有帖子回复视图"""
     pagination_class = LimitOffsetPagination
     filter_backends = (OrderingFilter,)
-    ordering_fields = ('create_time', 'praise_num')
+    ordering_fields = ('-created_time', 'praise_num')
     permission_classes = ()
+    queryset = PostReply.objects.all()
 
-    def get_queryset(self):
-        post_id = self.request.query_params.get('post_id')
-        return PostReply.objects.filter(post_id=post_id, parent__isnull=True)
+    def list(self, request, *args, **kwargs):
+        try:
+            post_id = int(request.query_params.get('post_id'))
+        except:
+            raise serializers.ValidationError({'code': RET.PARAMERR, 'msg': '参数传递错误'})
 
-    def get_serializer_class(self):
-        if self.action == 'retrieve':
-            return self.retrieve_serialize_class
-        return self.serializer_class
+        qs = PostReply.objects.filter(post_id=post_id, parent__isnull=True).defer("lft", "rght")
 
-    @transaction.atomic()
-    def perform_create(self, serializer):
-        instance = serializer.save()
-        # 增加帖子回复数量
-        Post.add_post_num(instance.post_id)
+        filter_qs = self.filter_queryset(qs)
+        paginate_qs = self.paginate_queryset(filter_qs)
+
+        users_info = User.get_simple_users_info([i.author_id for i in paginate_qs])
+
+        return_list = []
+        for obj in paginate_qs:
+            dic = model_to_dict(obj)
+            dic['created_time'] = obj.created_time.strftime("%Y-%m-%d %H:%M:%S")
+            dic['update_time'] = obj.update_time.strftime("%Y-%m-%d %H:%M:%S")
+            dic['author_info'] = users_info.get(obj.author_id)
+            dic['is_del'] = obj.is_del(request.user.id)
+            # dic['is_praise'] = 1
+            dic['is_praise'] = Praise.select_is_praise(request.user.id,
+                                                       obj.id, 2)
+            dic['children'] = []
+            children = obj.get_descendants().defer("lft", "rght")
+            child_users_info = User.get_simple_users_info([child.author_id for child in children])
+
+            for child in children:
+                child_dict = model_to_dict(child)
+                child_dict['author_info'] = child_users_info.get(child.author_id)
+                child_dict['is_del'] = child.is_del(request.user.id)
+                # child_dict['is_praise'] = 1
+                child_dict['is_praise'] = Praise.select_is_praise(request.user.id,
+                                                                  child.id, 2)
+                child_dict['created_time'] = child.created_time.strftime("%Y-%m-%d %H:%M:%S")
+                child_dict['update_time'] = child.update_time.strftime("%Y-%m-%d %H:%M:%S")
+                dic['children'].append(child_dict)
+
+            return_list.append(dic)
+
+        return self.get_paginated_response(return_list)
 
 
 class AllPostViewSet(ReadOnlyModelViewSet):
@@ -183,6 +221,6 @@ class CorrelationCategoryViewSet(ListModelMixin,
     filter_class = CorrelationCategoryFilter
     serializer_class = CorrelationCategorySerializer
 
-    @only_data_cache_response(key_func=limit_offset_list_cache_key_func, timeout=60*60)
+    @only_data_cache_response(key_func=limit_offset_list_cache_key_func, timeout=60 * 60)
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)

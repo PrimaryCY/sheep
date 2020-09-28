@@ -1,8 +1,5 @@
 export function get_tree_first_node(tree) {
-    console.log(tree)
-
     function fs(data) {
-        console.log(data)
         for (let i of data) {
             if (!i.child || !i.child.length) {
                 return i.id
@@ -11,7 +8,6 @@ export function get_tree_first_node(tree) {
             }
         }
     }
-
     return fs(tree)
 }
 

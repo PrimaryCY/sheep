@@ -2,8 +2,10 @@
 # author:CY
 # datetime:2019/7/26 23:33
 import os
+import re
 import uuid
 import time
+import json
 import itertools
 import datetime
 from collections import Iterable, Mapping
@@ -15,7 +17,27 @@ from xpinyin import Pinyin
 pin = Pinyin()
 
 
-def getFlatten(arr: Iterable)->Iterable:
+def covertFileSize(size):
+    """
+    kb转为人性化输出
+    :param size:
+    :return:
+    """
+    kb = 1
+    mb = kb * 1024
+    gb = mb * 1024
+    tb = gb * 1024
+    if size >= tb:
+        return "%.1f TB" % float(size / tb)
+    elif size >= gb:
+        return "%.1f GB" % float(size / gb)
+    elif size >= mb:
+        return "%.1f MB" % float(size / mb)
+    elif size >= kb:
+        return f"{size // kb} KB"
+
+
+def getFlattenOne(arr: Iterable) -> Iterable:
     """
     获取扁平数组的第一个数组
     :param arr:
@@ -23,6 +45,16 @@ def getFlatten(arr: Iterable)->Iterable:
     """
     arr=list(itertools.chain(*arr))
     return arr[0] if len(arr) else None
+
+
+def getFlatten(items: list) -> list:
+    """
+    数组扁平化
+    :param items:
+    :return:list
+    """
+    items = json.dumps(items)
+    return json.loads('[' + re.sub(r'[\[\]]', '', items) + ']')
 
 
 def random_filename(filename: str)->str:

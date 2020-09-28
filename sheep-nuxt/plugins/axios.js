@@ -21,11 +21,10 @@ export default function (context, inject) {
 
     service.interceptors.request.use(
         request => {
-            console.log('start request')
             if (process.client) {
                 NProgress.start()
             }
-            if (process.server) {
+            else if (process.server) {
                 // 为了解决ssr渲染后端还能查询到匿名用户,新增header:u-host
                 request.headers['u-host'] = context.req.headers['x-forwarded-for'] ||
                     context.req.headers['x-real-ip'] ||
@@ -44,6 +43,7 @@ export default function (context, inject) {
         err => {
             return Promise.reject(err);
         });
+    
 
     //http-响应拦截
     service.interceptors.response.use(

@@ -55,7 +55,7 @@ def after_praise_or_trample(operation: int, user_id: int, resource_id: int, prai
         return
 
     if praise_or_trample == 0:
-        Praise.objects.filter(user_id=user_id, resource_id=resource_id).delete()
+        Praise.objects.filter(user_id=user_id, t=t, resource_id=resource_id).delete()
     else:
         Praise.objects.update_or_create(defaults={
             'praise_or_trample': praise_or_trample

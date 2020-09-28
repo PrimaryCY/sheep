@@ -9,6 +9,7 @@ from urllib import parse
 from django_celery_results.models import TaskResult
 from qiniu import Auth, BucketManager
 from rest_framework.request import Request
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from django.conf import settings
 
@@ -18,6 +19,9 @@ from apps.post.serializer import PostCategorySerializer
 from sheep.constant import RET
 from utils.extra_fields import CurrentUserIdDefault, RangeField, SerializerMethodAndWriteField
 from utils.tools import random_filename
+
+
+User = get_user_model()
 
 
 class UploadTokenSerializer(serializers.Serializer):
@@ -108,11 +112,15 @@ class UploadHistorySerializer(serializers.ModelSerializer):
 
 class OptionSerializer(serializers.Serializer):
     post_category = serializers.SerializerMethodField(label='帖子类别')
+    default_portrait = serializers.SerializerMethodField(label='默认头像')
 
     def get_post_category(self, obj):
         return PostCategorySerializer(Category.objects.filter(level=0),
                                       many=True,
                                       context=self._context).data
+
+    def get_default_portrait(self, obj):
+        return User.defautl_man_portrait
 
 
 class FeedbackCategorySerializer(serializers.ModelSerializer):

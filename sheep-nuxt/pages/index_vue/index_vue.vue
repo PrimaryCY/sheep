@@ -20,7 +20,7 @@
                 </div>
 
 
-                <div v-if="!user.username">
+                <div v-if="user.is_anonymity">
                     <!-- Logo -->
                     <div id="logo">
                         <el-button

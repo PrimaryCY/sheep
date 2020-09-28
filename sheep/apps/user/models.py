@@ -1,4 +1,5 @@
 import datetime
+from collections import defaultdict
 from typing import Union
 
 from django.contrib.auth.base_user import AbstractBaseUser
@@ -112,6 +113,31 @@ class User(BaseModel, AbstractBaseUser):
         """
         user = cls.objects.filter(id=user_id).values('id', 'username', 'portrait').first()
         return dict(user) if user else {'username': "用户未找到"}
+
+    @classmethod
+    def get_simple_users_info(cls, *args):
+        """
+        批量获取简单通用用户信息
+        :param args:
+        :return:{1:{username:xxx,portrait:xxx}}
+        """
+        args = list(set(*args))
+        users = cls.objects.filter(id__in=args).values('id', 'username', 'portrait')
+        return {item['id']: item for item in users}
+
+
+    @classmethod
+    def generate_anonymity_user(cls, username):
+        """
+        创建匿名用户
+        :param username:
+        :return:
+        """
+        user, flag = cls.objects.get_or_create(username=username,
+                                               portrait=cls.defautl_man_portrait,
+                                               is_anonymity=True,
+                                               is_active=True)
+        return user, flag
 
     @classmethod
     def get_post_retrieve_author_info(cls, user_id: Union[int, object]):

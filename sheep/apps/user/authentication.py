@@ -118,7 +118,7 @@ class TokenAuthentication(BaseAuthentication):
     @staticmethod
     def anonymity_authenticate(request):
         """匿名用户"""
-        user, flag = User.objects.get_or_create(username=request.u_host, is_anonymity=True, is_active=True)
+        user, flag = User.generate_anonymity_user(request.u_host)
         # 匿名用户登录之后操作
         after_login.delay(user.id, request.u_host)
         return user, flag

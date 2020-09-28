@@ -44,3 +44,4 @@ Vue.prototype.deepCopy = function (obj) {
   let _obj = JSON.stringify(obj)
   return JSON.parse(_obj);
 }
+

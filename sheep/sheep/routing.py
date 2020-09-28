@@ -13,11 +13,9 @@ application = ProtocolTypeRouter({
     'http': AsgiHandler,
     'websocket': AuthMiddlewareStack(
         URLRouter(
-            api.routing.websocket_urlpatterns# 指明路由文件是api/routing.py
+            api.routing.websocket_urlpatterns  # 指明路由文件是api/routing.py
         )
     ),
 })
 
 server.init()
-
-

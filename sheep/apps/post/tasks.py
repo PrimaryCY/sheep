@@ -24,3 +24,26 @@ def delete_trash_post():
     :return:
     """
     Post.objects.filter(praise_num__lt=-50).update(status=3)
+
+
+@shared_task()
+def after_create_post_reply(post_id: int, user_id:int):
+    """
+    增加帖子回复数量
+    :param post_id:
+    :param parent:
+    :param user_id:
+    :return:
+    """
+    Post.add_post_num(post_id, user_id)
+
+
+@shared_task()
+def after_delete_post_reply(post_id: int):
+    """
+    删除帖子回复数量
+    :param post_id:
+    :param parent:
+    :return:
+    """
+    Post.del_post_num(post_id)

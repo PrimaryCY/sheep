@@ -74,7 +74,7 @@ class UserViewSet(CreateModelMixin,
 
     def get_permissions(self):
         # 只有注册时才不需要进行认证
-        if self.request.method != 'POST':
+        if self.request.method not in ['POST', "GET"]:
             return [temp() for temp in api_settings.DEFAULT_PERMISSION_CLASSES]
         return [temp() for temp in self.permission_classes]
 

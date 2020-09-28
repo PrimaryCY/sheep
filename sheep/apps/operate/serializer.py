@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # author:CY
 # datetime:2019/12/19 13:36
+from abc import ABC
 from typing import Any
 
 from django.contrib.auth import get_user_model
@@ -84,7 +85,8 @@ class CreatePraiseSerializer(serializers.Serializer):
 
     def validate(self, attr):
         resource_id = attr.get('resource_id')
-        resource = Post.objects.filter(id=resource_id).only('id').exists()
+        t = attr.get('t')
+        resource = Praise.PRAISE_TYPE_MODEL_MAPPING[t].objects.filter(id=resource_id).only('id').exists()
         if not resource:
             raise serializers.ValidationError({'code': RET.PARAMERR, 'msg': '不存在该资源!'})
         return attr

@@ -21,10 +21,12 @@ class Category(MPTTModel, BaseModel):
     parent = TreeForeignKey('self', on_delete=models.CASCADE, related_name='children',
                             verbose_name='父亲ID', null=True, blank=True)
 
+
     @property
     def child(self):
         """显示所有的子节点"""
-        tree = self.get_descendants().values("id", "name", "parent_id", "level", "desc", 'author_id', 'parent__name').iterator()
+        tree = self.get_descendants().values("id", "name", "parent_id", "level", "desc", 'author_id',
+                                             'parent__name').iterator()
         init = {}
         for i in tree:
             init[i['id']] = i
@@ -55,7 +57,7 @@ class Category(MPTTModel, BaseModel):
             {'name': 'java'},
             {'name': 'go'},
             {'name': '前端'},
-            {'name': '数据库', 'child':[
+            {'name': '数据库', 'child': [
                 {
                     'name': 'mysql'
                 }, {
@@ -63,8 +65,8 @@ class Category(MPTTModel, BaseModel):
                 }, {
                     'name': '其它'
                 }
-                ]
-            },
+            ]
+             },
             {'name': '运维'},
             {'name': '游戏'},
             {'name': 'elasticSearch'},
@@ -84,6 +86,7 @@ class Category(MPTTModel, BaseModel):
                     continue
                 parent = cls.objects.filter(name=category['name']).first().id
                 _execute(category['child'], parent_id=parent)
+
         _execute(categorys)
 
     class Meta:
@@ -128,9 +131,10 @@ class Post(BaseModel):
     like_num = models.IntegerField(default=0, verbose_name='收藏数量')
     praise_num = models.IntegerField(default=0, verbose_name='点赞数量')
     # not_reply = models.BooleanField(default=True, verbose_name='是否可以回复')
-    content_type = models.SmallIntegerField(choices=content_type_choices,verbose_name='内容类型')
+    content_type = models.SmallIntegerField(choices=content_type_choices, verbose_name='内容类型')
     newest_user_id = models.IntegerField(null=True, verbose_name='最新回复人')
-    status = models.PositiveSmallIntegerField(choices=post_status_choices, null=False, default=0, verbose_name='文章上下线状态')
+    status = models.PositiveSmallIntegerField(choices=post_status_choices, null=False, default=0,
+                                              verbose_name='文章上下线状态')
     is_active = None
 
     @classmethod
@@ -143,23 +147,27 @@ class Post(BaseModel):
         return cls.objects.filter(id=post_id).values(*cls.exclude(['content']))
 
     @classmethod
-    def add_post_num(cls, post_id: int):
+    def add_post_num(cls, post_id: int, newest_user_id: int):
         """
-        增加评论数量
+        增加评论数量,修改最后评论人
         :param post_id:帖子id
+        :param newest_user_id:回复人id
         :return:
         """
-        cls.objects.filter(id=post_id).update(post_num=F('post_num')+1)
+        cls.objects.filter(id=post_id).update(post_num=F('post_num') + 1,
+                                              newest_user_id=newest_user_id)
         return post_id
 
     @classmethod
     def del_post_num(cls, post_id: int):
         """
-        减少评论数量
+        减少评论数量,修改最后评论id
         :param post_id:帖子id
         :return:
         """
-        cls.objects.filter(id=post_id).update(post_num=F('post_num')-1)
+        reply = PostReply.objects.filter(post_id=post_id, parent__isnull=True).only("author_id").first()
+        cls.objects.filter(id=post_id).update(post_num=F('post_num') - 1,
+                                              newest_user_id=reply.author_id)
         return post_id
 
     @classmethod
@@ -168,7 +176,7 @@ class Post(BaseModel):
         增加阅读数量
         :return:
         """
-        return cls.objects.filter(id=post_id).update(read_num=F('read_num')+1)
+        return cls.objects.filter(id=post_id).update(read_num=F('read_num') + 1)
 
     class Meta:
         verbose_name_plural = verbose_name = '文章/问题表'
@@ -187,14 +195,26 @@ class PostReply(BaseModel, MPTTModel):
     parent = TreeForeignKey('self', on_delete=models.CASCADE, related_name='child',
                             verbose_name='父评论', null=True, blank=True)
     post_id = models.IntegerField(verbose_name='帖子id', null=False, db_index=True)
-    replier_id = models.IntegerField(null=True, verbose_name='回复人id', db_index=True)
+
+    # replier_id = models.IntegerField(null=True, verbose_name='回复人id', db_index=True)
 
     def is_del(self, user_id):
-        """用户是否可以删除该回复"""
-        return self.author_id == user_id and self.get_descendant_count() <= 0
+        """
+        用户是否可以删除该回复
+        :param user_id:
+        :return: 0 不可以删除  1 不可以删除，有子评论  2可以删除
+        """
+        if not self.author_id == user_id:
+            return 0
+        elif self.get_descendant_count() <= 0:
+            return 2
+        else:
+            return 1
+        # return self.author_id == user_id and self.get_descendant_count() <= 0
 
     class Meta:
         verbose_name_plural = verbose_name = '帖子评论表'
+        ordering = ('-created_time', 'praise_num')
 
     def __str__(self):
         return self.content

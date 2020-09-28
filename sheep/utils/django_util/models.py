@@ -21,11 +21,12 @@ class CustomQuerySet(QuerySet):
 
     def _chain(self, **kwargs):
         qs = super()._chain(**kwargs)
-        fields = {i.name for i in qs.model._meta.fields}
-        if 'is_active' in fields and not kwargs.get('is_active'):
-            qs.query.add_q(Q(is_active=True))
-        elif 'status' in fields and not kwargs.get('status'):
-            qs.query.add_q(Q(status=0))
+        if not qs.query.where.children:
+            fields = {i.name for i in qs.model._meta.fields}
+            if 'is_active' in fields and not kwargs.get('is_active'):
+                qs.query.add_q(Q(is_active=True))
+            elif 'status' in fields and not kwargs.get('status'):
+                qs.query.add_q(Q(status=0))
         return qs
 
 

@@ -261,8 +261,8 @@ class Praise(BaseModel):
                 return_num = +1
                 p_after_praise_or_trample(+1)
 
-        elif praise_or_trample == -1:
-            # 踩
+        elif praise_or_trample == -1 and t == 1:
+            # 踩， 只有文章或者问题可以踩
             is_praise = cls.con.setbit(resource_praise_like, user_id, 0)
             is_not_praise = cls.con.setbit(resource_praise_not_like, user_id, 1)
             if is_not_praise == 0:

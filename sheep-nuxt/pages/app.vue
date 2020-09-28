@@ -15,7 +15,7 @@
 
     import backtop from '../components/backtop'
     import upgrade from '@/components/common/upgrade'
-    import setting from '../conf/settings'
+    // import setting from '../conf/settings'
     import browser_mixin from '../mixins/browser_mixin'
     import '../plugins/util'
 
@@ -31,10 +31,10 @@
         },
         async asyncData(context) {
             try {
-                if (context.app.$cookies.secure_get(setting.TOKEN_NAME)
-                    && !context.store.user) {
+                // if (context.app.$cookies.secure_get(setting.TOKEN_NAME)
+                //     && !context.store.user) {
                     await context.store.dispatch('receive_userinfo')
-                }
+                // }
             } catch (e) {
                 context.error({statusCode: 500, message: 'ssr internal server error'})
             }

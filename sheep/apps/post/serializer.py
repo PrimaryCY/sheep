@@ -170,14 +170,13 @@ class PostReplySerializer(serializers.ModelSerializer):
     status = serializers.ReadOnlyField(label='状态')
     replier_id = serializers.ReadOnlyField(label='回复用户id')
     author_id = serializers.HiddenField(default=CurrentUserIdDefault(), label='创建人')
+    parent_id = serializers.IntegerField(required=False, label="父id")
     post_id = serializers.IntegerField(label='回复帖子id')
 
     def validate_post_id(self, post_id):
-        post = Post.objects.filter(id=post_id).first()
-        if post is None:
+        post = Post.objects.filter(id=post_id).exists()
+        if not post:
             raise serializers.ValidationError({'code': RET.PARAMERR, 'msg': f'{post_id}回复帖子不存在!'})
-        if not post.not_reply:
-            raise serializers.ValidationError({'code': RET.PARAMERR, 'msg': f'帖子{post.name},不允许回复!'})
         return post_id
 
     def validate(self, attr):
@@ -186,61 +185,9 @@ class PostReplySerializer(serializers.ModelSerializer):
             attr['replier_id'] = parent.author_id
         return attr
 
-    replier_info = serializers.SerializerMethodField(label='回复用户信息')
-    type = serializers.SerializerMethodField(label='回复帖子/回复用户')
-    author_info = serializers.SerializerMethodField(label='创建人信息')
-    is_del = serializers.SerializerMethodField(label='是否可删除')
-    child_num = serializers.SerializerMethodField(label='子评论数量')
-
-    def get_author_info(self, obj):
-        """回复创建人信息"""
-        user = User.get_simple_user_info(obj.author_id)
-        if user:
-            return user
-
-    def get_replier_info(self, obj):
-        """
-        返回回复人信息
-        :param obj:
-        :return:
-        """
-        if obj.replier_id:
-            return User.get_simple_user_info(obj.replier_id)
-
-    def get_type(self, obj):
-        """
-        获取回复的类型
-        :return: 1-->回复帖子   2-->回复用户
-        """
-        return 1 if not obj.parent else 2
-
-    def get_is_del(self, obj):
-        """
-        用户是否可以删除该回复,
-        创建人是该用户&回复并没有子回复
-        """
-        return obj.is_del(self.context['request'].user.id)
-
-    def get_child_num(self, obj):
-        """返回回复的子回复数量"""
-        return obj.get_descendant_count()
-
     class Meta:
         model = PostReply
         exclude = ("lft", "rght")
-
-
-class RetrievePostReplySerializer(PostReplySerializer):
-    """帖子回复详情序列化器"""
-    child = serializers.SerializerMethodField(label='用户子回复')
-
-    def get_child(self, obj):
-        """获取所有的子回复"""
-        return PostReplySerializer(obj.get_descendants(), many=True, context=self.context).data
-
-    class Meta:
-        model = PostReply
-        fields = ('id', 'author_id', 'child')
 
 
 class PostSerializer(serializers.ModelSerializer):

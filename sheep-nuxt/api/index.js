@@ -74,6 +74,14 @@ export const api_user_praise=common_crud('v1/web/user_praise');
 用户历史浏览记录
  */
 export const api_user_history=common_crud('v1/web/user_history');
+/*
+所有帖子回复
+ */
+export const api_post_reply=common_crud('v1/web/post_reply')
+/*
+用户个人回复
+ */
+export const api_user_reply=common_crud('v1/web/user_reply')
 
 /*
 * 上传文件接口

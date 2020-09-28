@@ -41,15 +41,14 @@ router.register('user_collect', CollectViewSet, basename='user_collect')
 router.register('user_praise', PraiseViewSet, basename='user_praise')
 # 个人浏览历史记录
 router.register('user_history', BrowsingHistoryViewSet, basename='user_history')
-
-
-# 个人回复展示
-router.register('user_reply', UserReplyViewSet, basename='user_reply')
-# 个人关注
-router.register('user_focus', FocusViewSet, basename='user_focus')
-
 # 所有帖子回复
 router.register('post_reply', PostReplyViewSet, basename='post_reply')
+# 个人回复展示
+router.register('user_reply', UserReplyViewSet, basename='user_reply')
+
+
+# 个人关注
+router.register('user_focus', FocusViewSet, basename='user_focus')
 # 所有用户收藏分类
 router.register('collect_category', CollectCategoryViewSet, basename='collect_category')
 # 所有用户基本信息

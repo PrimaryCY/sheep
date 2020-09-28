@@ -112,7 +112,7 @@ class ListCreateUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        exclude = ('created_time', 'update_time', 'is_active', 'is_anonymity')
+        exclude = ('created_time', 'update_time', 'is_active')
 
 
 class UpdateUserSerializer(serializers.ModelSerializer):

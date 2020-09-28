@@ -19,6 +19,7 @@
                         class="reply-button"
                         size="mini"
                         :disabled="!html_content.trim().length"
+                        @click="click_reply"
                         type="primary">
                     回复
                 </el-button>
@@ -42,9 +43,29 @@
                 type: String,
                 default: ''
             },
-            avatar:{
-                type:String,
-                default:'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2519824424,1132423651&fm=26&gp=0.jpg'
+            avatar: {
+                type: String,
+                default: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2519824424,1132423651&fm=26&gp=0.jpg'
+            },
+            post_id: {
+                type: Number,
+                required: true
+            },
+            parent_id: {
+                type: Number,
+                required: false
+            }
+        },
+        methods: {
+            click_reply() {
+                // 回复
+                let data = {
+                    post_id:this.post_id,
+                    content: this.html_content
+                }
+                if(this.parent_id)data['parent_id']=this.parent_id
+                this.html_content = ""
+                this.$emit("click_reply_btn", data)
             }
         },
         components: {
@@ -59,7 +80,7 @@
 </script>
 
 <style scoped lang="scss">
-    .create-reply{
+    .create-reply {
         text-align: right;
     }
 </style>

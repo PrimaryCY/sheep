@@ -6,6 +6,7 @@ from rest_framework import serializers
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework.mixins import ListModelMixin
+from rest_framework.settings import api_settings
 
 from apps.operate.models import Praise
 from apps.post.models import Category, Post, PostReply, User
@@ -79,6 +80,11 @@ class UserReplyViewSet(ReadOnlyModelViewSet,
     pagination_class = LimitOffsetPagination
     filter_backends = (OrderingFilter,)
     ordering_fields = ('create_time', 'praise_num')
+
+    def get_permissions(self):
+        if self.action == 'create':
+            return ()
+        return (temp() for temp in api_settings.DEFAULT_PERMISSION_CLASSES)
 
     def get_queryset(self):
         if self.action == 'destory':

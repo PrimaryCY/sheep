@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # author:CY
 # datetime:2020/9/9 14:34
+from typing import Iterable
+
 from celery import shared_task
 
-from apps.post.models import Post
+from apps.post.models import Post, PostReply
 from apps.operate.models import BrowsingHistoryRedisMode
 
 
@@ -47,3 +49,14 @@ def after_delete_post_reply(post_id: int):
     :return:
     """
     Post.del_post_num(post_id)
+
+
+@shared_task()
+def after_list_reply(user_id: int, ids:Iterable):
+    """
+    修改文章已读未读状态
+    :param user_id:
+    :param ids:
+    :return:
+    """
+    PostReply.objects.filter(id__in=ids, replier_id=user_id, is_read=False).update(is_read=True)

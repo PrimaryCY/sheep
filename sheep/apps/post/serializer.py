@@ -115,7 +115,7 @@ class UpdateRetrieveUserPostSerializer(UserPostSerializer):
         }
 
 
-class UserPostReplySerializer(serializers.ModelSerializer):
+class ListUserPostReplySerializer(serializers.ModelSerializer):
     """个人中心帖子回复序列化器"""
     praise_num = serializers.ReadOnlyField(label='点赞数量')
     status = serializers.ReadOnlyField(label='状态')
@@ -123,10 +123,11 @@ class UserPostReplySerializer(serializers.ModelSerializer):
     post_id = serializers.IntegerField(label='回复帖子id')
     replier_id = serializers.ReadOnlyField(label='回复用户id')
 
-    replier_info = serializers.SerializerMethodField(label='回复用户信息')
+    author_info = serializers.SerializerMethodField(label='回复用户信息')
     type = serializers.SerializerMethodField(label='回复帖子/回复用户')
     post_info = serializers.SerializerMethodField(label='帖子信息')
     is_del = serializers.SerializerMethodField(label='是否可删除')
+    parent_id = serializers.ReadOnlyField(label='回复资源id')
 
     def get_is_del(self, obj):
         """
@@ -142,14 +143,13 @@ class UserPostReplySerializer(serializers.ModelSerializer):
         """
         return 1 if not obj.parent else 2
 
-    def get_replier_info(self, obj):
+    def get_author_info(self, obj):
         """
         返回回复人信息
         :param obj:
         :return:
         """
-        if obj.replier_id:
-            return User.get_simple_user_info(obj.replier_id)
+        return self.context['author_info'][obj.author_id]
 
     def get_post_info(self, obj):
         """
@@ -157,14 +157,14 @@ class UserPostReplySerializer(serializers.ModelSerializer):
         :param obj:
         :return:
         """
-        return Post.get_simple_post_info(obj.post_id)
+        return self.context['post_info'][obj.post_id]
 
     class Meta:
         model = PostReply
-        exclude = ("lft", "rght")
+        exclude = ("lft", "rght", "html_content", "tree_id", "level")
 
 
-class PostReplySerializer(serializers.ModelSerializer):
+class CreateUserPostReplySerializer(serializers.ModelSerializer):
     """帖子内回复序列化器"""
     praise_num = serializers.ReadOnlyField(label='点赞数量')
     status = serializers.ReadOnlyField(label='状态')
@@ -180,14 +180,24 @@ class PostReplySerializer(serializers.ModelSerializer):
         return post_id
 
     def validate(self, attr):
-        parent = attr.get('parent')
-        if parent:
+        parent_id = attr.get('parent_id')
+        post_id = attr.get('post_id')
+        # 如果回复没有parent_id 回复对象就为文章｜问题作者， 如果有parent_id 回复对象就为该条评论作者
+        if parent_id:
+            parent = PostReply.objects.filter(id=parent_id).only('author_id').first()
+            if not parent:
+                raise serializers.ValidationError({'code': RET.PARAMERR, 'msg': f'{parent_id}回复不存在！'})
             attr['replier_id'] = parent.author_id
+        else:
+            post = Post.objects.filter(id=post_id).only('author_id').first()
+            if not post:
+                raise serializers.ValidationError({'code': RET.PARAMERR, 'msg': f'参数传递错误！'})
+            attr['replier_id'] = post.author_id
         return attr
 
     class Meta:
         model = PostReply
-        exclude = ("lft", "rght")
+        exclude = ("lft", "rght", "is_read")
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -204,9 +214,9 @@ class PostSerializer(serializers.ModelSerializer):
     post_type = serializers.IntegerField(label='文章类型')
 
     author_info = serializers.SerializerMethodField(label='创建人信息')
-    newest_user_id = serializers.SerializerMethodField(label='最新回复人')
+    newest_user_info = serializers.SerializerMethodField(label='最新回复人')
 
-    def get_newest_user_id(self, post):
+    def get_newest_user_info(self, post):
         u_id = post.newest_user_id
         if not u_id:
             return u_id

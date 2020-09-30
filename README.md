@@ -30,7 +30,7 @@
 - 搜索系统
 - 我的浏览
 - 点赞系统
-- 回复系统（仅差我的回复）
+- 回复系统
 
 **_未完成:_**
 
@@ -60,7 +60,6 @@
 
 <p align="center" >
 <img name='register' src="https://img-blog.csdnimg.cn/20200427115631329.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzQ4NTUwMg==,size_16,color_FFFFFF,t_70"/>
-
 <img  name='index' src="https://img-blog.csdnimg.cn/20200427115631838.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzQ4NTUwMg==,size_16,color_FFFFFF,t_70"/>
 
 <img name='postings' src="https://img-blog.csdnimg.cn/20200427115631226.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzQ4NTUwMg==,size_16,color_FFFFFF,t_70"/>

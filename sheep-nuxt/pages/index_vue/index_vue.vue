@@ -129,11 +129,12 @@
                                 </svg>
                                 我的点赞
                             </a></li>
-                            <li><a href="#">
+                            <li :class="{current_page_item:active==='my_reply'}"
+                                @click.prevent="push('/my-reply')"><a href="#">
                                 <svg class="icon-min" aria-hidden="true">
                                     <use xlink:href="#icon-icon_community_line"></use>
                                 </svg>
-                                我的回复
+                                消息回复
                             </a></li>
                             <li :class="{current_page_item:active==='my_history'}"
                                 @click.prevent="push('/my-history')"><a href="#">

@@ -94,7 +94,7 @@
                 <bubble_text
                         style="margin: 20px"
                         v-if="one_category===0"
-                        text="轮播图每两小时刷新，热门推荐每半小时刷新，推荐页数据每十分钟刷新🍔︎"
+                        text="首页数据每十分钟刷新一次🍔︎"
                         position="right">
                     <template v-slot:user>
                         <div class="dialog_reply">

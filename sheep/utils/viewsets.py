@@ -10,6 +10,18 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins
 
 
+class SerializerContextViewMixin(object):
+
+    def get_serializer(self, queryset=None, *args, **kwargs):
+        many = kwargs.get('many', False)
+        serializer_class = self.get_serializer_class()
+        kwargs['context'] = self.get_serializer_context(queryset, many=many)
+        return serializer_class(queryset, *args, **kwargs)
+
+    def get_serializer_context(self, *args, **kwargs):
+        return super().get_serializer_context()
+
+
 class ExtensionViewMixin(object):
 
     def get_serializer_class(self):

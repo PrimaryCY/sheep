@@ -241,7 +241,7 @@
                                         icon="el-icon-info"
                                         iconColor="red"
                                         v-if="item.is_del === 2"
-                                        @onConfirm="click_delete_btn(comments.results,item)"
+                                        @onConfirm="click_delete_btn(comments,item)"
                                         title="这是一段内容确定删除吗？"
                                 >
                                     <el-link type="danger"
@@ -295,7 +295,7 @@
                                     <el-popconfirm
                                             confirmButtonText='确定'
                                             cancelButtonText='点错啦'
-                                            @onConfirm="click_delete_btn(item.children,child_item)"
+                                            @onConfirm="click_delete_btn(item,child_item)"
                                             icon="el-icon-info"
                                             iconColor="red"
                                             v-if="child_item.is_del === 2"
@@ -378,7 +378,7 @@
                         v-if="author_post.results"
                         :list="author_post.results"
                         :bottom="false"
-                        title="他的文章">
+                        title="他的文章:">
                     <template v-slot:item-content="data">
                         <post_detail_item :post="data.item">
 
@@ -390,7 +390,7 @@
                 <post_detail_list
                         :list="category_post.results"
                         :bottom="false"
-                        title="推荐文章">
+                        title="推荐文章:">
                     <template v-slot:item-content="data">
                         <post_detail_item :post="data.item">
 
@@ -547,13 +547,18 @@ export default {
                 item.is_praise = 1
             }
         },
-        async click_delete_btn(list, item){
+        async click_delete_btn(items, item){
             // 用户点击删除回复按钮
             let res = await api_user_reply.destory(item.id)
             res = res.data
             if(res.code !== 2000)return this.$message(res.msg)
+            let list = items.results?items.results:items.children
             let i = list.indexOf(item)
             list.splice(i,1);
+            if(items.author_id===this.user.id && list.length === 0){
+                console.log('进入')
+                items.is_del = 2
+            }
             this.data.post_num--
         },
         get_reply_title(items, parent) {
@@ -579,12 +584,14 @@ export default {
             }
             // 将回复添加到回复列表中
             this._append_reply(res.data)
+            this.comments_input = 0
             loading.close()
         },
         _append_reply(reply) {
             reply.author_info = this.user
             reply.children = []
             reply.is_praise = 0
+            reply.is_del = 2
             this.comments.count++
             this.data.post_num++
             if (!reply.parent) {
@@ -595,12 +602,18 @@ export default {
                 if (i.id === reply.parent) {
                     this.$set(this.show_more, i.id, true)
                     i.children.unshift(reply)
+                    if(i.author_id===this.user.id){
+                        i.is_del = 1
+                    }
                     break
                 }
                 for (let c of i.children) {
                     if (c.id === reply.parent) {
                         this.$set(this.show_more, i.id, true)
                         i.children.unshift(reply)
+                        if(i.author_id===this.user.id){
+                            i.is_del = 1
+                        }
                         break
                     }
                 }

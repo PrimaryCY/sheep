@@ -40,10 +40,13 @@
 <style scoped lang="scss">
 	.item-wrap{
 		color: #333;
+        margin-top: 8px;
+        border-bottom: 1px solid #EBEEF5;
 		.title{
 			padding-top: 5px;
 			.img-box{
 				float: left;
+                margin-right: 8px;
 				img {
 					cursor: pointer;
 					position: relative;
@@ -67,6 +70,7 @@
 				display: inline-block;
 				margin: 1px 5px 10px 5px;
 				font-weight: initial!important;
+                border-radius: 5px;
 			}
 		}
 	}

@@ -61,7 +61,8 @@
                 // 回复
                 let data = {
                     post_id:this.post_id,
-                    content: this.html_content
+                    html_content: this.html_content,
+                    content:this.$refs['tinymce'].get_content()
                 }
                 if(this.parent_id)data['parent_id']=this.parent_id
                 this.html_content = ""

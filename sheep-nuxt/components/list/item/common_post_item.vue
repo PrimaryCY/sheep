@@ -71,7 +71,7 @@
                 </el-col>
                 <el-col v-if="post.newest_user_id" :span="6">
                     <div class="reply-txt ellipsis">
-                        最后回复来自于:xxxxasdadas
+                        {{ moment(post.newest_time).fromNow()}} • 最后回复来自于&nbsp;{{post.newest_user_info.username}}
                     </div>
                 </el-col>
             </el-row>

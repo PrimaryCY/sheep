@@ -21,6 +21,7 @@ import my_collect from './pages/index_vue/my_collect/my_collect'
 import my_collect_detail from './pages/index_vue/my_collect_detail/my_collect_detail'
 import my_praise from './pages/index_vue/my_praise/my_praise'
 import my_history from "./pages/index_vue/my_history/my_history"
+import my_reply from "@/pages/index_vue/my_reply/my_reply"
 
 // import NotFound from './views/notFound/notFound'
 // import test from './pages/test'
@@ -74,6 +75,14 @@ const routes = [
                         path: 'my_question',
                         name: 'my_question',
                         component: my_question,
+                        meta: {
+                            is_login: true
+                        }
+                    },
+                    {
+                        path: 'my-reply',
+                        name: 'my_reply',
+                        component: my_reply,
                         meta: {
                             is_login: true
                         }

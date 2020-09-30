@@ -1,6 +1,6 @@
 import datetime
 from collections import defaultdict
-from typing import Union
+from typing import Union, Iterable
 
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
@@ -113,6 +113,18 @@ class User(BaseModel, AbstractBaseUser):
         """
         user = cls.objects.filter(id=user_id).values('id', 'username', 'portrait').first()
         return dict(user) if user else {'username': "用户未找到"}
+
+    @classmethod
+    def bulk_get_simple_user_info(cls, ids: Iterable):
+        """
+        批量获取简单用户信息
+        :param ids:
+        :return:
+        """
+        return_dict = defaultdict(lambda :{'username': "用户未找到"})
+        for i in cls.objects.filter(id__in=ids).values('id', 'username', 'portrait'):
+            return_dict[i['id']] = i
+        return return_dict
 
     @classmethod
     def get_simple_users_info(cls, *args):

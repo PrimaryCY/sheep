@@ -55,7 +55,7 @@
                         </el-form-item>
                     </el-form>
                 </el-tab-pane>
-                <el-tab-pane v-if="user.is_anonymity" label="📃历史反馈" name="history">
+                <el-tab-pane v-if="!user.is_anonymity" label="📃历史反馈" name="history">
                     <div class="check-box">
                         <el-checkbox v-model="params.has_reply" @change="_get_history_fb(false)">只看已回复</el-checkbox>
                     </div>

@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import Q
 from django.db.transaction import on_commit
 from django.forms import model_to_dict
 from django_filters.rest_framework import DjangoFilterBackend
@@ -10,16 +11,17 @@ from rest_framework.settings import api_settings
 
 from apps.operate.models import Praise
 from apps.post.models import Category, Post, PostReply, User
-from apps.post.tasks import after_retrieve_post, after_create_post_reply, after_delete_post_reply
+from apps.post.tasks import after_retrieve_post, after_create_post_reply, after_delete_post_reply, after_list_reply
 from apps.post.filters import PostFilter, AllPostFilter, AuthorPostFilter, CategoryPostFilter, CorrelationCategoryFilter
 from sheep.constant import RET
 from utils.drf_extensions.util import limit_offset_list_cache_key_func
 from utils.viewsets import ModelViewSet, CreateModelMixin, DestroyModelMixin, GenericViewSet, ReadOnlyModelViewSet, \
-    ExtensionViewMixin
+    ExtensionViewMixin, SerializerContextViewMixin
 from utils.pagination import LimitOffsetPagination
 from utils.drf_extensions.decorators import only_data_cache_response
-from apps.post.serializer import PostCategorySerializer, UserPostSerializer, PostReplySerializer, \
-    UpdateRetrieveUserPostSerializer, PostSerializer, RetrievePostSerializer, CorrelationCategorySerializer
+from apps.post.serializer import PostCategorySerializer, UserPostSerializer, CreateUserPostReplySerializer, \
+    UpdateRetrieveUserPostSerializer, PostSerializer, RetrievePostSerializer, CorrelationCategorySerializer, \
+    ListUserPostReplySerializer
 from apps.user.permission import IsAdminUser, IsLoginUser
 
 
@@ -70,16 +72,28 @@ class UserPostViewSet(ModelViewSet):
         instance.save()
 
 
-class UserReplyViewSet(ReadOnlyModelViewSet,
+class UserReplyViewSet(SerializerContextViewMixin,
+                       ReadOnlyModelViewSet,
                        CreateModelMixin,
                        DestroyModelMixin):
     """个人帖子回复视图"""
     serializer_class = {
-        "create": PostReplySerializer,
+        "list": ListUserPostReplySerializer,
+        "create": CreateUserPostReplySerializer,
     }
     pagination_class = LimitOffsetPagination
-    filter_backends = (OrderingFilter,)
-    ordering_fields = ('create_time', 'praise_num')
+    filter_backends = (OrderingFilter, DjangoFilterBackend)
+    ordering_fields = ('created_time', 'praise_num')
+    filter_fields = ('is_read',)
+
+    def get_serializer_context(self, qs, many):
+        context = super().get_serializer_context()
+        if self.action in {'retrieve', 'create', 'update', 'partial_update'}:
+            return context
+
+        context['author_info'] = User.bulk_get_simple_user_info([i.author_id for i in qs])
+        context['post_info'] = Post.bulk_get_simple_post_info([i.post_id for i in qs])
+        return context
 
     def get_permissions(self):
         if self.action == 'create':
@@ -87,21 +101,29 @@ class UserReplyViewSet(ReadOnlyModelViewSet,
         return (temp() for temp in api_settings.DEFAULT_PERMISSION_CLASSES)
 
     def get_queryset(self):
-        if self.action == 'destory':
-            return PostReply.objects.filter(author_id=self.request.user.id, parent__isnull=True).all()
-        return PostReply.objects.filter(author_id=self.request.user.id).all()
+        if self.action == 'destroy':
+            pk = self.kwargs.get('pk')
+            if PostReply.objects.filter(parent_id=pk,
+                                        is_active=True,
+                                        author_id=self.request.user.id).exists():
+                raise serializers.ValidationError({'code': RET.PARAMERR, 'msg': '参数传递错误！'})
+            return PostReply.objects.filter(author_id=self.request.user.id, is_active=True).all()
+        elif self.action == 'list':
+            # post_ids = Post.raw_objects.filter(author_id=self.request.user.id).values_list('id', flat=True)
+            # return PostReply.objects.filter(
+            #     Q(replier_id=self.request.user.id) | Q(Q(post_id__in=post_ids) & Q(parent_id__isnull=True)))
+            return PostReply.objects.filter(replier_id=self.request.user.id)
+        # return PostReply.objects.filter(author_id=self.request.user.id).all()
 
     def perform_create(self, serializer):
         instance = serializer.save()
-        if not instance.parent:
-            on_commit(lambda: after_create_post_reply.delay(instance.post_id,
-                                                            instance.author_id))
+        on_commit(lambda: after_create_post_reply.delay(instance.post_id,
+                                                        instance.author_id))
 
     @transaction.atomic()
     def perform_destroy(self, instance):
         super().perform_destroy(instance)
-        if not instance.parent:
-            on_commit(lambda: after_delete_post_reply.delay(instance.post_id))
+        on_commit(lambda: after_delete_post_reply.delay(instance.post_id))
 
 
 class PostReplyViewSet(GenericViewSet):
@@ -125,6 +147,7 @@ class PostReplyViewSet(GenericViewSet):
 
         users_info = User.get_simple_users_info([i.author_id for i in paginate_qs])
 
+        celery_ids = []
         return_list = []
         for obj in paginate_qs:
             dic = model_to_dict(obj)
@@ -132,26 +155,28 @@ class PostReplyViewSet(GenericViewSet):
             dic['update_time'] = obj.update_time.strftime("%Y-%m-%d %H:%M:%S")
             dic['author_info'] = users_info.get(obj.author_id)
             dic['is_del'] = obj.is_del(request.user.id)
-            # dic['is_praise'] = 1
             dic['is_praise'] = Praise.select_is_praise(request.user.id,
                                                        obj.id, 2)
             dic['children'] = []
-            children = obj.get_descendants().defer("lft", "rght")
+            children = obj.get_descendants().filter(is_active=True).defer("lft", "rght")
             child_users_info = User.get_simple_users_info([child.author_id for child in children])
 
             for child in children:
                 child_dict = model_to_dict(child)
                 child_dict['author_info'] = child_users_info.get(child.author_id)
                 child_dict['is_del'] = child.is_del(request.user.id)
-                # child_dict['is_praise'] = 1
                 child_dict['is_praise'] = Praise.select_is_praise(request.user.id,
                                                                   child.id, 2)
                 child_dict['created_time'] = child.created_time.strftime("%Y-%m-%d %H:%M:%S")
                 child_dict['update_time'] = child.update_time.strftime("%Y-%m-%d %H:%M:%S")
                 dic['children'].append(child_dict)
+                # 添加id celery任务修改已读未读状态
+                celery_ids.append(child_dict['id'])
 
             return_list.append(dic)
-
+            celery_ids.append(dic['id'])
+        if not request.user.is_anonymity:
+            after_list_reply.delay(request.user.id, celery_ids)
         return self.get_paginated_response(return_list)
 
 
@@ -167,7 +192,7 @@ class AllPostViewSet(ReadOnlyModelViewSet):
     filter_class = AllPostFilter
     queryset = Post.objects.all()
 
-    @only_data_cache_response(key_func=limit_offset_list_cache_key_func, timeout=600)
+    @only_data_cache_response(key_func=limit_offset_list_cache_key_func)
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
@@ -194,7 +219,7 @@ class AuthorPostViewSet(ListModelMixin,
     filter_class = AuthorPostFilter
     serializer_class = PostSerializer
 
-    @only_data_cache_response(key_func=limit_offset_list_cache_key_func, timeout=600)
+    @only_data_cache_response(key_func=limit_offset_list_cache_key_func)
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
@@ -211,7 +236,7 @@ class CategoryPostViewSet(ListModelMixin,
     filter_class = CategoryPostFilter
     serializer_class = PostSerializer
 
-    @only_data_cache_response(key_func=limit_offset_list_cache_key_func, timeout=600)
+    @only_data_cache_response(key_func=limit_offset_list_cache_key_func)
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
@@ -227,6 +252,6 @@ class CorrelationCategoryViewSet(ListModelMixin,
     filter_class = CorrelationCategoryFilter
     serializer_class = CorrelationCategorySerializer
 
-    @only_data_cache_response(key_func=limit_offset_list_cache_key_func, timeout=60 * 60)
+    @only_data_cache_response(key_func=limit_offset_list_cache_key_func)
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)

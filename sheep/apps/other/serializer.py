@@ -115,7 +115,7 @@ class OptionSerializer(serializers.Serializer):
     default_portrait = serializers.SerializerMethodField(label='默认头像')
 
     def get_post_category(self, obj):
-        return PostCategorySerializer(Category.objects.filter(level=0),
+        return PostCategorySerializer(Category.objects.filter(level=0).order_by('order', 'id'),
                                       many=True,
                                       context=self._context).data
 

@@ -57,7 +57,7 @@ class OptionViewSet(GenericViewSet):
     permission_classes = ()
     queryset = ' '
 
-    # @only_data_cache_response()
+    @only_data_cache_response()
     def list(self, request, *args, **kwargs):
         serializer = self.get_serializer(self.queryset)
         return Response(serializer.data)

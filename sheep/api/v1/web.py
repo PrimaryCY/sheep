@@ -11,6 +11,7 @@ from apps.post.views import PostCategoryViewSet, UserPostViewSet, UserReplyViewS
 from apps.operate.views import UserCollectCategoryViewSet, CollectCategoryViewSet, CollectViewSet, PraiseViewSet, \
     FocusViewSet, BrowsingHistoryViewSet
 from apps.index.views import BannerViewSet, HotViewSet
+from apps.about.views import AboutUsViewSet
 
 router = CustomRouter()
 # 轮播图
@@ -45,7 +46,8 @@ router.register('user_history', BrowsingHistoryViewSet, basename='user_history')
 router.register('post_reply', PostReplyViewSet, basename='post_reply')
 # 个人回复展示
 router.register('user_reply', UserReplyViewSet, basename='user_reply')
-
+# 关于我们
+router.register('about', AboutUsViewSet, basename='about')
 
 # 个人关注
 router.register('user_focus', FocusViewSet, basename='user_focus')

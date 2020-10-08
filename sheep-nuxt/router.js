@@ -22,6 +22,7 @@ import my_collect_detail from './pages/index_vue/my_collect_detail/my_collect_de
 import my_praise from './pages/index_vue/my_praise/my_praise'
 import my_history from "./pages/index_vue/my_history/my_history"
 import my_reply from "@/pages/index_vue/my_reply/my_reply"
+import about from "@/pages/index_vue/about/about"
 
 // import NotFound from './views/notFound/notFound'
 // import test from './pages/test'
@@ -123,12 +124,23 @@ const routes = [
                     {
                         path: 'my-praise',
                         name: 'my_praise',
-                        component: my_praise
+                        component: my_praise,
+                        meta: {
+                            is_login: true
+                        }
                     },
                     {
                         path: 'my-history',
                         name: 'my_history',
-                        component: my_history
+                        component: my_history,
+                        meta: {
+                            is_login: true
+                        }
+                    },
+                    {
+                        path: 'about',
+                        name: 'about',
+                        component: about
                     },
                     {
                         path: '',

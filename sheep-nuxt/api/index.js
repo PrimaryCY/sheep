@@ -82,6 +82,10 @@ export const api_post_reply=common_crud('v1/web/post_reply')
 用户个人回复
  */
 export const api_user_reply=common_crud('v1/web/user_reply')
+/*
+关于我们
+ */
+export const api_about=common_crud('v1/web/about')
 
 /*
 * 上传文件接口

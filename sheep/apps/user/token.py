@@ -32,7 +32,7 @@ class Token(object):
                             'TOKEN_SECURITY_KEY': b'pBy0j5_m6qqTOXElHSs0OlfV5qiYhqHkEvwLtdrXZ5o=',
                             'TOKEN_EXPIRES': 7*24*3600, #redis的key过期时间
                             'TOKEN_REDIS': None,        #连接redis的实例
-                            'TOKEN_UNIQUE': True,       #是否单点登录
+                            'TOKEN_UNIQUE': True,       #是否单端登录
                         }
         :param request:请求对象
         """

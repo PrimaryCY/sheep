@@ -45,9 +45,11 @@ class InitServer(object):
         from apps.post.models import Category
         from apps.other.models import FeedbackCategory
         from apps.user.models import User
+        from apps.about.models import About
         User.create_default_super_user()
         Category.create_default_category()
         FeedbackCategory.create_default_category()
+        About.create_default_about()
 
 
 server = InitServer()

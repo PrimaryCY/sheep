@@ -266,12 +266,6 @@
 
 	#content-inner
 	{
-		/*
-			This sets an upper limit to the width of your page content. Prevents
-			it from looking insane on super wide displays. By default I've set it
-			to the width of the sample post images, but you can change it to
-			whatever you like (or remote it entirely).
-		*/
 		max-width: 100%;
 	}
 

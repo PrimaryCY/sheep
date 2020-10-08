@@ -34,6 +34,7 @@ module.exports = {
     css: [
         // "./static/font/17font.css",
         './static/css/reset.css',
+        './static/css/editor.css',
         //导入17素材的css文件
         './static/css/5grid/core.css',
         './static/css/style.css',

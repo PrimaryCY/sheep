@@ -28,7 +28,7 @@ class AllPostFilter(FilterSet):
     def filter_category(self, qs, name, value):
         qs = qs.defer('html_content', 'content')
         if value == 0:
-            return qs.order_by('like_num')
+            return qs.order_by('-like_num')
         else:
             c = Category.objects.filter(id=value).first()
             if not c:

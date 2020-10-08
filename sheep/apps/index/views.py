@@ -18,7 +18,7 @@ class BannerViewSet(GenericViewSet):
     permission_classes = ()
 
     def get_queryset(self):
-        return Post.objects.filter(image__isnull=False).order_by('praise_num').values('id', 'image', 'name')[:5]
+        return Post.objects.filter(image__isnull=False).order_by('-praise_num').values('id', 'image', 'name')[:5]
 
     @only_data_cache_response(timeout=120*60)
     def list(self, request, *args, **kwargs):

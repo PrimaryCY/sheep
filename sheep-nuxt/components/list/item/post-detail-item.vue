@@ -5,7 +5,7 @@
 			<div v-if="post.image" class="img-box">
 				<img :src="post.image">
 			</div>
-			<h1 class="two-line-ellipsis">{{post.name}}</h1>
+			<div class="two-line-ellipsis">{{post.name}}</div>
 		</div>
 		<div class="desc" style="clear: both">
 				<div class="icon-box">

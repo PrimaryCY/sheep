@@ -50,7 +50,6 @@ class UploadHistoryViewSet(GenericViewSet,
     queryset = UploadHistoryModel.objects.all()
 
 
-
 class OptionViewSet(GenericViewSet):
     """公共配置"""
     serializer_class = OptionSerializer

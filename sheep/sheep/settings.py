@@ -60,7 +60,8 @@ INSTALLED_APPS = [
     'apps.operate',
     'apps.other',
     'apps.index',
-    'apps.search'
+    'apps.search',
+    'apps.about'
 ]
 
 MIDDLEWARE = [

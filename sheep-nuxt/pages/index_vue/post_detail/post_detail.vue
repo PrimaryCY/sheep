@@ -173,7 +173,7 @@
                     </div>
                 </div>
                 <div class="article-content-wrap">
-                    <div class="article-content" v-html="data.html_content">
+                    <div class="html-content" v-html="data.html_content">
                     </div>
                     <div class="updatetime-text">
                         -------------&nbsp;&nbsp;&nbsp;最后更新于&nbsp;{{ data.update_time }}
@@ -1011,19 +1011,7 @@ export default {
             }
 
             .article-content-wrap {
-                text-align: initial;
-
-                .article-content {
-                    min-height: 60vh;
-
-                    * {
-                        font-size: initial;
-                        margin: initial;
-                        border: initial;
-                        font-weight: initial;
-                        vertical-align: initial;
-                    }
-                }
+                //text-align: initial;
             }
         }
 

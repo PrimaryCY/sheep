@@ -1,0 +1,14 @@
+/*富文本编辑器*/
+.html-content {
+    text-align: initial;
+    min-height: 60vh;
+}
+.html-content h1,h2,h3,h4,h5,h6{
+    margin-top: revert;
+    margin-bottom: revert;
+    font-weight: revert;
+    font-size: revert;
+}
+.html-content /deep/ img {
+    max-width: 100%;
+}

@@ -97,7 +97,7 @@
                 <div class="dialog_title">
                     问题类别:{{_fb_category(history_fb.now_fb.category_id)}}
                 </div>
-                <div class="html_content" v-html="history_fb.now_fb.html_content"></div>
+                <div class="html-content" style="min-height: initial" v-html="history_fb.now_fb.html_content"></div>
                 <bubble_text
                         v-if="history_fb.now_fb.reply_author_id"
                         :text="history_fb.now_fb.reply"
@@ -300,11 +300,6 @@
             text-align: left;
             padding: 0 8px;
             font-weight: bold;
-        }
-        .html_content{
-            /deep/ img{
-                width: 100%;
-            }
         }
         .dialog_reply {
             img {

@@ -35,7 +35,7 @@ class HotViewSet(ListModelMixin,
     def get_queryset(self):
         return Post.objects.order_by('-read_num').values('id', 'name', 'post_type', 'read_num', 'image')[:10]
 
-    @only_data_cache_response()
+    # @only_data_cache_response()
     def list(self, request, *args, **kwargs):
         serializer = self.get_serializer(self.get_queryset(), many=True)
         return Response(serializer.data)

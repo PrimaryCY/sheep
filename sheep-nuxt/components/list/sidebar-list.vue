@@ -108,7 +108,7 @@
           color: #3d3d3d;
           letter-spacing: 0;
           line-height: 22px;
-          max-width: 200px;
+          //max-width: 200px;
           overflow: hidden;
           cursor: pointer;
           font-weight: bold;

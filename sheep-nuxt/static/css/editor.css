@@ -3,7 +3,7 @@
     text-align: initial;
     min-height: 60vh;
 }
-.html-content h1,h2,h3,h4,h5,h6{
+.html-content *{
     margin-top: revert;
     margin-bottom: revert;
     font-weight: revert;

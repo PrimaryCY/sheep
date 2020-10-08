@@ -245,8 +245,9 @@
                             this.post.html_content = this.post.tiny_content
                             this.post.content = this.$refs['tinymce'].get_content()
                         } else {
-                            this.post.html_content = this.$refs['mavon'].d_render
+                            // this.post.html_content = this.$refs['mavon'].d_render
                             this.post.content = this.post.mavon_content
+                            this.post.html_content = this.post.mavon_content
                         }
                         if (!this.post.html_content) {
                             return this.$message('内容不能为空!')

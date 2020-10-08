@@ -191,7 +191,7 @@ class Category(MPTTModel, BaseModel):
                     'name': 'elasticSearch'
                 },
                 {
-                    'name': 'k8s'
+                    'name': '运维'
                 },
             ]},
             {'name': 'OS', 'child': [

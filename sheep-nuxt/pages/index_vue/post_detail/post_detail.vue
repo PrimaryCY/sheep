@@ -173,7 +173,20 @@
                     </div>
                 </div>
                 <div class="article-content-wrap">
-                    <div class="html-content" v-html="data.html_content">
+                    <mavon-editor
+                            v-if="data.content_type===2"
+                            class="md"
+                            :value="data.html_content"
+                            :subfield="false"
+                            :boxShadow="false"
+                            :defaultOpen="'preview'"
+                            :toolbarsFlag="false"
+                            :editable="false"
+                            :scrollStyle="true"
+                            :ishljs="true"
+                            previewBackground="#fff"
+                    />
+                    <div v-else class="html-content" v-html="data.html_content">
                     </div>
                     <div class="updatetime-text">
                         -------------&nbsp;&nbsp;&nbsp;最后更新于&nbsp;{{ data.update_time }}

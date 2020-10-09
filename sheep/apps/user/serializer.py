@@ -187,11 +187,3 @@ class DeleteUserSerializer(serializers.Serializer):
     def delete(user):
         user.is_active = False
         user.save()
-
-
-class AllUserSerializer(serializers.ModelSerializer):
-    """所有用户基本信息"""
-    
-    class Meta:
-        model = User
-        exclude = ('created_time', 'update_time', 'is_active', 'is_anonymity', 'password')

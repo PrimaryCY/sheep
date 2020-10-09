@@ -8,7 +8,8 @@ from rest_framework.viewsets import GenericViewSet
 from utils.mixins import CreateModelMixin, RetrieveModelMixin, UpdateModelMixin
 from utils.viewsets import ExtensionViewMixin
 from sheep import settings
-from apps.user.serializer import ListCreateUserSerializer, LoginSerializer, DeleteUserSerializer, AllUserSerializer, UpdateUserSerializer
+from apps.user.serializer import ListCreateUserSerializer, LoginSerializer, DeleteUserSerializer, \
+    UpdateUserSerializer
 from sheep.constant import RET
 from apps.user.tasks import after_user_create
 
@@ -103,8 +104,3 @@ class UserViewSet(CreateModelMixin,
         instance = serializer.save()
         after_user_create.delay(instance.id)
 
-
-class AllUserViewSet(RetrieveModelMixin,
-                     GenericViewSet):
-    serializer_class = AllUserSerializer
-    permission_classes = ()

@@ -56,172 +56,223 @@ class Category(MPTTModel, BaseModel):
     def create_default_category(cls):
         """创建默认文章类别"""
         categories = [
-            {'name': '历史', 'child': [
+            {'id': 1, 'name': '历史', 'child': [
                 {
+                    'id': 9,
                     'name': '先秦'
                 },
                 {
+                    'id': 10,
                     'name': '秦汉三国'
                 },
                 {
+                    'id': 11,
                     'name': '两晋隋唐'
                 },
                 {
+                    'id': 12,
                     'name': '两宋元明'
                 },
                 {
+                    'id': 13,
                     'name': '清史民国'
                 },
                 {
+                    'id': 14,
                     'name': '罗马'
                 },
                 {
+                    'id': 15,
                     'name': '中世纪'
                 },
                 {
+                    'id': 16,
                     'name': '文艺复兴'
                 },
                 {
+                    'id': 17,
                     'name': '工业革命'
                 },
                 {
+                    'id': 18,
                     'name': '维多利亚'
                 },
                 {
+                    'id': 19,
                     'name': '第二次世界大战'
                 },
             ]},
-            {'name': '游戏', 'child': [
+            {'id': 2, 'name': '游戏', 'child': [
                 {
+                    'id': 20,
                     'name': 'Paradox'
                 },
                 {
+                    'id': 21,
                     'name': '光荣株式会社'
                 },
                 {
+                    'id': 22,
                     'name': '2K'
                 },
                 {
+                    'id': 23,
                     'name': 'CD Projekt'
                 },
                 {
+                    'id': 24,
                     'name': 'Dota'
                 },
                 {
+                    'id': 25,
                     'name': 'Play station'
                 },
                 {
+                    'id': 26,
                     'name': 'Nintendo switch'
                 }
             ]},
-            {'name': '旅游', 'child': [
+            {'id': 3, 'name': '旅游', 'child': [
                 {
+                    'id': 27,
                     'name': '求伴'
                 },
                 {
+                    'id': 28,
                     'name': '北京'
                 },
                 {
+                    'id': 29,
                     'name': '西安'
                 },
                 {
+                    'id': 30,
                     'name': '成都'
                 },
                 {
+                    'id': 31,
                     'name': '上海'
                 },
                 {
+                    'id': 32,
                     'name': '南京'
                 },
                 {
+                    'id': 33,
                     'name': '其它城市'
                 }
             ]},
-            {'name': '生活', 'child': [
+            {'id': 4, 'name': '生活', 'child': [
                 {
+                    'id': 34,
                     'name': '电影'
                 },
                 {
+                    'id': 35,
                     'name': '火锅'
                 },
                 {
+                    'id': 36,
                     'name': '烤肉'
                 },
                 {
+                    'id': 37,
                     'name': '面条'
                 },
                 {
+                    'id': 38,
                     'name': '烤鱼'
                 },
                 {
+                    'id': 39,
                     'name': '唱歌'
                 },
                 {
+                    'id': 40,
                     'name': '小酒小烟'
                 },
             ]},
-            {'name': '创意', 'child': [
+            {'id': 5, 'name': '创意', 'child': [
                 {
+                    'id': 41,
                     'name': '奇思妙想'
                 },
                 {
+                    'id': 42,
                     'name': '分享创造'
                 }
             ]},
-            {'name': '程序', 'child': [
+            {'id': 6, 'name': '程序', 'child': [
                 {
+                    'id': 43,
                     'name': 'go'
                 },
                 {
+                    'id': 44,
                     'name': 'python'
                 },
                 {
+                    'id': 45,
                     'name': 'javaScript'
                 },
                 {
+                    'id': 46,
                     'name': 'mysql'
                 },
                 {
+                    'id': 47,
                     'name': 'redis'
                 },
                 {
+                    'id': 48,
                     'name': 'vue'
                 },
                 {
+                    'id': 49,
                     'name': 'elasticSearch'
                 },
                 {
+                    'id': 50,
                     'name': '运维'
                 },
             ]},
-            {'name': 'OS', 'child': [
+            {'id': 7, 'name': 'OS', 'child': [
                 {
+                    'id': 51,
                     'name': 'Centos'
                 },
                 {
+                    'id': 52,
                     'name': 'Ubuntu'
                 },
                 {
+                    'id': 53,
                     'name': 'Debian'
                 },
                 {
+                    'id': 54,
                     'name': 'Fedora'
                 },
                 {
+                    'id': 55,
                     'name': 'SUSE'
                 },
                 {
+                    'id': 56,
                     'name': 'mac'
                 },
                 {
+                    'id': 57,
                     'name': 'windows'
                 }
             ]},
-            {'name': '羊村', 'child': [
+            {'id': 8, 'name': '羊村', 'child': [
                 {
+                    'id': 58,
                     'name': '育羊心得'
                 },
                 {
+                    'id': 59,
                     'name': '羊圈'
                 }
             ]}
@@ -234,8 +285,9 @@ class Category(MPTTModel, BaseModel):
         def _execute(c_list, parent_id=None):
             for category in c_list:
                 obj, created = cls.objects.update_or_create(defaults={'author_id': author_id,
+                                                                      'name': category.get('name'),
                                                                       'order': category.get('order', 0)},
-                                                            name=category['name'],
+                                                            id=category['id'],
                                                             parent_id=parent_id)
                 if not category.get('child'):
                     continue

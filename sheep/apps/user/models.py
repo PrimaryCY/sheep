@@ -6,6 +6,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 from django.db.models import Sum, Count
 from django.conf import settings
+from django.forms import model_to_dict
 
 from sheep.init_server import init_stdout
 from utils.django_util.models import BaseModel
@@ -162,14 +163,12 @@ class User(BaseModel, AbstractBaseUser):
         if isinstance(user_id, User):
             user = user_id
         else:
-            user = User.objects.filter(id=user_id).only('id', 'portrait', 'username', 'created_time', 'birth').first()
+            user = User.objects.filter(id=user_id).only('id', 'portrait', 'username', 'created_time', 'birth', 'is_active').first()
             if not user:
                 return {}
-        res = dict(id=user.id,
-                   portrait=user.portrait,
-                   age=user.age,
-                   website_age=user.website_age,
-                   username=user.username)
+        res = model_to_dict(user, fields=('id', 'portrait', 'username', 'created_time', 'birth', 'is_active'))
+        res['age'] = user.age
+        res['website_age'] = user.website_age
         post_aggregate = Post.objects.filter(author_id=user.id).aggregate(Sum('praise_num'), Sum('like_num'))
         res['article_total'] = Post.objects.filter(author_id=user.id, post_type=1).only('id').count()
         res['praise_total'] = post_aggregate['praise_num__sum']

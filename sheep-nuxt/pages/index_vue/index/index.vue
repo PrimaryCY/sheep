@@ -322,7 +322,7 @@
         .banner-image {
             width: 100%;
             height: 100%;
-            border-radius: 25px;
+            border-radius: 20px;
             object-fit: cover;
         }
 
@@ -330,9 +330,10 @@
             position: absolute;
             bottom: 0;
             left: 0;
-            padding: 30px 0 12px 15px;
+            padding: 15px 0 12px 15px;
             font-family: PingFangSC-Medium;
             font-weight: 500;
+            border-radius: 20px;
             font-size: 18px;
             color: #fff;
             width: 100%;

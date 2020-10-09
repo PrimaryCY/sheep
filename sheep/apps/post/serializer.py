@@ -99,7 +99,7 @@ class UpdateRetrieveUserPostSerializer(UserPostSerializer):
         content = attrs.get('content')
         if content:
             # 帖子简介
-            attrs['desc'] = content[:230]
+            attrs['desc'] = f'{content[:230]}...'
 
         post_type = attrs.get('post_type')
         if post_type == 2 and not content.endswith('?'):

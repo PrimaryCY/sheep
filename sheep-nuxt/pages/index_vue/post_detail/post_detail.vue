@@ -153,18 +153,18 @@
                     </span>
                                 </div>
                             </el-col>
-                            <el-col :span="5" :offset="5">
+                            <el-col :span="3" :offset="7">
                 <span class="byline">
                   分类:{{ data.category }}
                 </span>
                             </el-col>
-                            <el-col :span="1">
+                            <el-col :span="2">
                                 <div class="divider">
                                     |
                                 </div>
                             </el-col>
-                            <el-col :span="5">
-                <span class="byline">
+                            <el-col :span="3">
+                <span class="byline" style="text-align: left">
                   发布于&nbsp;{{ data.created_time }}
                 </span>
                             </el-col>
@@ -173,19 +173,19 @@
                     </div>
                 </div>
                 <div class="article-content-wrap">
-                    <mavon-editor
-                            v-if="data.content_type===2"
-                            class="md"
-                            :value="data.html_content"
-                            :subfield="false"
-                            :boxShadow="false"
-                            :defaultOpen="'preview'"
-                            :toolbarsFlag="false"
-                            :editable="false"
-                            :scrollStyle="true"
-                            :ishljs="true"
-                            previewBackground="#fff"
-                    />
+                    <no-ssr v-if="data.content_type===2">
+                        <mavon-editor
+                                :value="data.html_content"
+                                :subfield="false"
+                                :boxShadow="false"
+                                :defaultOpen="'preview'"
+                                :toolbarsFlag="false"
+                                :editable="false"
+                                :scrollStyle="true"
+                                :ishljs="true"
+                                previewBackground="#fff"
+                        />
+                    </no-ssr>
                     <div v-else class="html-content" v-html="data.html_content">
                     </div>
                     <div class="updatetime-text">
@@ -560,15 +560,15 @@ export default {
                 item.is_praise = 1
             }
         },
-        async click_delete_btn(items, item){
+        async click_delete_btn(items, item) {
             // 用户点击删除回复按钮
             let res = await api_user_reply.destory(item.id)
             res = res.data
-            if(res.code !== 2000)return this.$message(res.msg)
-            let list = items.results?items.results:items.children
+            if (res.code !== 2000) return this.$message(res.msg)
+            let list = items.results ? items.results : items.children
             let i = list.indexOf(item)
-            list.splice(i,1);
-            if(items.author_id===this.user.id && list.length === 0){
+            list.splice(i, 1)
+            if (items.author_id === this.user.id && list.length === 0) {
                 console.log('进入')
                 items.is_del = 2
             }
@@ -615,7 +615,7 @@ export default {
                 if (i.id === reply.parent) {
                     this.$set(this.show_more, i.id, true)
                     i.children.unshift(reply)
-                    if(i.author_id===this.user.id){
+                    if (i.author_id === this.user.id) {
                         i.is_del = 1
                     }
                     break
@@ -624,7 +624,7 @@ export default {
                     if (c.id === reply.parent) {
                         this.$set(this.show_more, i.id, true)
                         i.children.unshift(reply)
-                        if(i.author_id===this.user.id){
+                        if (i.author_id === this.user.id) {
                             i.is_del = 1
                         }
                         break
@@ -846,14 +846,14 @@ export default {
                 this.$refs['like'].status = n
             }
         },
-        "comments.results":{
-            deep:true,
-            handler:function (){
+        "comments.results": {
+            deep: true,
+            handler: function () {
                 this.$nextTick(() => {
-                    for(let i of this.comments.results){
-                        this.$refs['praise'+i.id].status = i.is_praise === 1
-                        for(let j of i.children){
-                            this.$refs['praise'+j.id][0].status = j.is_praise === 1
+                    for (let i of this.comments.results) {
+                        this.$refs['praise' + i.id].status = i.is_praise === 1
+                        for (let j of i.children) {
+                            this.$refs['praise' + j.id][0].status = j.is_praise === 1
                         }
                     }
                 })
@@ -1010,7 +1010,7 @@ export default {
                         margin-top: 1em;
                         line-height: 100%;
                         font-size: 15px;
-                        text-align: right;
+                        text-align: center;
                     }
 
                     .num_data {

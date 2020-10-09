@@ -302,11 +302,11 @@
                     }
                 }
 
-                if (!this.post.category) {
+                if (!this.post.category_list) {
                     // 默认获取第一个子节点
                     this.cascader_data.category = _get_first_cascader_node(this.cascader_data.category_data)
                 } else {
-                    this.cascader_data.category = this.post.category
+                    this.cascader_data.category = this.post.category_list
                 }
             },
             async _select_schema() {
@@ -330,7 +330,7 @@
                     } else {
                         this.post.mavon_content = this.post.parse_content
                     }
-                    this.cascader_data.category = this.post.category_list
+                    // this.cascader_data.category = this.post.category_list
                     this.schema = 'update'
                     loading.close()
                 } else {

@@ -386,6 +386,7 @@
                     text-align: center;
                     cursor: pointer;
                     transition: 0.25s;
+                    border-radius: 5px 5px 0 0;
 
                     a {
                         padding: 0 20px;

@@ -6,7 +6,8 @@ RdAllot = {
     2: 'restframework-extengsions',
     3: 'celery',
     10: '存储token',
-    11: '操作相关'
+    11: '操作相关',
+    12: 'oauth使用'
 }
 
 

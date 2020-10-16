@@ -1,4 +1,4 @@
-<template>
+<template >
     <div class="wrap">
         <div class="left" :style="{'margin-right':pack_up?'150px':'190px'}">
             <div v-if="not_found_page">
@@ -191,6 +191,15 @@
                     <div class="updatetime-text">
                         -------------&nbsp;&nbsp;&nbsp;最后更新于&nbsp;{{ data.update_time }}
                     </div>
+                    <div class="share">
+                        <div  class="share-text" >
+                            分享到：
+                        </div>
+                        <div class="green_channel_weibo" @click="share_blank('weibo')">
+                            <img :src="require('@/static/img/icon_weibo.png')" alt="">
+                        </div>
+                    </div>
+
                 </div>
                 <div class="divider-line">
                     <el-divider></el-divider>
@@ -444,7 +453,7 @@ export default {
     head: {
         link: [
             {res: "stylesheet", type: 'text/css', href: "http://biger.applinzi.com/api/css/animate.min.css"}
-        ]
+        ],
     },
     name: 'post_detail',
     data() {
@@ -496,7 +505,7 @@ export default {
     computed: {
         ...mapState(['pack_up', 'user', 'option']),
     },
-    inject: ['blank_push'],
+    inject: ['blank_push', 'blank_inner_window'],
     async asyncData(context) {
         let id, post_res, detail_recommend_list
         id = context.params.id
@@ -530,6 +539,15 @@ export default {
         return return_dict
     },
     methods: {
+        share_blank(app){
+            let now_url = window.location.href
+            // let features = 'height=400, width=800, toolbar=no, menubar=no, scrollbars=no, status=no'
+            if(app === 'weibo'){
+                let pic = this.data.image !== null? this.data.image: '';
+                let share_url = `https://service.weibo.com/share/share.php?url=${now_url}&title=${this.data.name} - sheep&pic=${pic}`
+                this.blank_inner_window(share_url, '分享到微博', 800, 400)
+            }
+        },
         async click_reply_praise_or_tread(item, flag) {
             // 用户回复点赞
             let data = {
@@ -1025,6 +1043,38 @@ export default {
 
             .article-content-wrap {
                 //text-align: initial;
+                .share{
+                    text-align: right;
+                    padding: 10px 0;
+                    font-size: 12px;
+                    .share-text{
+                        display: inline-block;
+                        font-weight: bold;
+                        color: #999;
+                        -moz-user-select: none; /*火狐*/
+                        -webkit-user-select: none; /*webkit浏览器*/
+                        -ms-user-select: none; /*IE10*/
+                        -khtml-user-select: none; /*早期浏览器*/
+                        user-select: none;
+                    }
+                    .green_channel_weibo{
+                        display: inline-block;
+                        background: none;
+                        padding: 3px 2px;
+                        -moz-border-radius: none;
+                        -webkit-border-radius: none;
+                        -moz-box-shadow: none;
+                        -webkit-box-shadow: none;
+                        text-shadow: none;
+                        cursor: pointer;
+                        img{
+                            vertical-align: middle;
+                            border: none;
+                            margin-left: 5px;
+                            box-shadow: none;
+                        }
+                    }
+                }
             }
         }
 

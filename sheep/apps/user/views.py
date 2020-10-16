@@ -56,7 +56,7 @@ class LoginViewSet(CreateModelMixin, GenericViewSet):
 class UserViewSet(CreateModelMixin,
                   ExtensionViewMixin,
                   GenericViewSet,
-                  UpdateModelMixin):
+                  ):
     """用户个人信息"""
     serializer_class = {'list': ListCreateUserSerializer,
                         'create': ListCreateUserSerializer,
@@ -91,6 +91,9 @@ class UserViewSet(CreateModelMixin,
     def bulk_partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
         return self.bulk_update(request, *args, **kwargs)
+
+    def perform_update(self, serializer):
+        serializer.save()
 
     def bulk_delete(self, request, *args, **kwargs):
         """注销账号"""

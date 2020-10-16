@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_celery_results',
     'django_celery_beat',
+    "drf_yasg",
     # celery自动导入不支持 apps.user.apps.UserConfig这种方式
     'commands',
     'apps.user.apps.UserConfig',
@@ -61,7 +62,8 @@ INSTALLED_APPS = [
     'apps.other',
     'apps.index',
     'apps.search',
-    'apps.about'
+    'apps.about',
+    'apps.oauth'
 ]
 
 MIDDLEWARE = [
@@ -268,6 +270,7 @@ REST_FRAMEWORK = \
         'DATETIME_FORMAT': "%Y-%m-%d %H:%M",
         'HTML_SELECT_CUTOFF': 200,
         'HTML_SELECT_CUTOFF_TEXT': '太多了,我加载不出来了',
+        'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
         # 'EXCEPTION_HANDLER': 'utils.exceptions.main'
     }
 
@@ -348,12 +351,27 @@ CACHES = {
             },
         }
     },
+    'oauth': {
+        'BACKEND': "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_HOST + "12",
+        'TIMEOUT': 2000,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+            "PARSER_CLASS": "redis.connection.HiredisParser",
+            'CONNECTION_POOL_KWARGS': {
+                "max_connections": 100,
+                'decode_responses': True,
+            },
+        }
+    },
 }
 
 from django_redis import get_redis_connection
 
 USER_REDIS: StrictRedis = get_redis_connection('user')
 OPERATE_REDIS: StrictRedis = get_redis_connection('operate')
+OAUTH_REDIS: StrictRedis = get_redis_connection('oauth')
 
 # celery配置
 CELERY_BROKER_BACKEND = "redis"
@@ -404,9 +422,9 @@ CELERY_BEAT_SCHEDULE = {
     # 'schedule': crontab(minute=f"*/{CELERY_RESULT_EXPIRES}"),
     # },
     # 'real-clear-celery-results': {
-        # 真实清除
-        # 'task': 'apps.other.tasks.real_clear_celery_results',
-        # 'schedule': crontab(minute=f"*/{CELERY_RESULT_EXPIRES * 5}"),
+    # 真实清除
+    # 'task': 'apps.other.tasks.real_clear_celery_results',
+    # 'schedule': crontab(minute=f"*/{CELERY_RESULT_EXPIRES * 5}"),
     # },
     'delete_trash_post': {
         # 定时删除垃圾文章
@@ -453,7 +471,6 @@ if DEBUG:
     ]
     MIDDLEWARE.extend(EXTRA_MIDDLEWARE)
     INSTALLED_APPS.extend(EXTRA_INSTALL_APPS)
-
 
 # 日志配置
 LOG_DIR = os.path.join(BASE_DIR, 'logs')
@@ -566,7 +583,6 @@ LOGGING = {
         },
     }
 }
-
 
 # 百度api
 BD_API_LOCATION_IP_URL = "http://api.map.baidu.com/location/ip"

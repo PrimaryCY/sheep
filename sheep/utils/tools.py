@@ -8,13 +8,46 @@ import time
 import json
 import itertools
 import datetime
+import urllib.parse
 from collections import Iterable, Mapping
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Union
 
 from xpinyin import Pinyin
 
-pin = Pinyin()
+
+def url_join_args(api, query=None, **kwargs):
+    """
+    拼接get请求参数
+    :param api: 原url，可带?或不带
+    :param query: urllib.parse.urlencode支持的query，建议传dict
+    :param kwargs: 未出现的参数，将组合成字典
+    :return: 拼接好的url
+
+    >>> url_join_args('api.com/s')
+    'api.com/s'
+    >>> url_join_args('api.com/s?')
+    'api.com/s?'
+    >>> url_join_args('api.com/s', {'a':1, 'b':2})
+    'api.com/s?a=1&b=2'
+    >>> url_join_args('api.com/s', (('a', 1), ('b', 2)))
+    'api.com/s?a=1&b=2'
+    >>> url_join_args('api.com/s', a=1, b='你好')
+    'api.com/s?a=1&b=%E4%BD%A0%E5%A5%BD'
+    >>> url_join_args('api.com/s', {'a':1}, b=2)
+    'api.com/s?a=1&b=2'
+    """
+    result = api
+    if not result.endswith('?') and (query or kwargs):
+        result = api + '?'
+    if query:
+        result = result + urllib.parse.urlencode(query)
+    if kwargs:
+        if query:
+            result = result + '&' + urllib.parse.urlencode(kwargs)
+        else:
+            result = result + urllib.parse.urlencode(kwargs)
+    return result
 
 
 def covertFileSize(size):
@@ -43,7 +76,7 @@ def getFlattenOne(arr: Iterable) -> Iterable:
     :param arr:
     :return:
     """
-    arr=list(itertools.chain(*arr))
+    arr = list(itertools.chain(*arr))
     return arr[0] if len(arr) else None
 
 
@@ -57,7 +90,7 @@ def getFlatten(items: list) -> list:
     return json.loads('[' + re.sub(r'[\[\]]', '', items) + ']')
 
 
-def random_filename(filename: str)->str:
+def random_filename(filename: str) -> str:
     """
     随机文件名
     :param filename: 原始文件名称
@@ -68,35 +101,38 @@ def random_filename(filename: str)->str:
     return new_filename
 
 
-def get_day_zero_time() ->tuple:
+def get_day_zero_time() -> tuple:
     """
     获取到今日凌晨的秒数
     :return: 当前时间到今日凌晨所剩的秒数
     """
-    now=datetime.datetime.now()
+    now = datetime.datetime.now()
     date_zero = datetime.datetime.now().replace(year=now.year, month=now.month,
-                                            day=now.day, hour=23, minute=59, second=59)
+                                                day=now.day, hour=23, minute=59, second=59)
     date_zero_time = time.mktime(date_zero.timetuple())
-    return now.strftime('%Y-%m-%d'),round(date_zero_time-time.time())
+    return now.strftime('%Y-%m-%d'), round(date_zero_time - time.time())
 
 
-def sort_pinyin(queryset: Iterable)->dict:
+pin = Pinyin()
+
+
+def sort_pinyin(queryset: Iterable) -> dict:
     """
     根据用户名称的首字母进行分类
     :param queryset:
     :return: 返回字典{'a':[],'b':[]}
     """
-    dic={}
+    dic = {}
     for i in queryset:
-        user_dict=i[0].to_dict()
-        userCheck=i[1].to_dict()
+        user_dict = i[0].to_dict()
+        userCheck = i[1].to_dict()
         pinyin = pin.get_pinyin(userCheck['remark'])[0]  # 以备注作为分组
-        dic.setdefault(pinyin,[])
+        dic.setdefault(pinyin, [])
         user_dict['is_friend'] = True
-        user_dict['pinyin']=pinyin
-        user_dict['user']=userCheck
+        user_dict['pinyin'] = pinyin
+        user_dict['user'] = userCheck
         dic[pinyin].append(user_dict)
-    return dict(sorted(dic.items(),key=lambda x:x[0]))
+    return dict(sorted(dic.items(), key=lambda x: x[0]))
 
 
 def stdout(s: str):
@@ -121,5 +157,5 @@ def rounding(num: Union[str, Decimal], reserve_decimal: str = '0.0') -> Decimal(
 
 
 if __name__ == '__main__':
-    now=datetime.datetime.now()
+    now = datetime.datetime.now()
     print(now.strftime('%Y-%m-%d %H:%M:%S'))

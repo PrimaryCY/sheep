@@ -23,8 +23,6 @@ export default {
         //获取存储用户信息
         console.log('receive_userinfo')
         let res = await api_user.list()
-        console.log(res)
-        // console.log(res)
         if (res.data.code === 2000) {
             let user_info = res.data.data
             commit(RECEIVE_USERINFO, user_info)
@@ -42,7 +40,6 @@ export default {
         let user = await api_login.destory()
         console.log('delete_userinfo')
         user = user.data
-        console.log(user)
         if (user.code === 2000) {
             process.$cookies.remove(settings.TOKEN_NAME)
             commit(RECEIVE_USERINFO, {})

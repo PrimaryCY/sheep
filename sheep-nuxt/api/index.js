@@ -31,6 +31,18 @@ export const api_author_post=common_crud('/v1/web/author_post')
 登录相关
  */
 export const api_login=common_crud('/v1/web/login/')
+/*
+第三方登录app
+ */
+export const api_o_applications=common_crud('v1/o/applications/')
+/*
+第三方code登录
+ */
+export const api_o_token=common_crud('v1/o/token/')
+/*
+第三方绑定用户登录
+ */
+export const api_o_register=common_crud('v1/o/register/')
 
 /*
 用户修改相关

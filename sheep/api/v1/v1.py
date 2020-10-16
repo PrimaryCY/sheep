@@ -28,5 +28,6 @@ router.register('task-result', CeleryResultsViewSet, basename='celery_result')
 urlpatterns = [
     path(r'web/', include(('api.v1.web', 'api.v1.web'), namespace='web')),
     path(r'task/', include(('django_celery_results.urls', 'django_celery_results'), namespace='celery')),
+    path(r'o/', include(('apps.oauth.urls', 'apps.oauth.urls'), namespace='oauth')),
     path(r'', include(router.urls)),
 ]

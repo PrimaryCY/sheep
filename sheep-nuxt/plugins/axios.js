@@ -10,7 +10,7 @@ let service = {}
 export default function (context, inject) {
     service = axios.create({
         baseURL: settings.SERVER_URL,
-        timeout: 10000,
+        timeout: 100000,
         // withCredentials: true,
         headers: {
             'content-type': 'application/json',

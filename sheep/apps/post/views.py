@@ -117,8 +117,8 @@ class UserReplyViewSet(SerializerContextViewMixin,
 
     def perform_create(self, serializer):
         instance = serializer.save()
-        on_commit(lambda: after_create_post_reply.delay(instance.post_id,
-                                                        instance.author_id))
+        after_create_post_reply.delay(instance.post_id,
+                                      instance.author_id)
 
     @transaction.atomic()
     def perform_destroy(self, instance):

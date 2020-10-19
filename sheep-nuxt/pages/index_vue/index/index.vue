@@ -333,7 +333,7 @@
             padding: 15px 0 12px 15px;
             font-family: PingFangSC-Medium;
             font-weight: 500;
-            border-radius: 20px;
+            /*border-radius: 20px;*/
             font-size: 18px;
             color: #fff;
             width: 100%;

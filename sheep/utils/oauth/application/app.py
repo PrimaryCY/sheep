@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # author:CY
 # datetime:2020/10/13 17:06
+import abc
 import functools
 import requests
 from requests.exceptions import ConnectionError
@@ -19,12 +20,12 @@ def http_error_decorator(func):
     def wrap(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except (HTTPError, ConnectionError) as ex:
+        except (HTTPError, ConnectionError, KeyError) as ex:
             return
     return wrap
 
 
-class BaseApp(object):
+class BaseApp(metaclass=abc.ABCMeta):
     APP_URL = None
     ACCESS_TOKEN_URL = None
     INFO_URL = None
@@ -53,6 +54,23 @@ class BaseApp(object):
 
         return url_join_args(self.APP_URL, client_id=self.client_id, scope=self.scope, redirect_uri=self.redirect_uri)
 
+    @abc.abstractmethod
+    def get_user_info(self, code):
+        """
+        返回第三方平台用户信息
+        格式：
+            {
+                'id': 第三方平台id，
+                'username': 用户名,
+                'portrait': 用户头像,
+                'home_url': 用户首页
+            }
+        :param code:
+        :return:
+        """
+        ...
+
+
     def _request(self, url, method='GET', *args, **kwargs):
         kwargs['headers'] = {
             **{
@@ -77,8 +95,7 @@ class GitHubApp(BaseApp):
     ACCESS_TOKEN_URL = 'https://github.com/login/oauth/access_token'
     INFO_URL = 'https://api.github.com/user'
 
-    @http_error_decorator
-    def get_access_token(self, code):
+    def _get_access_token(self, code):
         json = {
             'code': code,
             'client_id': self.client_id,
@@ -92,20 +109,7 @@ class GitHubApp(BaseApp):
         )
         return response.get('access_token')
 
-    @http_error_decorator
-    def get_user_info(self, access_token):
-        """
-        返回第三方平台用户信息
-        格式：
-            {
-                'id': 第三方平台id，
-                'username': 用户名,
-                'portrait': 用户头像,
-                'home_url': 用户首页
-            }
-        :param access_token:
-        :return:
-        """
+    def _get_user_info(self, access_token):
         response = self.get_json(self.INFO_URL, headers={
             'Authorization': f'token {access_token}'
         })
@@ -114,6 +118,54 @@ class GitHubApp(BaseApp):
         response['home_url'] = response['html_url']
         return response
 
+    @http_error_decorator
+    def get_user_info(self, code):
+        """
+        返回第三方平台用户信息
+        """
+        access_token = self._get_access_token(code)
+        if not access_token:
+            return
+        return self._get_user_info(access_token)
+
 
 class WeiBoApp(BaseApp):
     APP_URL = 'https://api.weibo.com/oauth2/authorize'
+    ACCESS_TOKEN_URL = 'https://api.weibo.com/oauth2/access_token'
+    INFO_URL = 'https://api.weibo.com/2/users/show.json'
+
+    def _get_access_token(self, code):
+        json = {
+            'code': code,
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'grant_type': 'authorization_code',
+            'redirect_uri': self.redirect_uri
+        }
+        response = self.get_json(
+            self.ACCESS_TOKEN_URL,
+            method='POST',
+            params=json
+        )
+        return response
+
+    def _get_user_info(self, tk_response):
+        """
+        返回第三方平台用户信息
+        """
+        params = {
+            'access_token': tk_response.get('access_token'),
+            'uid': tk_response.get('uid')
+        }
+        response = self.get_json(self.INFO_URL, params=params)
+        response['portrait'] = response['avatar_large']
+        response['username'] = f'{response["name"]}-weibo'
+        response['home_url'] = f'https://www.weibo.com/{response["profile_url"]}'
+        return response
+
+    @http_error_decorator
+    def get_user_info(self, code):
+        response = self._get_access_token(code)
+        if not response.get('access_token'):
+            return
+        return self._get_user_info(response)

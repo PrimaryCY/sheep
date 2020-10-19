@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.db.transaction import on_commit
 from django.db import transaction
 from rest_framework.mixins import ListModelMixin
 from rest_framework.views import APIView
@@ -8,7 +9,7 @@ from django.conf import settings
 from rest_framework.viewsets import GenericViewSet
 
 from apps.oauth.models import Application, UserOAuth
-from apps.user.tasks import after_login
+from apps.user.tasks import after_login, after_user_create
 from apps.oauth.serializer import ListApplicationSerializer
 from apps.user.token import Token
 from sheep.constant import RET
@@ -29,7 +30,7 @@ class ApplicationViewSet(ExtensionViewMixin,
     permission_classes = ()
 
     # 缓存30分钟
-    @only_data_cache_response(timeout=60*30)
+    # @only_data_cache_response(timeout=60 * 30)
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
@@ -51,11 +52,7 @@ class OauthTokenView(APIView):
         except Exception:
             raise ValidationError({'code': RET.PARAMERR, 'msg': '不支持该app'})
 
-        access_token = app.app_modules.get_access_token(code)
-        if not access_token:
-            raise ValidationError({'code': RET.PARAMERR, 'msg': '超时，请刷新页面重试'})
-
-        info = app.app_modules.get_user_info(access_token)
+        info = app.app_modules.get_user_info(code)
         if not info:
             raise ValidationError({'code': RET.UNKOWNERR, 'msg': '未知错误，请重试'})
 
@@ -123,7 +120,8 @@ class OauthRegisterView(APIView):
                                          user=user,
                                          uid=info['id'],
                                          extra_data=info,
-                                         home_url=info['home_url'],)
+                                         home_url=info['home_url'], )
+                on_commit(lambda: after_user_create.delay(user.id))
                 payload = User.generate_token_data(user)
                 after_login.delay(user.id, request.u_host)
 

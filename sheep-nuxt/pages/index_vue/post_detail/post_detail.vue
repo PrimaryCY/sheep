@@ -544,7 +544,8 @@ export default {
             // let features = 'height=400, width=800, toolbar=no, menubar=no, scrollbars=no, status=no'
             if(app === 'weibo'){
                 let pic = this.data.image !== null? this.data.image: '';
-                let share_url = `https://service.weibo.com/share/share.php?url=${now_url}&title=${this.data.name} - sheep&pic=${pic}`
+                let share_url = `https://service.weibo.com/share/share.php?url=${now_url}&title=${this.data.name} -
+                ${this.data.author_info.username} sheep&pic=${pic}`
                 this.blank_inner_window(share_url, '分享到微博', 800, 400)
             }
         },

@@ -265,6 +265,7 @@ export default {
             if (res === 'confirm') {
                 await this.$store.dispatch('clear_userinfo')
                 await this.$store.dispatch('receive_userinfo')
+                this.$router.push({name: 'index'})
             }
         }
     },

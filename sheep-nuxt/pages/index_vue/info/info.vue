@@ -191,6 +191,11 @@
 
     export default {
         name: "info",
+        head () {
+            return {
+                title: '个人中心',
+            }
+        },
         data() {
             return {
                 uploadData: {

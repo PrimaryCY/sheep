@@ -20,7 +20,7 @@ class User(BaseModel, AbstractBaseUser):
         (1, '男'),
         (2, '保密')
     )
-    username = models.CharField(max_length=50, verbose_name='用户名', unique=True)
+    username = models.CharField(max_length=50, verbose_name='用户名')
     phone = models.CharField(max_length=11, null=True, verbose_name='手机号码', db_index=True)
     email = models.EmailField(max_length=100, verbose_name='邮箱', db_index=True)
     is_email = models.BooleanField(default=False, verbose_name='邮箱认证')

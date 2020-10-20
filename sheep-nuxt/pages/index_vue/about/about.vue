@@ -11,6 +11,11 @@ import {api_about} from "@/api"
 
 export default {
     name: "about",
+    head () {
+        return {
+            title: '关于我们',
+        }
+    },
     data() {
         return {
             content: {}

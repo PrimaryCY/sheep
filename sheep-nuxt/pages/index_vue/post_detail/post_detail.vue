@@ -450,10 +450,16 @@ import pagination from "../../../components/pagination"
 
 
 export default {
-    head: {
-        link: [
-            {res: "stylesheet", type: 'text/css', href: "http://biger.applinzi.com/api/css/animate.min.css"}
-        ],
+    head () {
+        return {
+            title: this.data.name,
+            meta: [
+                { hid: 'description', name: 'description', content: this.data.desc }
+            ],
+            link: [
+                {res: "stylesheet", type: 'text/css', href: "http://biger.applinzi.com/api/css/animate.min.css"}
+            ],
+        }
     },
     name: 'post_detail',
     data() {

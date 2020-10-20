@@ -346,13 +346,15 @@ export default {
             let data = {...this.registerData}
             delete data.verify_password
             let res = await api_user.create(data)
-            if (res.data.code === 2000) {
+            res = res.data
+            if (res.code === 2000) {
                 this.$message({
                     message: '恭喜你，注册成功,请登录!',
                     type: 'success'
                 })
-                this.reload()
-                this.loginData.email_or_phone = data.email
+                this.loginData.email_or_phone = res.data.email
+                this.registerData = {}
+                this.status = 'login'
             } else if (res.msg.indexOf('用户') !== -1) {
                 this.registerError.username = res.data.msg
             } else if (res.msg.indexOf('密码') !== -1) {

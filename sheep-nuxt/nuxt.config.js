@@ -1,14 +1,12 @@
 module.exports = {
     mode: 'universal',
-    /*
-    ** Headers of the page
-    */
     head: {
-        title: process.env.npm_package_name || '小羊酒馆',
+        title: '羊绒衫',
         meta: [
             {charset: 'utf-8'},
             {name: 'viewport', content: 'width=device-width, initial-scale=1'},
-            {hid: 'description', name: 'description', content: process.env.npm_package_description || ''},
+            {name: 'keywords', content: '博客,blog,羊绒衫官网,小羊,分享,好玩,图文编辑软件,图文创作,创作软件,原创社区,小说,散文,写作,阅读'},
+            {hid: 'description', name: 'description', content: process.env.npm_package_description || '羊绒衫是一个想让你了解多种生活的社区,多种生活,多面人生'},
             // 全站升级https请求，还需要nginx配置
             // 暂时关闭，七牛云https图片要收费
             // {'http-equiv': "Content-Security-Policy", content: "upgrade-insecure-requests"}

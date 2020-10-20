@@ -304,9 +304,10 @@ class Praise(BaseModel):
     class Meta:
         verbose_name_plural = verbose_name = '用户点赞表'
         ordering = ('-update_time', '-created_time')
+        unique_together = ('user_id', 'resource_id', 't')
 
     def __str__(self):
-        return self.resource_id
+        return f"{self.resource_id}"
 
 
 class BrowsingHistoryRedisMode(object):

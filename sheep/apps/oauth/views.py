@@ -10,7 +10,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from apps.oauth.models import Application, UserOAuth
 from apps.user.tasks import after_login, after_user_create
-from apps.oauth.serializer import ListApplicationSerializer
+from apps.oauth.serializer import ListApplicationSerializer, ListUserOauthSerializer
 from apps.user.token import Token
 from sheep.constant import RET
 from utils.drf_extensions.decorators import only_data_cache_response
@@ -131,3 +131,12 @@ class OauthRegisterView(APIView):
                                          payload),
             }
             return Response(data=data)
+
+
+class UserOauth(ExtensionViewMixin,
+                ListModelMixin,
+                GenericViewSet):
+    queryset = Application.objects.all()
+    serializer_class = {
+        'list': ListUserOauthSerializer
+    }

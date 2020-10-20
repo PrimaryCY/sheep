@@ -3,6 +3,8 @@
 # datetime:2020/7/31 15:14
 from celery import shared_task
 from django.db.models import F
+from django.db.utils import IntegrityError
+from django.conf import settings
 
 from apps.operate.models import Collect, CollectRedisModel, Praise
 from apps.user.models import User
@@ -57,6 +59,7 @@ def after_praise_or_trample(operation: int, user_id: int, resource_id: int, prai
     if praise_or_trample == 0:
         Praise.objects.filter(user_id=user_id, t=t, resource_id=resource_id).delete()
     else:
-        Praise.objects.update_or_create(defaults={
-            'praise_or_trample': praise_or_trample
-        }, user_id=user_id, resource_id=resource_id, t=t)
+        with settings.LOCK_REDIS.lock(f'{user_id}-{resource_id}-{t}') :
+            Praise.objects.update_or_create(defaults={
+                'praise_or_trample': praise_or_trample
+            }, user_id=user_id, resource_id=resource_id, t=t)

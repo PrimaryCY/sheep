@@ -29,17 +29,16 @@ def field_sort_queryset(queryset: QuerySet, items: Iterable, sort_field: str = '
     return queryset
 
 
-def raw_sort_queryset(model, items: Iterable):
+def raw_sort_queryset(queryset: QuerySet, items: Iterable):
     """
        field排序
        :param model:
        :param items:
-       :param sort_field:
        :return:
     """
-    assert issubclass(model, Model), (
-        '传入的不是ModelClass'
+    assert issubclass(queryset._queryset_class, QuerySet), (
+        '传入的不是QuerySet'
     )
-    queryset = model.objects.filter(id__in=items).all()
+    queryset = queryset.filter(id__in=items).all()
     query_dict = {i.id: i for i in queryset}
     return [query_dict[i] for i in items if i in query_dict]

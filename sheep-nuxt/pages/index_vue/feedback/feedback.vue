@@ -127,6 +127,11 @@
 
     export default {
         name: 'feedback',
+        head () {
+            return {
+                title: '意见反馈',
+            }
+        },
         data() {
             return {
                 visable: true,

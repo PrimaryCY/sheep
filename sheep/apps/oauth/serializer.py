@@ -12,3 +12,7 @@ class ListApplicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Application
         fields = ('id', 'app_name', 'image', 'login_url', 'help_text', 'client_id')
+
+
+class ListUserOauthSerializer(serializers.ModelSerializer):
+    ...

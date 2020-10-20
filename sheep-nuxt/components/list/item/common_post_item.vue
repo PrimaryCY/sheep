@@ -10,9 +10,18 @@
                         <div v-show="post.image" class="article-image">
                             <img :src="post.image">
                         </div>
+                        <!--未被删除的文章才可以点击跳转-->
+                        <a v-if="post.status === 0"
+                           :href="$router.resolve({name:'post_detail',params:{id:post.id}}).href"
+                           target="_blank"
+                           :class="{'article-image-title-text':post.image}"
+                           class="article-title-text two-line-ellipsis">
+                            <font_icon :type="post.post_type"></font_icon>
+                            {{ post.name }}
+                        </a>
                         <a
-                                :href="$router.resolve({name:'post_detail',params:{id:post.id}}).href"
-                                target="_blank"
+                                v-else
+                                href="#"
                                 :class="{'article-image-title-text':post.image}"
                                 class="article-title-text two-line-ellipsis">
                             <font_icon :type="post.post_type"></font_icon>
@@ -69,10 +78,14 @@
                 <el-col :span="2">
                     <!--占位使用-->
                 </el-col>
-                <el-col v-if="post.newest_user_id" :span="6">
+                <!--被删除的文章会有已被删除的提示语-->
+                <el-col v-if="post.status === 0 && post.newest_user_id" :span="6">
                     <div class="reply-txt ellipsis">
-                        {{ moment(post.newest_time).fromNow()}} • 最后回复来自于&nbsp;{{post.newest_user_info.username}}
+                        {{ moment(post.newest_time).fromNow() }} • 最后回复来自于&nbsp;{{ post.newest_user_info.username }}
                     </div>
+                </el-col>
+                <el-col v-if="post.status !== 0" :span="6" class="delete_msg">
+                    {{ `此${post.post_type === 1 ? '文章' : '问题'}已被删除!` }}
                 </el-col>
             </el-row>
         </div>
@@ -85,10 +98,10 @@ import font_icon from '../../small/font_icon'
 
 export default {
     name: 'post_item',
-    data(){
-      return {
-          moment
-      }
+    data() {
+        return {
+            moment
+        }
     },
     props: {
         post: {
@@ -186,6 +199,12 @@ export default {
     .author-info {
         color: #1a1a1a;
         font-weight: 500;
+    }
+
+    .delete_msg {
+        border: 0 !important;
+        color: #F56C6C;
+        text-align: center;
     }
 }
 

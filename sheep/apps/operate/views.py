@@ -38,7 +38,7 @@ class UserCollectCategoryViewSet(ModelViewSet):
     """用户收藏类别视图"""
     serializer_class = CollectCategorySerializer
     filter_backends = (SearchFilter,)
-    search_fields = ('name', )
+    search_fields = ('name',)
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -113,20 +113,23 @@ class PraiseViewSet(CreateModelMixin,
     pagination_class = LimitOffsetPagination
     filter_class = PraiseFilter
     permission_classes = ()
-    # 仅支持用户看到自己点赞的文章
-    queryset = Praise.objects.filter(t=1)
+
+    def get_queryset(self):
+        # 仅支持用户看到自己点赞的文章
+        # 暂不支持查看点赞的评论
+        return Praise.objects.filter(t=1, user_id=self.request.user.id)
 
     def paginate_queryset(self, queryset):
         queryset_list = super().paginate_queryset(queryset)
         post_ids = {i.resource_id: (i.update_time, i.praise_or_trample) for i in queryset_list}
-        real_post = raw_sort_queryset(Post, post_ids.keys())
+        real_post = raw_sort_queryset(Post.raw_objects, post_ids.keys())
         for i in real_post:
             i.update_praise_time, i.praise_or_trample = post_ids.get(i.id)
         return real_post
 
 
 class BrowsingHistoryViewSet(ListModelMixin,
-                     GenericViewSet):
+                             GenericViewSet):
     """用户浏览记录视图"""
     serializer_class = BrowsingHistorySerializer
     pagination_class = LimitOffsetPagination

@@ -365,6 +365,19 @@ CACHES = {
             },
         }
     },
+    'lock': {
+        'BACKEND': "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_HOST + "13",
+        'TIMEOUT': 2000,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+            "PARSER_CLASS": "redis.connection.HiredisParser",
+            'CONNECTION_POOL_KWARGS': {
+                "max_connections": 100,
+            },
+        }
+    },
 }
 
 from django_redis import get_redis_connection
@@ -372,6 +385,7 @@ from django_redis import get_redis_connection
 USER_REDIS: StrictRedis = get_redis_connection('user')
 OPERATE_REDIS: StrictRedis = get_redis_connection('operate')
 OAUTH_REDIS: StrictRedis = get_redis_connection('oauth')
+LOCK_REDIS: StrictRedis = get_redis_connection('lock')
 
 # celery配置
 CELERY_BROKER_BACKEND = "redis"

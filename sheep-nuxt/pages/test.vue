@@ -1,307 +1,92 @@
 <template>
-<!--  <img style="width:100%;height:100%" src="~/Images/chatBack.jpg">-->
-  <div class="container">
-    <div>头像</div>
-    <div class="talk-bubble tri-right round right-in">
-      <div class="talktext">
-        <p>
-          Moving our way back up the right side indented. Uses .round and .right-in
-          Moving our way back up the right side indented. Uses .round and .right-in
-          Moving our way back up the right side indented. Uses .round and .right-in
-          Moving our way back up the right side indented. Uses .round and .right-in
-          Moving our way back up the right side indented. Uses .round and .right-in
-          Moving our way back up the right side indented. Uses .round and .right-in
-          Moving our way back up the right side indented. Uses .round and .right-in
-          Moving our way back up the right side indented. Uses .round and .right-in
-          2132222222222222222222222222222222222222222
-          2132222222222222222222222222222222222222222
-          2132222222222222222222222222222222222222222
-          2132222222222222222222222222222222222222222
-          2132222222222222222222222222222222222222222
-          2132222222222222222222222222222222222222222
-          2132222222222222222222222222222222222222222
-          2132222222222222222222222222222222222222222
-        </p>
-      </div>
+    <!--  <img style="width:100%;height:100%" src="~/Images/chatBack.jpg">-->
+    <div class="container">
+        <div class="applications">
+
+                <button
+                        v-for="a in this.user_oauth" class="item" :key="a.id"
+                        type="button">
+                        <span class="mat-button-wrapper">
+                            <img :src="a.image"/>
+                        </span>
+                </button>
+
+        </div>
     </div>
-  </div>
 
 </template>
 
 <script>
-  import {mapState} from 'vuex'
+import {mapState} from 'vuex'
 
-  import '../plugins/util'
+import '../plugins/util'
 
-  export default {
+export default {
     name: 'app',
-    data () {
-      return {
-      }
+    data() {
+        return {
+            user_oauth: [{
+                "id": 1,
+                "app_name": "github",
+                "image": "https://github.githubassets.com/favicons/favicon.png",
+                "login_url": "https://github.com/login/oauth/authorize?client_id=01d5f5a68a65d1d2ef88&scope=user&redirect_uri=http%3A%2F%2Fwww.sheep.beer%2Flogin%3Fapp_name%3Dgithub",
+                "help_text": "使用github登录",
+                "client_id": "01d5f5a68a65d1d2ef88",
+                "info": {"is_active": false}
+            }, {
+                "id": 2,
+                "app_name": "weibo",
+                "image": "https://open.weibo.com/favicon.ico",
+                "login_url": "https://api.weibo.com/oauth2/authorize?client_id=3001368361&scope=all&redirect_uri=http%3A%2F%2F127.0.0.1%3A3000%2Flogin%3Fapp_name%3Dweibo",
+                "help_text": "使用微博登录",
+                "client_id": "3001368361",
+                "info": {
+                    "id": 2,
+                    "created_time": "2020-10-19T14:43:12.230784",
+                    "update_time": "2020-10-19T14:43:12.230823",
+                    "is_active": true,
+                    "app": 2,
+                    "user": 23,
+                    "uid": 6936210337,
+                    "home_url": "https://www.weibo.com/u/6936210337"
+                }
+            }]
+        }
     },
-    methods: {
-    },
-    async asyncData(){
-      // let url = '/v1/web/user/'
-      // await context.$axios(
-      //   {
-      //     methods:'get',
-      //     url
-      //   }
-      // )
-      // await context.app.$axios(
-      //   {
-      //     methods:'get',
-      //     url:'/v1/option/'
-      //   }
-      // )
-      // let res = await Promise.all([api_user.list(),api_option.list()])
-      // for (let r of  res){
-      //   console.log(r.data)
-      // }
-    },
-    components:{
-    },
-    computed:{
-      ...mapState(['user','option'])
+    methods: {},
+    components: {},
+    computed: {
+        ...mapState(['user', 'option'])
     }
-  }
+}
 </script>
 <style scoped lang="scss">
-  /* container */
-  .container {
-    padding: 5% 5%;
-  }
-
-  /* CSS talk bubble */
-  .talk-bubble {
-    margin: 40px;
+.applications {
+    text-align: center;
+    justify-content: space-around;
+    margin-top: 12px;
+    margin-left: 10px;
     display: inline-block;
-    position: relative;
-    width: 200px;
-    height: auto;
-    background-color: lightyellow;
-  }
-  .round{
-    border-radius: 30px;
-    -webkit-border-radius: 30px;
-    -moz-border-radius: 30px;
 
-  }
+    button {
+        line-height: 1;
+        min-width: 0;
+        padding: 9px;
+        border-radius: 50%;
+        display: revert;
+        width: revert;
+        height: revert;
+        color: revert;
+        font-size: revert;
+        cursor: pointer;
 
-  /* Right triangle placed top left flush. */
-  .tri-right.border.left-top:before {
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: -40px;
-    right: auto;
-    top: -8px;
-    bottom: auto;
-    border: 32px solid;
-    border-color: #666 transparent transparent transparent;
-  }
-  .tri-right.left-top:after{
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: -20px;
-    right: auto;
-    top: 0px;
-    bottom: auto;
-    border: 22px solid;
-    border-color: lightyellow transparent transparent transparent;
-  }
+        .mat-button-wrapper {
+            line-height: 1;
+        }
+    }
 
-  /* Right triangle, left side slightly down */
-  .tri-right.border.left-in:before {
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: -40px;
-    right: auto;
-    top: 30px;
-    bottom: auto;
-    border: 20px solid;
-    border-color: #666 #666 transparent transparent;
-  }
-  .tri-right.left-in:after{
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: -20px;
-    right: auto;
-    top: 38px;
-    bottom: auto;
-    border: 12px solid;
-    border-color: lightyellow lightyellow transparent transparent;
-  }
-
-  /*Right triangle, placed bottom left side slightly in*/
-  .tri-right.border.btm-left:before {
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: -8px;
-    right: auto;
-    top: auto;
-    bottom: -40px;
-    border: 32px solid;
-    border-color: transparent transparent transparent #666;
-  }
-  .tri-right.btm-left:after{
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: 0px;
-    right: auto;
-    top: auto;
-    bottom: -20px;
-    border: 22px solid;
-    border-color: transparent transparent transparent lightyellow;
-  }
-
-  /*Right triangle, placed bottom left side slightly in*/
-  .tri-right.border.btm-left-in:before {
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: 30px;
-    right: auto;
-    top: auto;
-    bottom: -40px;
-    border: 20px solid;
-    border-color: #666 transparent transparent #666;
-  }
-  .tri-right.btm-left-in:after{
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: 38px;
-    right: auto;
-    top: auto;
-    bottom: -20px;
-    border: 12px solid;
-    border-color: lightyellow transparent transparent lightyellow;
-  }
-
-  /*Right triangle, placed bottom right side slightly in*/
-  .tri-right.border.btm-right-in:before {
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: auto;
-    right: 30px;
-    bottom: -40px;
-    border: 20px solid;
-    border-color: #666 #666 transparent transparent;
-  }
-  .tri-right.btm-right-in:after{
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: auto;
-    right: 38px;
-    bottom: -20px;
-    border: 12px solid;
-    border-color: lightyellow lightyellow transparent transparent;
-  }
-
-	/*Right triangle, placed bottom right side slightly in*/
-  .tri-right.border.btm-right:before {
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: auto;
-    right: -8px;
-    bottom: -40px;
-    border: 20px solid;
-    border-color: #666 #666 transparent transparent;
-  }
-  .tri-right.btm-right:after{
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: auto;
-    right: 0px;
-    bottom: -20px;
-    border: 12px solid;
-    border-color: lightyellow lightyellow transparent transparent;
-  }
-
-  /* Right triangle, right side slightly down*/
-  .tri-right.border.right-in:before {
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: auto;
-    right: -40px;
-    top: 30px;
-    bottom: auto;
-    border: 20px solid;
-    border-color: #666 transparent transparent #666;
-  }
-  .tri-right.right-in:after{
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: auto;
-    right: -20px;
-    top: 38px;
-    bottom: auto;
-    border: 12px solid;
-    border-color: lightyellow transparent transparent lightyellow;
-  }
-
-  /* Right triangle placed top right flush. */
-  .tri-right.border.right-top:before {
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: auto;
-    right: -40px;
-    top: -8px;
-    bottom: auto;
-    border: 32px solid;
-    border-color: #666 transparent transparent transparent;
-  }
-  .tri-right.right-top:after{
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: auto;
-    right: -20px;
-    top: 0px;
-    bottom: auto;
-    border: 20px solid;
-    border-color: lightyellow transparent transparent transparent;
-  }
-
-  /* talk bubble contents */
-  .talktext{
-    padding: 1em;
-    text-align: left;
-    line-height: 1.5em;
-  }
-  .talktext p{
-    /* remove webkit p margins */
-    -webkit-margin-before: 0em;
-    -webkit-margin-after: 0em;
-  }
+    button:active {
+        background: #ecf5ff;
+    }
+}
 </style>

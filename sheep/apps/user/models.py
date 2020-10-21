@@ -94,15 +94,17 @@ class User(BaseModel, AbstractBaseUser):
         super().save(force_insert, force_update, using, update_fields)
 
     @staticmethod
-    def generate_token_data(user) -> dict:
+    def generate_token_data(user, source='normal') -> dict:
         """
         返回token的加密数据
-        :param user: 
+        :param user:
+        :param source:
         :return: dict
         """
         return {
             'id': user.id,
-            'username': user.username
+            'username': user.username,
+            'source': source
         }
 
     @classmethod

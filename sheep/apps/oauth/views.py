@@ -60,7 +60,7 @@ class OauthTokenView(APIView):
 
         if user_oauth:
             # 有用户记录
-            payload = User.generate_token_data(user_oauth.user)
+            payload = User.generate_token_data(user_oauth.user, source='oauth')
             after_login.delay(user_oauth.user.id, request.u_host)
             data = {
                 'token': Token.encryptTk(settings.TOKEN,
@@ -122,7 +122,7 @@ class OauthRegisterView(APIView):
                                          extra_data=info,
                                          home_url=info['home_url'], )
                 on_commit(lambda: after_user_create.delay(user.id))
-                payload = User.generate_token_data(user)
+                payload = User.generate_token_data(user, source='oauth')
                 after_login.delay(user.id, request.u_host)
 
             data = {
@@ -133,10 +133,15 @@ class OauthRegisterView(APIView):
             return Response(data=data)
 
 
-class UserOauth(ExtensionViewMixin,
-                ListModelMixin,
-                GenericViewSet):
+class UserOauthViewSet(ExtensionViewMixin,
+                       ListModelMixin,
+                       GenericViewSet):
     queryset = Application.objects.all()
     serializer_class = {
         'list': ListUserOauthSerializer
     }
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['user_oauth'] = {o['app']: o for o in self.request.user.oauth.all().values(*UserOAuth.exclude('extra_data'))}
+        return context

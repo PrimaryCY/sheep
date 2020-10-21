@@ -43,11 +43,19 @@ export const api_o_token=common_crud('v1/o/token/')
 第三方绑定用户登录
  */
 export const api_o_register=common_crud('v1/o/register/')
+/*
+第三方用户信息
+ */
+export const api_o_user_oauth=common_crud('v1/o/user_oauth/')
 
 /*
 用户修改相关
  */
 export const api_user=common_crud('/v1/web/user/')
+/*
+用户修改密码
+ */
+export const api_pwd=common_crud('v1/web/pwd/')
 
 /*
 获取所有帖子类别

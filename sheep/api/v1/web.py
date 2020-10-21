@@ -5,7 +5,7 @@ from django.conf.urls import include
 from django.urls import path, re_path
 
 from utils.routes import CustomRouter
-from apps.user.views import UserViewSet, LoginViewSet
+from apps.user.views import UserViewSet, LoginViewSet, PwdViewSet
 from apps.post.views import PostCategoryViewSet, UserPostViewSet, UserReplyViewSet, \
     PostReplyViewSet, AllPostViewSet, CategoryPostViewSet, AuthorPostViewSet, CorrelationCategoryViewSet
 from apps.operate.views import UserCollectCategoryViewSet, CollectCategoryViewSet, CollectViewSet, PraiseViewSet, \
@@ -22,6 +22,8 @@ router.register('hot', HotViewSet, basename='hot')
 router.register('user', UserViewSet, basename='user')
 # 用户登录退出
 router.register('login', LoginViewSet, basename='login')
+# 用户修改密码
+router.register('pwd', PwdViewSet, basename='pwd')
 # 帖子分类crud
 router.register('post_category', PostCategoryViewSet, basename='post_category')
 # 所有帖子

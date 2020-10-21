@@ -21,4 +21,11 @@ function special_str() {
 }
 re.special_str=special_str()
 
+// 空格校验
+function space(){
+    re._space=/\s/;
+    return re._space
+}
+re.space=space()
+
 export default re

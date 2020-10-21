@@ -7,7 +7,8 @@ export default {
             push: this.push,
             blank_push: this.blank_push,
             generate_url: this.generate_url,
-            blank_inner_window: this.blank_inner_window
+            blank_inner_window: this.blank_inner_window,
+            blank_window_push:this.blank_window_push
         }
     },
     data() {
@@ -31,6 +32,9 @@ export default {
             // 新窗口打开页面
             let routeData = this.$router.resolve(push_params)
             window.open(routeData.href, '_blank')
+        },
+        blank_window_push(url){
+            window.open(url)
         }
         ,
         reload() {

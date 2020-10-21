@@ -75,7 +75,7 @@ async function createApp(ssrContext, config = {}) {
   // here we inject the router and store to all child components,
   // making them available everywhere as `this.$router` and `this.$store`.
   const app = {
-    head: {"title":"羊绒衫","meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"hid":"description","name":"description","content":"My rad Nuxt.js project"}],"link":[{"rel":"icon","type":"image\u002Fx-icon","href":"\u002Ffavicon.png"}],"script":[{"src":"http:\u002F\u002Flibs.baidu.com\u002Fjquery\u002F1.8.3\u002Fjquery.min.js"},{"src":"http:\u002F\u002Fat.alicdn.com\u002Ft\u002Ffont_1739386_3bmedkb9dpo.js"}],"bodyAttrs":{"class":"left-sidebar is-desktop is-1200px"},"style":[]},
+    head: {"title":"羊绒衫","meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"name":"keywords","content":"博客,blog,羊绒衫官网,小羊,分享,好玩,图文编辑软件,图文创作,创作软件,原创社区,小说,散文,写作,阅读"},{"hid":"description","name":"description","content":"My rad Nuxt.js project"}],"link":[{"rel":"icon","type":"image\u002Fx-icon","href":"\u002Ffavicon.png"}],"script":[{"src":"http:\u002F\u002Flibs.baidu.com\u002Fjquery\u002F1.8.3\u002Fjquery.min.js"},{"src":"http:\u002F\u002Fat.alicdn.com\u002Ft\u002Ffont_1739386_3bmedkb9dpo.js"}],"bodyAttrs":{"class":"left-sidebar is-desktop is-1200px"},"style":[]},
 
     store,
     router,

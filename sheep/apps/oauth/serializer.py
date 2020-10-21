@@ -15,4 +15,11 @@ class ListApplicationSerializer(serializers.ModelSerializer):
 
 
 class ListUserOauthSerializer(serializers.ModelSerializer):
-    ...
+    info = serializers.SerializerMethodField()
+
+    def get_info(self, obj):
+        return self.context['user_oauth'].get(obj.id, {'is_active': False})
+
+    class Meta:
+        model = Application
+        fields = ('id', 'app_name', 'image', 'login_url', 'help_text', 'client_id', 'info')

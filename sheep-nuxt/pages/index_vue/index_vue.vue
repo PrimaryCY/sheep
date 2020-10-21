@@ -189,11 +189,11 @@
                         <h2>关于本站</h2>
                     </header>
                     <ul>
-<!--                        <li @click="push('/about')" :class="{select:active==='about'}"><a href="#">关于我们</a>-->
-<!--                        </li>-->
-                        <li ><a href="/about" target="_blank">关于我们</a></li>
+                        <li @click="push('/about')" :class="{select:active==='about'}"><a href="#">关于我们</a>
+                        </li>
+<!--                        <li ><a href="/about" >关于我们</a></li>-->
 <!--                        <li><a href="#" target="_blank">广告服务</a></li>-->
-                        <li><a href="#" target="_blank">我的愿景</a></li>
+                        <li><a href="#">我的愿景</a></li>
                         <li><a href="#">技术支持</a></li>
                         <li><a href="https://github.com/PrimaryCY/sheep" target="_blank">github 地址</a></li>
                         <li><a href="http://beian.miit.gov.cn" target="_blank">京ICP备2020034225号</a></li>
@@ -273,14 +273,12 @@ export default {
 </script>
 
 <style scoped lang="scss">
-/*
 .select {
     a {
         font-weight: 800;
         color: #fff;
     }
 }
- */
 
 @media (min-width: 1200px) {
     .pack-up {

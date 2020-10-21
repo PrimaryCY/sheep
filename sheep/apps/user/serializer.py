@@ -173,12 +173,12 @@ class DeleteUserSerializer(serializers.Serializer):
     password = serializers.CharField(style={'input_type': 'password'}, write_only=True, label='密码')
     is_del = serializers.ChoiceField(choices=['y', 'n'], label='是否注销')
 
-    def validated_password(self, password):
+    def validate_password(self, password):
         if not self.instance.check_password(password):
             raise serializers.ValidationError('密码错误!')
         return password
 
-    def validated_is_del(self, is_del):
+    def validate_is_del(self, is_del):
         if is_del == 'n':
             raise serializers.ValidationError('注销失败!')
         return is_del
@@ -187,3 +187,25 @@ class DeleteUserSerializer(serializers.Serializer):
     def delete(user):
         user.is_active = False
         user.save()
+
+
+class PwdSerializer(serializers.Serializer):
+    r_p = serializers.CharField(write_only=True, label='当前密码', error_messages={
+        'null': '请输入当前密码！',
+        'blank': '请输入当前密码!',
+    })
+    n_p = serializers.CharField(write_only=True, label='新密码', error_messages={
+        'null': '请输入密码！',
+        'blank': '请输入密码!',
+    })
+
+    def validate_r_p(self, pwd):
+        if not self.context['request'].user.check_password(pwd):
+            raise serializers.ValidationError('密码错误!')
+        return pwd
+
+    def create(self, validated_data):
+        n_p = validated_data.get('n_p')
+        self.context['request'].user.password = n_p
+        self.context['request'].user.save()
+        return {}

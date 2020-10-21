@@ -62,7 +62,21 @@
                             <use xlink:href="#icon-xingbienan-copy"></use>
                         </svg>
                         :
-                        <span class="name">{{user.username}}</span>
+                        <span class="name">{{ user.username }}</span>
+
+                        <div class="applications">
+
+                            <button
+                                    v-for="a in this.user_oauth" :key="a.id"
+                                    @click="blank_window_push(a.info.home_url)"
+                            >
+                                        <span class="mat-button-wrapper">
+                                            <img :src="a.image"/>
+                                        </span>
+                            </button>
+
+                        </div>
+
                     </el-col>
                 </el-row>
                 <br>
@@ -72,14 +86,14 @@
                             <use xlink:href="#icon-youxiang-"></use>
                         </svg>
                         :
-                        {{user.email? user.email: '暂未绑邮箱'}}
+                        {{ user.email ? user.email : '暂未绑邮箱' }}
                     </el-col>
                     <el-col :span="4" :offset="1">
                         <svg class="icon-min" aria-hidden="true">
                             <use xlink:href="#icon-shouji-"></use>
                         </svg>
                         :
-                        {{user.phone?user.phone:'暂未绑定手机号'}}
+                        {{ user.phone ? user.phone : '暂未绑定手机号' }}
                     </el-col>
 
                 </el-row>
@@ -89,14 +103,12 @@
         </div>
 
         <div class="info">
-            <!--			我的积分-->
             <el-tabs class="space" type="card" :stretch="true">
-                <el-tab-pane>
-                    <span slot="label"><i class="el-icon-date"></i> 我的积分</span>
+                <el-tab-pane label="📅动态">
                     <tbe :img_src="require('../../../static/img/tbe.gif')"></tbe>
                 </el-tab-pane>
                 <!--			用户信息修改-->
-                <el-tab-pane label="个人资料" class="data">
+                <el-tab-pane label="📃个人资料" class="data">
                     <el-row type="flex">
                         <el-col :span="3" :offset="21">
                             <el-button plain size="small" type="info" @click="edit.flag=!edit.flag">
@@ -167,12 +179,14 @@
                         </el-form-item>
                     </el-form>
                 </el-tab-pane>
-                <el-tab-pane>
-                    <span slot="label">我的关注</span>
+                <!--            用户密码修改-->
+                <el-tab-pane label="🔑修改密码">
+                    <change_pwd></change_pwd>
+                </el-tab-pane>
+                <el-tab-pane label="➕我的关注">
                     <tbe :img_src="require('../../../static/img/tbe.gif')"></tbe>
                 </el-tab-pane>
-                <el-tab-pane>
-                    <span slot="label">我的粉丝</span>
+                <el-tab-pane label="🌹我的粉丝">
                     <tbe :img_src="require('../../../static/img/tbe.gif')"></tbe>
                 </el-tab-pane>
             </el-tabs>
@@ -183,211 +197,274 @@
 </template>
 
 <script>
-    import {mapState} from 'vuex'
+import {mapState} from 'vuex'
 
-    import tbe from '../../../components/tbe'
-    import {api_upload, api_user} from "../../../api"
-    import re from '../../../utils/re'
+import tbe from '../../../components/tbe'
+import change_pwd from '@/components/form/change-pwd'
+import {api_o_user_oauth, api_upload, api_user} from "../../../api"
+import re from '../../../utils/re'
 
-    export default {
-        name: "info",
-        head () {
-            return {
-                title: '个人中心',
-            }
-        },
-        data() {
-            return {
-                uploadData: {
-                    // 上传图片的数据
-                    upload_path: 'sheep-portrait',
-                    file: undefined,
-                    flag: false
-                },
-                pickerOptions: { // 计费日期的约束条件
-                    disabledDate: this.validate_birth,
-                },
-                reader_portrait: this.$store.state.user.portrait,
-                edit: {
-                    portrait: this.deepCopy(this.$store.state.user.portrait),
-                    phone: this.deepCopy(this.$store.state.user.phone),
-                    gender: this.deepCopy(this.$store.state.user.gender),
-                    birth: this.deepCopy(this.$store.state.user.birth),
-                    brief: this.deepCopy(this.$store.state.user.brief),
-                    flag: false,
-                },
-
-                rules: {
-                    phone: [
-                        {
-                            validator: this.validate_phone, trigger: 'change'//触发条件：blur、change
-                        }],
-                    gender: [
-                        {
-                            required: true, message: '请选择性别!', trigger: 'blur'
-                        }
-                    ]
-                }
-            }
-        },
-        computed: {
-            ...mapState(['user'])
-        },
-        watch: {
-            "user": {
-                deep: true,
-                handler: function (new_val) {
-                    this.edit = Object.assign(this.edit, new_val)
-                    this.reader_portrait = this.edit.portrait
-                }
-            }
-        },
-        methods: {
-            validate_phone(r, v, callback) {
-                // 验证用户输入的手机号
-                if (v === null) {
-                    callback()
-                } else if (!re.phone.test(v)) {
-                    callback(new Error("手机号码不正确!"))
-                } else {
-                    callback()
-                }
+export default {
+    name: "info",
+    head() {
+        return {
+            title: '个人中心',
+        }
+    },
+    data() {
+        return {
+            user_oauth: [],  // 用户oauth信息
+            uploadData: {
+                // 上传图片的数据
+                upload_path: 'sheep-portrait',
+                file: undefined,
+                flag: false
             },
-            validate_birth(time) {
-                // 验证用户生日
-                return time.getTime() > Date.now() - 8.64e7
+            pickerOptions: { // 计费日期的约束条件
+                disabledDate: this.validate_birth,
             },
-            reset_info() {
-                // 重置数据
-                this.$refs['rule_edit'].resetFields()
+            reader_portrait: this.$store.state.user.portrait,
+            edit: {
+                portrait: this.deepCopy(this.$store.state.user.portrait),
+                phone: this.deepCopy(this.$store.state.user.phone),
+                gender: this.deepCopy(this.$store.state.user.gender),
+                birth: this.deepCopy(this.$store.state.user.birth),
+                brief: this.deepCopy(this.$store.state.user.brief),
+                flag: false,
             },
-            modify_info() {
-                // 修改个人资料
-                this.$refs['rule_edit'].validate(async (valid) => {
-                    if (!valid) {
-                        return false
+            rules: {
+                phone: [
+                    {
+                        validator: this.validate_phone, trigger: 'change'//触发条件：blur、change
+                    }],
+                gender: [
+                    {
+                        required: true, message: '请选择性别!', trigger: 'blur'
                     }
-                    let loading = this.openLoading(
+                ]
+            },
+            ruleForm: {
+                pass: '',
+                checkPass: '',
+                age: ''
+            },
+
+        }
+    },
+    computed: {
+        ...mapState(['user'])
+    },
+    watch: {
+        "user": {
+            deep: true,
+            handler: function (new_val) {
+                this.edit = Object.assign(this.edit, new_val)
+                this.reader_portrait = this.edit.portrait
+            }
+        }
+    },
+    methods: {
+        async _get_user_oauth_info() {
+            // 获取当前用户的第三方信息
+            let res = await api_o_user_oauth.list()
+            res = res.data
+            if (res.code !== 2000) {
+                return this.$message(res.msg)
+            }
+            this.user_oauth = res.data.filter(i => i.info.is_active)
+        },
+        validate_phone(r, v, callback) {
+            // 验证用户输入的手机号
+            if (v === null) {
+                callback()
+            } else if (!re.phone.test(v)) {
+                callback(new Error("手机号码不正确!"))
+            } else {
+                callback()
+            }
+        },
+        validate_birth(time) {
+            // 验证用户生日
+            return time.getTime() > Date.now() - 8.64e7
+        },
+        reset_info() {
+            // 重置数据
+            this.$refs['rule_edit'].resetFields()
+        },
+        modify_info() {
+            // 修改个人资料
+            this.$refs['rule_edit'].validate(async (valid) => {
+                if (!valid) {
+                    return false
+                }
+                let loading = this.openLoading(
                         {
                             'text': '修改中',
                             'target': '.el-tabs__content',
                         }
-                    )
-                    let res = await api_user.update(null, this.edit)
-                    if (res.data.code !== 2000) {
-                        this.$message(res.data.msg)
-                        loading.close()
-                        return false
-                    }
-                    this.$store.dispatch('modify_userinfo', res.data.data)
-                    this.edit.flag = !this.edit.flag
-                    this.$message.success('修改成功!')
+                )
+                let res = await api_user.update(null, this.edit)
+                if (res.data.code !== 2000) {
+                    this.$message(res.data.msg)
                     loading.close()
-                })
-            },
-            async upload_portrait() {
-                // 上传修改头像
-                let loading = this.openLoading({
-                    text: '上传中...',
-                    target: '#content-inner'
-                })
-                let portrait_res = await api_upload.upload(this.uploadData)
-                if (portrait_res.data.code !== 2000) {
-                    this.$message('上传失败!请重试!')
-                    loading.close()
-                    return
+                    return false
                 }
-                this.edit.portrait = portrait_res.data.data.url
-                let user_res = await api_user.partial_update(null, this.edit)
-                if (user_res.data.code !== 2000) {
-                    this.$message(user_res.data.msg)
-                    loading.close()
-                    return
-                }
-                this.uploadData.flag = !this.uploadData.flag
-                this.$store.dispatch('modify_userinfo', user_res.data.data)
+                this.$store.dispatch('modify_userinfo', res.data.data)
+                this.edit.flag = !this.edit.flag
                 this.$message.success('修改成功!')
                 loading.close()
-            },
-            before_avatar_upload(file) {
-                const isJPG = file.type === "image/jpeg"
-                const isPNG = file.type === "image/png"
-                const isLt1M = file.size / 1024 / 1024 < 1
+            })
+        },
+        async upload_portrait() {
+            // 上传修改头像
+            let loading = this.openLoading({
+                text: '上传中...',
+                target: '#content-inner'
+            })
+            let portrait_res = await api_upload.upload(this.uploadData)
+            if (portrait_res.data.code !== 2000) {
+                this.$message('上传失败!请重试!')
+                loading.close()
+                return
+            }
+            this.edit.portrait = portrait_res.data.data.url
+            let user_res = await api_user.partial_update(null, this.edit)
+            if (user_res.data.code !== 2000) {
+                this.$message(user_res.data.msg)
+                loading.close()
+                return
+            }
+            this.uploadData.flag = !this.uploadData.flag
+            this.$store.dispatch('modify_userinfo', user_res.data.data)
+            this.$message.success('修改成功!')
+            loading.close()
+        },
+        before_avatar_upload(file) {
+            const isJPG = file.type === "image/jpeg"
+            const isPNG = file.type === "image/png"
+            const isLt1M = file.size / 1024 / 1024 < 1
 
-                if (!isJPG && !isPNG) {
-                    this.$message.error("上传头像图片只能是 JPG 或 PNG 格式!")
-                } else if (!isLt1M) {
-                    this.$message.error("上传头像图片大小不能超过 1MB!")
-                } else {
-                    this.uploadData.file = file
-                    this._image_preview(file)
-                    this.uploadData.flag = true
-                }
-                // 不使用upload自带的上传方式，而是使用axios，所以阻止upload自带的上传
-                return false
-            },
-            _image_preview: function (file) {
-                // 图片预览
-                var self = this
-                //定义一个文件阅读器
-                var reader = new FileReader()
-                //文件装载后将其显示在图片预览里
-                reader.onload = function (e) {
-                    //将bade64位图片保存至数组里供上面图片显示
-                    self.reader_portrait = e.target.result
-                }
-                reader.readAsDataURL(file)
-            },
+            if (!isJPG && !isPNG) {
+                this.$message.error("上传头像图片只能是 JPG 或 PNG 格式!")
+            } else if (!isLt1M) {
+                this.$message.error("上传头像图片大小不能超过 1MB!")
+            } else {
+                this.uploadData.file = file
+                this._image_preview(file)
+                this.uploadData.flag = true
+            }
+            // 不使用upload自带的上传方式，而是使用axios，所以阻止upload自带的上传
+            return false
         },
-        components: {
-            tbe,
+        _image_preview: function (file) {
+            // 图片预览
+            var self = this
+            //定义一个文件阅读器
+            var reader = new FileReader()
+            //文件装载后将其显示在图片预览里
+            reader.onload = function (e) {
+                //将bade64位图片保存至数组里供上面图片显示
+                self.reader_portrait = e.target.result
+            }
+            reader.readAsDataURL(file)
         },
-    }
+    },
+    components: {
+        tbe,
+        change_pwd
+    },
+    created() {
+        if (process.server) {
+            return
+        }
+        this._get_user_oauth_info()
+    },
+    inject: ['blank_window_push']
+}
 </script>
 
 <style scoped lang="scss">
-    #content {
-        margin-left: 0;
+
+
+#content {
+    margin-left: 0;
+}
+
+.container {
+    text-align: left;
+
+    .avatar {
+        text-align: center;
+
+        .el-row:last-child {
+            .submit_portrait {
+                margin: 10px;
+            }
+        }
     }
 
-    .container {
-        text-align: left;
+    .user {
+        margin-top: 20px;
 
-        .avatar {
+        .name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .applications {
             text-align: center;
+            justify-content: space-around;
+            margin-left: 10px;
+            display: inline-block;
 
-            .el-row:last-child {
-                .submit_portrait {
-                    margin: 10px;
+            button {
+                line-height: 1;
+                min-width: 0;
+                padding: 5px;
+                border-radius: 50%;
+                background-color: transparent;
+                border: 0;
+                display: revert;
+                width: revert;
+                height: revert;
+                color: revert;
+                font-size: revert;
+                cursor: pointer;
+                outline: none;
+
+                .mat-button-wrapper {
+                    line-height: 1;
+                }
+
+                img {
+                    width: 23px;
+                    height: 23px;
+                    vertical-align: text-bottom;
                 }
             }
-        }
 
-        .user {
-            margin-top: 20px;
-
-            .name {
-                font-size: 16px;
-                font-weight: 700;
-                color: #222;
+            button:active {
+                background: #ecf5ff;
             }
         }
     }
+}
 
-    .info {
-        .data {
-            .el-form-item {
-                text-align: left;
-            }
+.info {
+    .data {
+        .el-form-item {
+            text-align: left;
+        }
 
-            .el-row {
-                margin-bottom: 15px;
-            }
+        .el-row {
+            margin-bottom: 15px;
+        }
 
-            .submit {
-                text-align: center;
-            }
+        .submit {
+            text-align: center;
         }
     }
+}
 
 </style>

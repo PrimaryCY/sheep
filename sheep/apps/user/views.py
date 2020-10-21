@@ -9,7 +9,7 @@ from utils.mixins import CreateModelMixin, RetrieveModelMixin, UpdateModelMixin
 from utils.viewsets import ExtensionViewMixin
 from sheep import settings
 from apps.user.serializer import ListCreateUserSerializer, LoginSerializer, DeleteUserSerializer, \
-    UpdateUserSerializer
+    UpdateUserSerializer, PwdSerializer
 from sheep.constant import RET
 from apps.user.tasks import after_user_create
 
@@ -107,3 +107,11 @@ class UserViewSet(CreateModelMixin,
         instance = serializer.save()
         after_user_create.delay(instance.id)
 
+
+class PwdViewSet(CreateModelMixin,
+                 ExtensionViewMixin,
+                 GenericViewSet):
+    """修改密码"""
+    serializer_class = {
+        'create': PwdSerializer,
+    }

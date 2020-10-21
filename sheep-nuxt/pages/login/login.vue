@@ -59,7 +59,7 @@
                 </button>
 
                 <div class="applications">
-                    <el-tooltip v-for="a in applications" class="item" :key="a.id"
+                    <el-tooltip v-for="a in applications" :key="a.id"
                                 effect="light"
                                 :content="a.help_text"
                                 placement="bottom">
@@ -392,7 +392,10 @@ export default {
                     if (password.length === 0) err = ''
                     else if (password.length < 6) {
                         err = '请输入大于六位的密码!'
+                    }else if(re.space.test(password)){
+                        err = '密码中不能包含空格!'
                     }
+
                     this.registerError.password = err
                     if (verify_password.length === 0) err = ''
                     if (verify_password !== password) {

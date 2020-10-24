@@ -149,8 +149,9 @@ class CreateFocusSerializer(serializers.Serializer):
         user_id = validated_data.get('user_id')
         focus_id = validated_data.get('focus_id')
         obj, created = Focus.raw_objects.get_or_create(focus_id=focus_id, user_id=user_id, defaults=validated_data)
-        obj.is_active = not obj.is_active
-        obj.save()
+        if not created:
+            obj.is_active = not obj.is_active
+            obj.save()
         if not obj.is_active:
             return {'code': RET.OK, 'success': True, 'data': '取消关注'}
         return {'code': RET.OK, 'success': True, 'data': '关注成功'}

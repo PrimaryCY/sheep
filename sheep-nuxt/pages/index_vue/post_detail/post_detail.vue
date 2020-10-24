@@ -449,7 +449,7 @@
                         v-if="author_post.results"
                         :list="author_post.results"
                         :bottom="false"
-                        title="他的文章:">
+                        title="Ta的文章:">
                     <template v-slot:item-content="data">
                         <post_detail_item :post="data.item">
 
@@ -1234,6 +1234,7 @@ export default {
                 text-indent:1em;
                 color: #72777b;
                 margin-bottom: 0.5rem;
+                text-align: left;
             }
             .author-other{
                 text-align: left;

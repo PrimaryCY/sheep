@@ -161,7 +161,7 @@ class ListFocusSerializer(serializers.ModelSerializer):
     """用户关注列表序列化器"""
     class Meta:
         model = User
-        fields = ('id', 'username', 'brief', 'is_active')
+        fields = ('id', 'username', 'brief', 'is_active', 'portrait')
 
 
 class CollectPostSerializer(PostSerializer):

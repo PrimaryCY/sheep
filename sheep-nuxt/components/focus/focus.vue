@@ -6,7 +6,7 @@
                     <el-avatar
                             class="vertical-middle"
                             :size="60"
-                            src="http://portrait.sheep.beer/456287d0-b92e-48cc-bc9a-13304b753ee5.jpg">
+                            :src="user.portrait">
                     </el-avatar>
                 </div>
                 <div class="focus-info">

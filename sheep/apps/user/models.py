@@ -154,27 +154,31 @@ class User(BaseModel, AbstractBaseUser):
         return user, flag
 
     @classmethod
-    def get_post_retrieve_author_info(cls, user_id: Union[int, object]):
+    def get_post_retrieve_author_info(cls, author_id: Union[int, object], user):
         """
         获取文章作者信息
-        :param user_id:
+        :param author_id:
+        :param user: 当前用户
         :return:
         """
         from apps.post.models import Post
+        from apps.operate.models import Focus
 
-        if isinstance(user_id, User):
-            user = user_id
+        if isinstance(author_id, User):
+            author = author_id
         else:
-            user = User.objects.filter(id=user_id).only('id', 'portrait', 'username', 'created_time', 'birth', 'is_active').first()
-            if not user:
+            author = User.objects.filter(id=author_id).only('id', 'portrait', 'username', 'created_time', 'birth', 'is_active').first()
+            if not author:
                 return {}
-        res = model_to_dict(user, fields=('id', 'portrait', 'username', 'created_time', 'birth', 'is_active'))
-        res['age'] = user.age
-        res['website_age'] = user.website_age
-        post_aggregate = Post.objects.filter(author_id=user.id).aggregate(Sum('praise_num'), Sum('like_num'))
-        res['article_total'] = Post.objects.filter(author_id=user.id, post_type=1).only('id').count()
+        res = model_to_dict(author, fields=('id', 'portrait', 'username', 'created_time', 'birth', 'is_active', 'brief'))
+        res['age'] = author.age
+        # res['website_age'] = author.website_age
+        post_aggregate = Post.objects.filter(author_id=author.id).aggregate(Sum('praise_num'), Sum('like_num'), Sum('read_num'))
+        res['article_total'] = Post.objects.filter(author_id=author.id, post_type=1).only('id').count()
         res['praise_total'] = post_aggregate['praise_num__sum']
         res['like_total'] = post_aggregate['like_num__sum']
+        res['read_total'] = post_aggregate['read_num__sum']
+        res['is_focus'] = Focus.objects.filter(user_id=user.id, focus_id=author.id).exists()
         return res
 
     @classmethod

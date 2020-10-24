@@ -14,9 +14,9 @@ def field_sort_queryset(queryset: QuerySet, items: Iterable, sort_field: str = '
     :param sort_field:
     :return:
     """
-    assert issubclass(queryset._queryset_class, QuerySet), (
-        '传入的不是QuerySet'
-    )
+    # assert issubclass(queryset._queryset_class, QuerySet), (
+    #     '传入的不是QuerySet'
+    # )
     if items:
         sku_ids = ','.join([str(i) for i in items])
         field_sql = f"FIELD(`{sort_field}`,{sku_ids})"
@@ -36,9 +36,9 @@ def raw_sort_queryset(queryset: QuerySet, items: Iterable):
        :param items:
        :return:
     """
-    assert issubclass(queryset._queryset_class, QuerySet), (
-        '传入的不是QuerySet'
-    )
+    # assert issubclass(queryset._queryset_class, QuerySet), (
+    #     '传入的不是QuerySet'
+    # )
     queryset = queryset.filter(id__in=items).all()
     query_dict = {i.id: i for i in queryset}
     return [query_dict[i] for i in items if i in query_dict]

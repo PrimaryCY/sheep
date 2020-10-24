@@ -56,7 +56,10 @@ export const api_user=common_crud('/v1/web/user/')
 用户修改密码
  */
 export const api_pwd=common_crud('v1/web/pwd/')
-
+/*
+用户关注
+ */
+export const api_user_focus=common_crud('v1/web/user_focus/')
 /*
 获取所有帖子类别
  */

@@ -259,9 +259,9 @@ class RetrievePostSerializer(PostSerializer):
     def get_author_info(self, obj):
         """帖子创建人信息"""
         if obj.author_id == self.context['request'].user.id:
-            res = User.get_post_retrieve_author_info(self.context['request'].user)
+            res = User.get_post_retrieve_author_info(self.context['request'].user, self.context['request'].user)
         else:
-            res = User.get_post_retrieve_author_info(obj.author_id)
+            res = User.get_post_retrieve_author_info(obj.author_id, self.context['request'].user)
         return res
 
     def get_category(self, obj):

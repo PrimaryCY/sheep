@@ -50,9 +50,9 @@ router.register('post_reply', PostReplyViewSet, basename='post_reply')
 router.register('user_reply', UserReplyViewSet, basename='user_reply')
 # 关于我们
 router.register('about', AboutUsViewSet, basename='about')
-
 # 个人关注
 router.register('user_focus', FocusViewSet, basename='user_focus')
+
 # 所有用户收藏分类
 router.register('collect_category', CollectCategoryViewSet, basename='collect_category')
 # 所有用户基本信息

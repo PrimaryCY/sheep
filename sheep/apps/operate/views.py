@@ -16,7 +16,6 @@ from apps.operate.tasks import after_collect, after_delete_user_category
 from apps.operate.filters import PraiseFilter
 from apps.post.filters import PostFilter
 from apps.post.models import Post
-from apps.user.serializer import ListCreateUserSerializer
 from apps.post.serializer import PostSerializer
 from apps.user.permission import IsLoginUser
 from sheep.constant import RET, error_map
@@ -29,7 +28,7 @@ from apps.operate.models import CollectCategory, Praise, Focus, \
     CollectRedisModel, BrowsingHistoryRedisMode
 from apps.operate.serializer import CollectCategorySerializer, CreateCollectSerializer, \
     CreateFocusSerializer, CollectPostSerializer, ListPraiseSerializer, CreatePraiseSerializer, \
-    BrowsingHistorySerializer
+    BrowsingHistorySerializer, ListFocusSerializer
 
 User = get_user_model()
 
@@ -151,14 +150,17 @@ class BrowsingHistoryViewSet(ListModelMixin,
         return queryset_list
 
 
-class FocusViewSet(ListModelMixin,
+class FocusViewSet(ExtensionViewMixin,
+                   ListModelMixin,
                    CreateModelMixin,
                    GenericViewSet):
     """关注视图"""
-    c_serializer_class = CreateFocusSerializer
-    r_serializer_class = ListCreateUserSerializer
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = None
+    serializer_class = {
+        'create': CreateFocusSerializer,
+        'list': ListFocusSerializer
+    }
+    # filter_backends = (DjangoFilterBackend,)
+    # filterset_class = None
 
     def get_queryset(self):
         user_id = self.request.query_params.get('user_id', self.request.user.id)
@@ -169,14 +171,4 @@ class FocusViewSet(ListModelMixin,
         # type为其它值时, 查看关注我的人
         else:
             focus_ids = Focus.objects.filter(focus_id=user_id).values_list('user_id', flat=True)
-        return field_sort_queryset(User, focus_ids)
-
-    def get_serializer_class(self):
-        if self.action == 'create':
-            return self.c_serializer_class
-        return self.r_serializer_class
-
-    def get_permissions(self):
-        if self.action != 'create':
-            return []
-        return super().get_permissions()
+        return raw_sort_queryset(User.raw_objects.only(*ListFocusSerializer.Meta.fields), focus_ids)

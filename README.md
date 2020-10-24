@@ -31,11 +31,11 @@
 - 我的浏览
 - 点赞系统
 - 回复系统
+- 好友关注系统
 
 **_未完成:_**
 
 - 文章详情
-- 好友关注系统
 
 ---
 
@@ -95,6 +95,7 @@
     - vue-infinite-scroll
     - qiniu-js
     - vue-star
+    - ant-design-vue
 
 ---
 

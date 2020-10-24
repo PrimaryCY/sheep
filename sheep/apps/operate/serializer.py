@@ -130,15 +130,17 @@ class ListPraiseSerializer(PostSerializer):
 
 class CreateFocusSerializer(serializers.Serializer):
     """用户关注序列化器"""
-    is_active = serializers.ReadOnlyField(label='状态')
     user_id = serializers.HiddenField(default=CurrentUserIdDefault(), label='用户id')
-    focus_id = serializers.IntegerField(label='关注用户id')
-    created_time = serializers.DateTimeField(read_only=True, label='关注时间')
+    focus_id = serializers.IntegerField(write_only=True, label='关注用户id')
+
+    data = serializers.CharField(read_only=True)
+    code = serializers.IntegerField(read_only=True)
+    success = serializers.BooleanField(read_only=True)
 
     def validate_focus_id(self, focus_id):
         if focus_id == self.context['request'].user.id:
             raise serializers.ValidationError({'code': RET.PARAMERR, 'msg': '用户不能关注自己!'})
-        focus_user = User.objects.filter(id=focus_id).first()
+        focus_user = User.objects.filter(id=focus_id, is_anonymity=False).exists()
         if not focus_user:
             raise serializers.ValidationError({"code": RET.PARAMERR, 'msg': '不存在该用户!'})
         return focus_id
@@ -147,10 +149,18 @@ class CreateFocusSerializer(serializers.Serializer):
         user_id = validated_data.get('user_id')
         focus_id = validated_data.get('focus_id')
         obj, created = Focus.raw_objects.get_or_create(focus_id=focus_id, user_id=user_id, defaults=validated_data)
-        if not created:
-            obj.is_active = not F('is_active')
-            obj.save()
-        return obj
+        obj.is_active = not obj.is_active
+        obj.save()
+        if not obj.is_active:
+            return {'code': RET.OK, 'success': True, 'data': '取消关注'}
+        return {'code': RET.OK, 'success': True, 'data': '关注成功'}
+
+
+class ListFocusSerializer(serializers.ModelSerializer):
+    """用户关注列表序列化器"""
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'brief', 'is_active')
 
 
 class CollectPostSerializer(PostSerializer):

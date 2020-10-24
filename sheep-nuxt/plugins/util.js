@@ -18,9 +18,9 @@ Vue.prototype.openLoading = function({text = '加载中',target = 'body',time_ou
 }
 
 
-Vue.prototype.sleep = function (ms){
-  let min = ms * 1000
-  return new Promise((resolve)=>setTimeout(resolve,min));
+Vue.prototype.sleep = function (sec){
+  let seconds = sec * 1000
+  return new Promise((resolve)=>setTimeout(resolve,seconds));
 }
 
 Vue.prototype.getClientHeight = function(){

@@ -184,10 +184,14 @@
                     <change_pwd></change_pwd>
                 </el-tab-pane>
                 <el-tab-pane label="➕我的关注">
-                    <tbe :img_src="require('../../../static/img/tbe.gif')"></tbe>
+                    <focus schema="focus"
+                           :data="user_focus">
+                    </focus>
                 </el-tab-pane>
                 <el-tab-pane label="🌹我的粉丝">
-                    <tbe :img_src="require('../../../static/img/tbe.gif')"></tbe>
+                    <focus schema="fans"
+                           :data="user_fans">
+                    </focus>
                 </el-tab-pane>
             </el-tabs>
 
@@ -201,7 +205,13 @@ import {mapState} from 'vuex'
 
 import tbe from '../../../components/tbe'
 import change_pwd from '@/components/form/change-pwd'
-import {api_o_user_oauth, api_upload, api_user} from "../../../api"
+import focus from '@/components/focus/focus'
+import {
+    api_o_user_oauth,
+    api_user_focus,
+    api_upload,
+    api_user
+} from "../../../api"
 import re from '../../../utils/re'
 
 export default {
@@ -213,6 +223,8 @@ export default {
     },
     data() {
         return {
+            user_fans: [],
+            user_focus: [],
             user_oauth: [],  // 用户oauth信息
             uploadData: {
                 // 上传图片的数据
@@ -264,6 +276,24 @@ export default {
         }
     },
     methods: {
+        async _get_user_focus() {
+            // 获取当前用户的关注
+            let res = await api_user_focus.list({type: 1})
+            res = res.data
+            if (res.code !== 2000) {
+                return this.$message(res.msg)
+            }
+            this.user_focus = res.data
+        },
+        async _get_user_fans() {
+            // 获取当前用户的粉丝
+            let res = await api_user_focus.list({type: 2})
+            res = res.data
+            if (res.code !== 2000) {
+                return this.$message(res.msg)
+            }
+            this.user_fans = res.data
+        },
         async _get_user_oauth_info() {
             // 获取当前用户的第三方信息
             let res = await api_o_user_oauth.list()
@@ -371,13 +401,16 @@ export default {
     },
     components: {
         tbe,
-        change_pwd
+        change_pwd,
+        focus
     },
     created() {
         if (process.server) {
             return
         }
         this._get_user_oauth_info()
+        this._get_user_fans()
+        this._get_user_focus()
     },
     inject: ['blank_window_push']
 }

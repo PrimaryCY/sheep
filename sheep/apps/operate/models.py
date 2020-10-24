@@ -357,12 +357,13 @@ class BrowsingHistoryRedisMode(object):
 
 class Focus(BaseModel):
     """用户关注"""
-    user_id = models.PositiveIntegerField(db_index=True, verbose_name='用户')
+    user_id = models.PositiveIntegerField(verbose_name='用户')
     focus_id = models.PositiveIntegerField(db_index=True, verbose_name='关注人')
 
     class Meta:
         verbose_name_plural = verbose_name = '用户关注表'
         ordering = ('-update_time', '-created_time')
+        unique_together = ('user_id', 'focus_id')
 
     def __str__(self):
         return self.user_id

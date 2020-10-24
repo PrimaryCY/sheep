@@ -1,4 +1,4 @@
-<template >
+<template>
     <div class="wrap">
         <div class="left" :style="{'margin-right':pack_up?'150px':'190px'}">
             <div v-if="not_found_page">
@@ -192,7 +192,7 @@
                         -------------&nbsp;&nbsp;&nbsp;最后更新于&nbsp;{{ data.update_time }}
                     </div>
                     <div class="share">
-                        <div  class="share-text" >
+                        <div class="share-text">
                             分享到：
                         </div>
                         <div class="green_channel_weibo" @click="share_blank('weibo')">
@@ -369,31 +369,80 @@
         </div>
         <div class="right">
             <div class="author-info-wrap" v-if="!not_found_page">
+                <div class="author-title">
+                    <div class="title">
+                        关于作者
+                    </div>
+                    <div v-if="user.id !== data.author_info.id" class="focus">
+                        <el-button
+                                v-show="!data.author_info.is_focus"
+                                plain
+                                @click="click_focus"
+                                :loading="focus_loading"
+                                size="mini"
+                                type="primary">
+                            关注
+                        </el-button>
+                        <el-button
+                                v-show="data.author_info.is_focus"
+                                @click="click_focus"
+                                size="mini"
+                                :loading="focus_loading"
+                                type="primary">
+                            ✨已关注
+                        </el-button>
+                    </div>
+                </div>
                 <a class="ellipsis author-info pointer">
-                    <el-avatar
-                            class="vertical-middle"
-                            :size="60"
-                            :src="data.author_info.portrait">
-                    </el-avatar>
-                    <h1 class="username">
-                        <svg v-if="data.author_info.gender===0" class="icon-min" aria-hidden="true">
-                            <use xlink:href="#icon-xingbienv-copy"></use>
-                        </svg>
-                        <svg v-else class="icon-min" aria-hidden="true">
-                            <use xlink:href="#icon-xingbienan-copy"></use>
-                        </svg>
-                        :
-                        {{ data.author_info.username }}
-                    </h1>
+                    <div class="portrait">
+                        <el-avatar
+                                class="vertical-middle"
+                                :size="60"
+                                :src="data.author_info.portrait">
+                        </el-avatar>
+                    </div>
+                    <div class="author-name">
+                        <h1 class="username ellipsis">
+                            <svg v-if="data.author_info.gender===0" class="icon-min" aria-hidden="true">
+                                <use xlink:href="#icon-xingbienv-copy"></use>
+                            </svg>
+                            <svg v-else class="icon-min" aria-hidden="true">
+                                <use xlink:href="#icon-xingbienan-copy"></use>
+                            </svg>
+                            :
+                            {{ data.author_info.username }}
+                        </h1>
+                        <p>
+                            <svg class="icon-min" aria-hidden="true">
+                                <use xlink:href="#icon-nianling"></use>
+                            </svg>
+                            :
+                            {{ data.author_info.age }}
+                        </p>
+                    </div>
                 </a>
-                <p>
-                    <svg class="icon-min" aria-hidden="true">
-                        <use xlink:href="#icon-nianling"></use>
-                    </svg>
-                    :
-                    {{ data.author_info.age }}
-                </p>
-                <span>网站年龄: {{ data.author_info.website_age }}</span>
+                <span class="author-brief three-line-ellipsis">
+                            {{ data.author_info.brief }}
+                        </span>
+                <div class="author-other">
+                    <div class="normal">
+                        <svg class="icon-mid" aria-hidden="true">
+                            <use xlink:href="#icon-liulan"></use>
+                        </svg>
+                        <span>
+                      文章被阅读:{{data.author_info.read_total}}
+                    </span>
+                    </div>
+                    <div class="special">
+                        <svg class="icon-mid" aria-hidden="true">
+                            <use xlink:href="#icon-icon_likegood"></use>
+                        </svg>
+                        <span>
+                      获得点赞:{{data.author_info.praise_total}}
+                    </span>
+                    </div>
+                </div>
+
             </div>
             <div class="list-wrap">
                 <post_detail_list
@@ -439,6 +488,7 @@ import {
     api_author_post,
     api_post_reply,
     api_user_reply,
+    api_user_focus
 } from '../../../api'
 import reply_input from "../../../components/reply/reply_input"
 import post_detail_list from '../../../components/list/post-detail-list'
@@ -450,11 +500,11 @@ import pagination from "../../../components/pagination"
 
 
 export default {
-    head () {
+    head() {
         return {
             title: this.data.name,
             meta: [
-                { hid: 'description', name: 'description', content: this.data.desc }
+                {hid: 'description', name: 'description', content: this.data.desc}
             ],
             link: [
                 {res: "stylesheet", type: 'text/css', href: "http://biger.applinzi.com/api/css/animate.min.css"}
@@ -464,6 +514,7 @@ export default {
     name: 'post_detail',
     data() {
         return {
+            focus_loading:false,    // 关注按钮等待状态
             show_more: {},       //评论回答查看更多
             comments_input: 0,
             comments: {          //评论内容,
@@ -475,8 +526,6 @@ export default {
                 limit: 10
             },
             moment,
-            response: {    //文章内容具体响应,包含code值
-            },
             data: {        // 文章内容
                 author_info: {}
             },
@@ -506,7 +555,7 @@ export default {
         star,
         font_icon,
         reply_input,
-        pagination
+        pagination,
     },
     computed: {
         ...mapState(['pack_up', 'user', 'option']),
@@ -521,7 +570,6 @@ export default {
             post_res = post_res.data
 
             return_dict['data'] = post_res.data ? post_res.data : {}
-            return_dict['response'] = post_res
             if (post_res.code === 404) {
                 return_dict['not_found_page'] = true
             } else {
@@ -545,11 +593,28 @@ export default {
         return return_dict
     },
     methods: {
-        share_blank(app){
+        async click_focus() {
+            // 关注
+            if (this.user.is_anonymity) {
+                return this._move_to_login('关注❤️', '未登录用户暂不可以关注🙈')
+            }
+            this.focus_loading = true
+            let res = await api_user_focus.create({focus_id: this.data.author_info.id})
+            res = res.data
+            if(res.code !== 2000){
+                this.focus_loading = false
+                return this.$message(res.msg)
+            }
+            await this.sleep(0.5)
+            this.data.author_info.is_focus = !this.data.author_info.is_focus
+            this.focus_loading = false
+        },
+        share_blank(app) {
+            // 分享
             let now_url = window.location.href
             // let features = 'height=400, width=800, toolbar=no, menubar=no, scrollbars=no, status=no'
-            if(app === 'weibo'){
-                let pic = this.data.image !== null? this.data.image: '';
+            if (app === 'weibo') {
+                let pic = this.data.image !== null ? this.data.image : ''
                 let share_url = `https://service.weibo.com/share/share.php?url=${now_url}&title=${this.data.name} -
                 ${this.data.author_info.username} sheep&pic=${pic}`
                 this.blank_inner_window(share_url, '分享到微博', 800, 400)
@@ -736,23 +801,7 @@ export default {
             // 点击收藏星星图标
             if (this.user.is_anonymity) {
                 this.like_dialog = false
-                const h = this.$createElement
-                return this.$msgbox({
-                    title: '收藏👋',
-                    message: h('p', null, [
-                        h('i', {style: 'color: teal'}, '未登录用户暂不可以收藏🙈')
-                    ]),
-                    showCancelButton: true,
-                    confirmButtonText: '现在去登录➡️',
-                    cancelButtonText: '取消',
-                }).then(() => {
-                    return this.blank_push({
-                        'name': 'login', 'query': {
-                            from: this.$route.path
-                        }
-                    })
-                }).catch(() => {
-                })
+                return this._move_to_login('收藏👋', '未登录用户暂不可以收藏🙈')
             }
             let collect = await api_user_collect_category.list({
                 resource_id: this.data.id,
@@ -765,6 +814,25 @@ export default {
                 return null
             }
             this.collect = collect.data
+        },
+        _move_to_login(title, content) {
+            const h = this.$createElement
+            return this.$msgbox({
+                title: title,
+                message: h('p', null, [
+                    h('i', {style: 'color: teal'}, content)
+                ]),
+                showCancelButton: true,
+                confirmButtonText: '现在去登录➡️',
+                cancelButtonText: '取消',
+            }).then(() => {
+                return this.blank_push({
+                    'name': 'login', 'query': {
+                        from: this.$route.path
+                    }
+                })
+            }).catch(() => {
+            })
         },
         custom_notify(msg) {
             this.$notify({
@@ -1050,11 +1118,12 @@ export default {
 
             .article-content-wrap {
                 //text-align: initial;
-                .share{
+                .share {
                     text-align: right;
                     padding: 10px 0;
                     font-size: 12px;
-                    .share-text{
+
+                    .share-text {
                         display: inline-block;
                         font-weight: bold;
                         color: #999;
@@ -1064,7 +1133,8 @@ export default {
                         -khtml-user-select: none; /*早期浏览器*/
                         user-select: none;
                     }
-                    .green_channel_weibo{
+
+                    .green_channel_weibo {
                         display: inline-block;
                         background: none;
                         padding: 3px 2px;
@@ -1074,7 +1144,8 @@ export default {
                         -webkit-box-shadow: none;
                         text-shadow: none;
                         cursor: pointer;
-                        img{
+
+                        img {
                             vertical-align: middle;
                             border: none;
                             margin-left: 5px;
@@ -1118,16 +1189,72 @@ export default {
         .author-info-wrap {
             border-bottom: 1px solid #EBEEF5;
             /*border-left: 1px solid #EBEEF5;*/
-            margin-top: 40px;
-            padding-bottom: 20px;
+            padding-bottom: 15px;
 
+            .author-title{
+                padding: 20px 20px 0 15px;
+                display: flex;
+                .title {
+                    text-align: left;
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: #333;
+                    flex: 0 0 auto;
+                }
+                .focus{
+                    text-align: right;
+                    flex: 1 1 auto;
+                }
+            }
             .author-info {
                 color: #1a1a1a;
+                display: flex;
                 font-weight: 500;
+                padding: 1.2rem 1.5rem 0.5rem 15px;
 
-                h1 {
-                    margin: 10px;
+                .portrait {
+                    flex: 0 0 auto;
                 }
+
+                .author-name {
+                    flex: 1 1 auto;
+                    text-align: left;
+                    margin-left: 5px;
+
+                    h1 {
+                        font-weight: bold;
+                    }
+                    p {
+                        margin-bottom: 0;
+                    }
+                }
+
+            }
+            .author-brief {
+                text-indent:1em;
+                color: #72777b;
+                margin-bottom: 0.5rem;
+            }
+            .author-other{
+                text-align: left;
+                padding: 0 1.5rem 0 15px;
+                font-weight: bold;
+                span{
+                    font-weight: bold;
+                    font-size: 15px;
+                }
+                .normal{
+                    svg{
+                        vertical-align: bottom;
+                    }
+                }
+                .special{
+                    svg{
+                        height: 18px;
+                        vertical-align: sub;
+                    }
+                }
+
             }
         }
 

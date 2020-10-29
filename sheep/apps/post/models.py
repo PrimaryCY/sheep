@@ -1,11 +1,11 @@
-from collections import defaultdict
+import re
 from datetime import datetime
 from typing import Iterable
 
 from django.db import models
 from django.db.models import F
 from django.contrib.auth import get_user_model
-
+from django.forms import model_to_dict
 from mptt.models import MPTTModel
 from mptt.fields import TreeForeignKey
 
@@ -351,7 +351,9 @@ class Post(BaseModel):
         :param post_id:
         :return:
         """
-        return cls.objects.filter(id=post_id).values(*cls.exclude('content'))
+        fields = ['name', 'author_id', 'category',
+                  'image', 'post_type', 'desc']
+        return Post.raw_objects.filter(id=post_id).values(*fields).first()
 
     @classmethod
     def bulk_get_simple_post_info(cls, ids: Iterable):
@@ -443,3 +445,41 @@ class PostReply(BaseModel, MPTTModel):
 
     def __str__(self):
         return self.content
+
+
+class Sensitive(models.Model):
+    key_word = models.CharField(max_length=32, verbose_name='关键字')
+    con = settings.DEFAULT_REDIS
+
+    class Meta:
+        verbose_name_plural = verbose_name = '敏感词过滤表'
+
+    CACHE_KEY = 'key_word'
+
+    @classmethod
+    def filter_key_word(cls, text: str):
+        """
+        敏感词过滤
+        :param text:
+        :return: flag(是否包含敏感词), key_word
+        """
+        cache_key_word = cls.con.get(cls.CACHE_KEY)
+        if cache_key_word:
+            key_word = cache_key_word
+        else:
+            key_word = cls.objects.values_list('key_word', flat=True)
+            key_word = '|'.join(key_word)
+            # 缓存keyword时常为10分钟
+            cls.con.set(cls.CACHE_KEY, key_word, ex=60 * 10)
+        res = re.search(key_word, text)
+        if not res:
+            return False, None
+        return True, res.group()
+
+    @classmethod
+    def delete_cache(cls):
+        """
+        清楚缓存
+        :return:
+        """
+        return cls.con.delete(cls.CACHE_KEY)

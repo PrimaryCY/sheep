@@ -11,7 +11,8 @@ from rest_framework.settings import api_settings
 
 from apps.operate.models import Praise
 from apps.post.models import Category, Post, PostReply, User
-from apps.post.tasks import after_retrieve_post, after_create_post_reply, after_delete_post_reply, after_list_reply
+from apps.post.tasks import after_retrieve_post, after_create_post_reply, after_delete_post_reply, after_list_reply, \
+    after_create_post, after_update_post, after_delete_post
 from apps.post.filters import PostFilter, AllPostFilter, AuthorPostFilter, CategoryPostFilter, CorrelationCategoryFilter
 from sheep.constant import RET
 from utils.drf_extensions.util import limit_offset_list_cache_key_func
@@ -70,6 +71,21 @@ class UserPostViewSet(ModelViewSet):
     def perform_destroy(self, instance):
         instance.status = 1
         instance.save()
+        after_delete_post.delay(user_id=self.request.user.id,
+                                ip=self.request.u_host,
+                                resource_id=instance.id)
+
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        after_create_post.delay(user_id=self.request.user.id,
+                                ip=self.request.u_host,
+                                resource_id=instance.id)
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        after_update_post.delay(user_id=self.request.user.id,
+                                ip=self.request.u_host,
+                                resource_id=instance.id,)
 
 
 class UserReplyViewSet(SerializerContextViewMixin,
@@ -118,12 +134,18 @@ class UserReplyViewSet(SerializerContextViewMixin,
     def perform_create(self, serializer):
         instance = serializer.save()
         after_create_post_reply.delay(instance.post_id,
-                                      instance.author_id)
+                                      instance.author_id,
+                                      instance.id,
+                                      self.request.u_host)
 
     @transaction.atomic()
     def perform_destroy(self, instance):
-        super().perform_destroy(instance)
-        on_commit(lambda: after_delete_post_reply.delay(instance.post_id))
+        instance.is_active = False
+        instance.save()
+        on_commit(lambda: after_delete_post_reply.delay(post_id=instance.post_id,
+                                                        user_id=instance.author_id,
+                                                        ip=self.request.u_host,
+                                                        id=instance.id))
 
 
 class PostReplyViewSet(GenericViewSet):
@@ -140,7 +162,8 @@ class PostReplyViewSet(GenericViewSet):
         except:
             raise serializers.ValidationError({'code': RET.PARAMERR, 'msg': '参数传递错误'})
 
-        qs = PostReply.objects.filter(post_id=post_id, parent__isnull=True).defer("lft", "rght")
+        qs = PostReply.objects.filter(post_id=post_id, parent__isnull=True).defer("lft", "rght")\
+            .order_by('-created_time', 'praise_num')
 
         filter_qs = self.filter_queryset(qs)
         paginate_qs = self.paginate_queryset(filter_qs)
@@ -158,7 +181,8 @@ class PostReplyViewSet(GenericViewSet):
             dic['is_praise'] = Praise.select_is_praise(request.user.id,
                                                        obj.id, 2)
             dic['children'] = []
-            children = obj.get_descendants().filter(is_active=True).defer("lft", "rght")
+            children = obj.get_descendants().filter(is_active=True).defer("lft", "rght").\
+                order_by('-created_time', 'praise_num')
             child_users_info = User.get_simple_users_info([child.author_id for child in children])
 
             for child in children:

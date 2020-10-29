@@ -287,7 +287,9 @@ export default {
             if (res.code === 2000) {
                 this._login(res.data.token, async ()=>{
                     this._save_remeber_me(res.data)
-                    await this.oauth_login(1)
+                    if (this.bind_user_flag){
+                        await this.oauth_login(1)
+                    }
                 })
             } else if (res.msg.indexOf('邮箱') !== -1) {
                 this.loginError.email_or_phone = res.msg

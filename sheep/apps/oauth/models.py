@@ -3,6 +3,7 @@ import uuid
 
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.forms import model_to_dict
 from django.utils.module_loading import import_string
 from django_extensions.db.fields.json import JSONField
 from django.utils.functional import cached_property
@@ -19,6 +20,7 @@ User = get_user_model()
 class Application(BaseModel):
     id = models.BigAutoField(primary_key=True)
     app_name = models.CharField(max_length=255, verbose_name='应用名称')
+    chinese_app_name = models.CharField(max_length=255, default='', verbose_name='应用中文名称')
     client_id = models.CharField(max_length=100, db_index=True)
     client_secret = models.CharField(max_length=255, db_index=True)
     image = models.URLField(verbose_name='图片icon')
@@ -64,18 +66,18 @@ class UserOAuth(BaseModel):
         ordering = ('-created_time',)
 
     @classmethod
-    def save_app_user_info(cls, info, app_id):
+    def save_app_user_info(cls, info, app):
         """
         临时存储第三方网站的用户信息到redis
         :param info:
-        :param app_id:
+        :param app:
         :return:
         """
         #
         key = uuid.uuid3(uuid.NAMESPACE_DNS, str(uuid.uuid1().hex))
         flag = cls.con.set(str(key), str({
             'info': info,
-            'app_id': app_id
+            'app_info': model_to_dict(app),
         }), ex=10*60)
         if not flag:
             return False
@@ -89,7 +91,7 @@ class UserOAuth(BaseModel):
         except:
             cls.del_app_user_info(key)
             return None, None
-        return data['app_id'], data['info']
+        return data['app_info'], data['info']
 
     @classmethod
     def del_app_user_info(cls, key):

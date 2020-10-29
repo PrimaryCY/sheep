@@ -65,8 +65,9 @@
                     content:this.$refs['tinymce'].get_content()
                 }
                 if(this.parent_id)data['parent_id']=this.parent_id
-                this.html_content = ""
-                this.$emit("click_reply_btn", data)
+                this.$emit("click_reply_btn", data, ()=>{
+                    this.html_content = ""
+                })
             }
         },
         components: {
@@ -76,7 +77,7 @@
             placeholder() {
                 return this.reply_name ? `回复 ${this.reply_name} :` : ''
             }
-        }
+        },
     }
 </script>
 

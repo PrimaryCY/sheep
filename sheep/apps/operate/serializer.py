@@ -99,7 +99,8 @@ class CreatePraiseSerializer(serializers.Serializer):
         return_num = Praise.add_or_del_praise_num(user_id=user_id,
                                                   resource_id=resource_id,
                                                   praise_or_trample=praise_or_trample,
-                                                  t=t)
+                                                  t=t,
+                                                  ip=self.context['request'].u_host)
 
         temp = {
             1: '💕点赞成功！',

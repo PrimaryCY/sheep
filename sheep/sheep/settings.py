@@ -100,12 +100,6 @@ TEMPLATES = [
     },
 ]
 
-# 配置微博开放平台授权(使用其它平台注意更改关键字)
-SOCIAL_AUTH_WEIBO_KEY = ''
-SOCIAL_AUTH_WEIBO_SECRET = ''
-
-# 登录成功后跳转页面
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/index/'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -381,7 +375,7 @@ CACHES = {
 }
 
 from django_redis import get_redis_connection
-
+DEFAULT_REDIS: StrictRedis = get_redis_connection('default')
 USER_REDIS: StrictRedis = get_redis_connection('user')
 OPERATE_REDIS: StrictRedis = get_redis_connection('operate')
 OAUTH_REDIS: StrictRedis = get_redis_connection('oauth')

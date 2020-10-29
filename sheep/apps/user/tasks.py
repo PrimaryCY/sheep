@@ -10,11 +10,10 @@ from requests.exceptions import RequestException
 from celery import shared_task
 from celery.contrib import rdb
 from celery import result
-
 from django.conf import settings
 from django.db.models import F
 
-from apps.operate.models import CollectCategory
+from apps.operate.models import CollectCategory, UserDynamic
 from apps.user.models import User
 
 
@@ -44,7 +43,7 @@ def send_bd_location_ip(params):
 
 
 @shared_task()
-def after_login(user_id, ip):
+def after_login(user_id, ip, login_method=None):
     """
     用户成功登录后的操作
     :return:
@@ -68,8 +67,12 @@ def after_login(user_id, ip):
             update_dict['last_login_city'] = "某个城市"
 
     User.objects.filter(id=user_id).update(**update_dict)
-
     update_dict.pop('login_num')
+
+    # 增加用户登录日志
+    if not user.is_anonymity:
+        UserDynamic.add_login_dynamic(user.id, ip, login_method)
+
     return update_dict
 
 
@@ -78,9 +81,12 @@ def after_user_create(user_id):
     """
     创建用户之后的操作
     :param user_id:
+    :param ip:
     :return:
     """
     c = CollectCategory(user_id=user_id,
                         name='默认收藏集',
                         )
     c.save()
+
+    UserDynamic.add_register_user_dynamic(user_id)

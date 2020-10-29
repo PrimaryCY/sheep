@@ -6,8 +6,10 @@ import logging
 from datetime import datetime, timedelta
 
 from django.db import models
-from django.db.models import F
+from django.db.models import F, Q
 from django.conf import settings
+from django.forms import model_to_dict
+from django_mysql.models import JSONField
 from redis import ResponseError, StrictRedis
 from rest_framework.exceptions import ValidationError
 
@@ -16,20 +18,19 @@ from apps.post.serializer import PostSerializer
 from sheep.constant import RET, error_map
 from utils.django_util.models import BaseModel
 
-
 logger = logging.getLogger('django')
 # 废弃
 TYPE_CHOICES_MAPPING = (
-        (1, '帖子'),
-    )
+    (1, '帖子'),
+)
 
 TYPE_MODEL_MAPPING = {
-        1: Post,
-    }
+    1: Post,
+}
 
 TYPE_SERIALIZER_MAPPING = {
-        1: PostSerializer,
-    }
+    1: PostSerializer,
+}
 
 
 class CollectCategory(BaseModel):
@@ -151,13 +152,13 @@ class CollectRedisModel(object):
         备份保存三十天
         """
         post_ids = self.con.zrange(self.redis_key, 0, -1)
-        Post.objects.filter(id__in=post_ids).update(like_num=F('like_num')-1)
+        Post.objects.filter(id__in=post_ids).update(like_num=F('like_num') - 1)
 
         back_key = f'{self.redis_key}-backup'
         try:
             with self.con.pipeline() as con:
                 con.rename(self.redis_key, back_key)
-                con.expire(back_key, 60*60*24*30)
+                con.expire(back_key, 60 * 60 * 24 * 30)
                 con.execute()
         except ResponseError:
             pass
@@ -187,10 +188,10 @@ class Collect(BaseModel):
         """
         model = Post
         if is_active:
-            CollectCategory.objects.filter(id=category_id).update(total=F('total')+1)
-            return model.objects.filter(id=resource_id).update(like_num=F('like_num')+1)
+            CollectCategory.objects.filter(id=category_id).update(total=F('total') + 1)
+            return model.objects.filter(id=resource_id).update(like_num=F('like_num') + 1)
         CollectCategory.objects.filter(id=category_id).update(total=F('total') - 1)
-        model.objects.filter(id=resource_id).update(like_num=F('like_num')-1)
+        model.objects.filter(id=resource_id).update(like_num=F('like_num') - 1)
 
     # @classmethod
     # def select_is_like(cls, user_id: int, type: int, resource_id: int):
@@ -230,15 +231,18 @@ class Praise(BaseModel):
 
     user_id = models.PositiveIntegerField(db_index=True, verbose_name='用户')
     resource_id = models.IntegerField(db_index=True, verbose_name='资源id')
-    praise_or_trample = models.SmallIntegerField(null=False, default=1, choices=PRAISE_OR_TRAMPLE_CHOICE, verbose_name='赞或踩')
-    t = models.PositiveSmallIntegerField(null=False, choices=PRAISE_TYPE_CHOICE.items(), verbose_name='资源类型', db_index=True)
+    praise_or_trample = models.SmallIntegerField(null=False, default=1, choices=PRAISE_OR_TRAMPLE_CHOICE,
+                                                 verbose_name='赞或踩')
+    t = models.PositiveSmallIntegerField(null=False, choices=PRAISE_TYPE_CHOICE.items(), verbose_name='资源类型',
+                                         db_index=True)
+    is_active = None
 
     resource_praise_like = 'praise_l_{t}_{resource_id}'
     resource_praise_not_like = 'praise_nl_{t}_{resource_id}'
     con = settings.OPERATE_REDIS
 
     @classmethod
-    def add_or_del_praise_num(cls, praise_or_trample: int, resource_id: int, user_id: int, t: int):
+    def add_or_del_praise_num(cls, praise_or_trample: int, resource_id: int, user_id: int, t: int, ip: str):
         from apps.operate.tasks import after_praise_or_trample
 
         resource_praise_like = cls.resource_praise_like.format(resource_id=resource_id, t=t)
@@ -247,6 +251,7 @@ class Praise(BaseModel):
                                                       user_id=user_id,
                                                       praise_or_trample=praise_or_trample,
                                                       t=t,
+                                                      ip=ip,
                                                       resource_id=resource_id)
 
         return_num = 0
@@ -364,6 +369,105 @@ class Focus(BaseModel):
         verbose_name_plural = verbose_name = '用户关注表'
         ordering = ('-update_time', '-created_time')
         unique_together = ('user_id', 'focus_id')
+
+    def __str__(self):
+        return self.user_id
+
+
+class UserDynamic(BaseModel):
+    """用户操作动态"""
+    ACTION_CHOICES = (
+        (1, '用户注册'),
+        (2, '用户登录'),
+        (3, '用户发布文章/提问'),
+        (4, '用户更新文章/提问'),
+        (5, '用户评论'),
+        (6, '用户点赞'),
+    )
+    user_id = models.PositiveIntegerField(verbose_name='用户', db_index=True)
+    action = models.PositiveSmallIntegerField(choices=ACTION_CHOICES, verbose_name="用户动作",
+                                              default=0, db_index=True)
+    ip = models.GenericIPAddressField(verbose_name='操作ip', default='0.0.0.0')
+    resource_id = models.IntegerField(verbose_name="操作资源id", default=0)
+    extra_type = models.SmallIntegerField(verbose_name='额外类型', default=0)
+    extra_data = models.TextField(verbose_name='其它信息', default='')
+
+    class Meta:
+        verbose_name_plural = verbose_name = '用户动态表'
+
+    @classmethod
+    def add_login_dynamic(cls, user_id, ip, login_method):
+        cls.objects.create(user_id=user_id, ip=ip, extra_data=login_method, action=2)
+
+    @classmethod
+    def add_register_user_dynamic(cls, user_id):
+        cls.objects.create(user_id=user_id, action=1)
+
+    @classmethod
+    def add_create_post_dynamic(cls, user_id, ip, resource_id):
+        other = Post.get_simple_post_info(resource_id)
+        cls.objects.create(user_id=user_id, resource_id=resource_id, action=3, extra_data=other, ip=ip)
+
+    @classmethod
+    def add_update_post_dynamic(cls, user_id, ip, resource_id):
+        other = Post.get_simple_post_info(resource_id)
+        cls.objects.create(user_id=user_id, resource_id=resource_id, action=4, extra_data=other, ip=ip)
+
+    @classmethod
+    def delete_post_dynamic(cls, user_id, resource_id, ip):
+        cls.objects.filter(Q(action=4) | Q(action=3), user_id=user_id, resource_id=resource_id,). \
+            update(is_active=False, ip=ip)
+
+    @classmethod
+    def add_create_reply_dynamic(cls, user_id, resource_id, ip):
+        """
+        添加回复动态
+        :param user_id:
+        :param resource_id: 评论id
+        :param ip:
+        :return:
+        """
+        instance = PostReply.raw_objects.filter(id=resource_id).first()
+        other = model_to_dict(instance)
+        cls.objects.create(user_id=user_id, resource_id=resource_id, action=5, extra_data=other, ip=ip)
+
+    @classmethod
+    def delete_reply_dynamic(cls, user_id, resource_id, ip):
+        """
+        删除回复动态
+        :param user_id:
+        :param resource_id: 评论id
+        :param ip:
+        :return:
+        """
+        cls.objects.filter(user_id=user_id, resource_id=resource_id, action=5). \
+            update(is_active=False, ip=ip)
+
+    @classmethod
+    def add_create_praise_dynamic(cls, user_id, resource_id, ip, t):
+        """
+        添加点赞动态
+        :param user_id:
+        :param resource_id: 评论/文章id
+        :param ip:
+        :param t: 类型
+        :return:
+        """
+        other = Post.get_simple_post_info(resource_id)
+        cls.objects.create(user_id=user_id, resource_id=resource_id, action=6, extra_type=t, extra_data=other, ip=ip)
+
+    @classmethod
+    def delete_praise_dynamic(cls, user_id, resource_id, t, ip):
+        """
+        删除点赞动态
+        :param user_id:
+        :param resource_id: 评论/文章id
+        :param t: 类型
+        :param ip:
+        :return:
+        """
+        cls.objects.filter(user_id=user_id, resource_id=resource_id, action=6, extra_type=t). \
+            update(is_active=False, ip=ip)
 
     def __str__(self):
         return self.user_id

@@ -6,7 +6,7 @@ from django.db.models import F
 from django.db.utils import IntegrityError
 from django.conf import settings
 
-from apps.operate.models import Collect, CollectRedisModel, Praise
+from apps.operate.models import Collect, CollectRedisModel, Praise, UserDynamic
 from apps.user.models import User
 from apps.post.models import Post
 
@@ -40,7 +40,7 @@ def after_collect(category_id, resource_id, is_active, *args, **kwargs):
 
 
 @shared_task()
-def after_praise_or_trample(operation: int, user_id: int, resource_id: int, praise_or_trample: int, t: int):
+def after_praise_or_trample(operation: int, user_id: int, resource_id: int, praise_or_trample: int, t: int, ip: str):
     """
     点赞redis之后的持久化到mysql操作,并且修改对应资源的praise总数
     :param user_id:
@@ -48,6 +48,7 @@ def after_praise_or_trample(operation: int, user_id: int, resource_id: int, prai
     :param operation:
     :param praise_or_trample:
     :param t:
+    :param ip:
     :return:
     """
     model = Praise.PRAISE_TYPE_MODEL_MAPPING[t]
@@ -63,3 +64,9 @@ def after_praise_or_trample(operation: int, user_id: int, resource_id: int, prai
             Praise.objects.update_or_create(defaults={
                 'praise_or_trample': praise_or_trample
             }, user_id=user_id, resource_id=resource_id, t=t)
+
+    # 添加用户日志
+    if praise_or_trample in [0, -1]:
+        UserDynamic.delete_praise_dynamic(user_id=user_id, resource_id=resource_id, t=t, ip=ip)
+    else:
+        UserDynamic.add_create_praise_dynamic(user_id=user_id, resource_id=resource_id, t=t, ip=ip)

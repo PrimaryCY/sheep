@@ -59,7 +59,7 @@ class UserModelBackend(ModelBackend):
             return False, ex.detail
         else:
             # 用户登录成功后的操作
-            after_login.delay(user.id, request.u_host)
+            after_login.delay(user.id, request.u_host, '密码')
             return True, user
 
 

@@ -247,22 +247,22 @@
                                     回复
                                 </el-link>
                             </div>
-                            <div slot="actions" class="actions">
-                                <el-link type="info"
-                                         size="mini"
-                                         class="cancel-select"
-                                         v-show="item.children.length > 0 "
-                                         @click="$set(show_more, item.id, !show_more[item.id])">
-                                    查看更多({{ item.children.length }})
-                                </el-link>
-                            </div>
+<!--                            <div slot="actions" class="actions">-->
+<!--                                <el-link type="info"-->
+<!--                                         size="mini"-->
+<!--                                         class="cancel-select"-->
+<!--                                         v-show="item.children.length > 0 "-->
+<!--                                         @click="$set(show_more, item.id, !show_more[item.id])">-->
+<!--                                    查看更多({{ item.children.length }})-->
+<!--                                </el-link>-->
+<!--                            </div>-->
                             <div slot="actions" class="actions">
                                 <el-popconfirm
                                         confirmButtonText='好的'
                                         cancelButtonText='不用了'
                                         icon="el-icon-info"
                                         iconColor="red"
-                                        v-if="item.is_del === 2"
+                                        v-if="item.is_del === 2 && item.children.length === 0"
                                         @onConfirm="click_delete_btn(comments,item)"
                                         title="这是一段内容确定删除吗？"
                                 >
@@ -356,6 +356,14 @@
                                         v-show="comments_input===child_item.id">
                                 </reply_input>
                             </a-comment>
+                            <el-link type="info"
+                                         size="mini"
+                                         class="cancel-select"
+                                         v-show="item.children.length > 0"
+                                         @click="$set(show_more, item.id, !show_more[item.id])">
+                                    {{!show_more[item.id] ? `查看回复(${item.children.length})`:'收起'}}
+                            </el-link>
+
                         </a-comment>
                     </a-list-item>
                 </a-list>
@@ -497,7 +505,6 @@ import font_icon from '@/components/small/font_icon'
 import star from '@/components/common/star'
 import {get_tree_first_node} from '@/utils/util'
 import pagination from "../../../components/pagination"
-
 
 export default {
     head() {
@@ -673,7 +680,7 @@ export default {
                 }
             }
         },
-        async click_reply_btn(data) {
+        async click_reply_btn(data, callback) {
             // 用户点击回复
             let loading = this.openLoading({
                 target: ".article-reply",
@@ -688,6 +695,7 @@ export default {
             // 将回复添加到回复列表中
             this._append_reply(res.data)
             this.comments_input = 0
+            callback && callback()
             loading.close()
         },
         _append_reply(reply) {

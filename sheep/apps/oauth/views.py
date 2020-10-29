@@ -61,7 +61,7 @@ class OauthTokenView(APIView):
         if user_oauth:
             # 有用户记录
             payload = User.generate_token_data(user_oauth.user, source='oauth')
-            after_login.delay(user_oauth.user.id, request.u_host)
+            after_login.delay(user_oauth.user.id, request.u_host, app.chinese_app_name)
             data = {
                 'token': Token.encryptTk(settings.TOKEN,
                                          request,
@@ -71,7 +71,7 @@ class OauthTokenView(APIView):
             return Response(data=data)
         else:
             # 无用户记录,给用户一个随机值
-            key = UserOAuth.save_app_user_info(info, app.id)
+            key = UserOAuth.save_app_user_info(info, app)
             if key is False:
                 raise ValidationError({'code': RET.DBERR, 'msg': '数据库错误，请重试'})
             data = {
@@ -97,13 +97,13 @@ class OauthRegisterView(APIView):
         if t == 1 and request.user.is_anonymity:
             raise ValidationError({'code': RET.PARAMERR, 'msg': '未登录'})
 
-        app_id, info = UserOAuth.get_app_user_info(k)
+        app, info = UserOAuth.get_app_user_info(k)
         if not info:
             raise ValidationError({'code': RET.PARAMERR, 'msg': '请重试！'})
 
         if t == 1:
             # oauth关联当前登录用户
-            UserOAuth.objects.create(app_id=app_id,
+            UserOAuth.objects.create(app_id=app['id'],
                                      home_url=info['home_url'],
                                      user=request.user,
                                      uid=info['id'],
@@ -116,14 +116,15 @@ class OauthRegisterView(APIView):
                                            portrait=info['portrait'],
                                            is_anonymity=False,
                                            is_active=True)
-                UserOAuth.objects.create(app_id=app_id,
+                UserOAuth.objects.create(app_id=app['id'],
                                          user=user,
                                          uid=info['id'],
                                          extra_data=info,
                                          home_url=info['home_url'], )
                 on_commit(lambda: after_user_create.delay(user.id))
-                payload = User.generate_token_data(user, source='oauth')
-                after_login.delay(user.id, request.u_host)
+
+            payload = User.generate_token_data(user, source='oauth')
+            after_login.delay(user.id, request.u_host, app['chinese_app_name'])
 
             data = {
                 'token': Token.encryptTk(settings.TOKEN,

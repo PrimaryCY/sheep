@@ -6,7 +6,7 @@ from django.forms import model_to_dict
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from apps.post.models import Category, Post, PostReply
+from apps.post.models import Category, Post, PostReply, Sensitive
 from utils.extra_fields import CurrentUserIdDefault, SerializerMethodAndWriteField, RangeField
 from sheep.constant import RET, error_map
 
@@ -95,6 +95,13 @@ class UpdateRetrieveUserPostSerializer(UserPostSerializer):
     def get_parse_content(self, obj):
         return obj.content if obj.content_type == 2 else obj.html_content
 
+    def validate_content(self, content):
+        # 敏感词过滤
+        flag, key_word = Sensitive.filter_key_word(content)
+        if flag:
+            raise serializers.ValidationError({'code': RET.DATAERR, 'msg': f'包含 {key_word} 恶意非法关键字'})
+        return content
+
     def validate(self, attrs):
         content = attrs.get('content')
         if content:
@@ -178,6 +185,13 @@ class CreateUserPostReplySerializer(serializers.ModelSerializer):
         if not post:
             raise serializers.ValidationError({'code': RET.PARAMERR, 'msg': f'{post_id}回复帖子不存在!'})
         return post_id
+
+    def validate_content(self, content):
+        # 敏感词过滤
+        flag, key_word = Sensitive.filter_key_word(content)
+        if flag:
+            raise serializers.ValidationError({'code': RET.DATAERR, 'msg': f'回复中包含 {key_word} 恶意非法关键字'})
+        return content
 
     def validate(self, attr):
         parent_id = attr.get('parent_id')

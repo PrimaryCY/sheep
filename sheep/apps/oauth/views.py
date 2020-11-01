@@ -30,7 +30,7 @@ class ApplicationViewSet(ExtensionViewMixin,
     permission_classes = ()
 
     # 缓存30分钟
-    # @only_data_cache_response(timeout=60 * 30)
+    @only_data_cache_response(timeout=60 * 30)
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 

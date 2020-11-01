@@ -19,16 +19,16 @@ from apps.post.models import Post
 from apps.post.serializer import PostSerializer
 from apps.user.permission import IsLoginUser
 from sheep.constant import RET, error_map
-from utils.viewsets import ExtensionViewMixin
+from utils.viewsets import ExtensionViewMixin, SerializerContextViewMixin
 from utils.django_util.util import field_sort_queryset, raw_sort_queryset
 from utils.mixins import CreateModelMixin
 from utils.pagination import LimitOffsetPagination
 from utils.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from apps.operate.models import CollectCategory, Praise, Focus, \
-    CollectRedisModel, BrowsingHistoryRedisMode
+    CollectRedisModel, BrowsingHistoryRedisMode, UserDynamic
 from apps.operate.serializer import CollectCategorySerializer, CreateCollectSerializer, \
     CreateFocusSerializer, CollectPostSerializer, ListPraiseSerializer, CreatePraiseSerializer, \
-    BrowsingHistorySerializer, ListFocusSerializer
+    BrowsingHistorySerializer, ListFocusSerializer, UserDynamicSerializer
 
 User = get_user_model()
 
@@ -172,3 +172,20 @@ class FocusViewSet(ExtensionViewMixin,
         else:
             focus_ids = Focus.objects.filter(focus_id=user_id).values_list('user_id', flat=True)
         return raw_sort_queryset(User.raw_objects.only(*ListFocusSerializer.Meta.fields), focus_ids)
+
+
+class UserDynamicViewSet(ListModelMixin,
+                         GenericViewSet):
+    """用户自身动态视图"""
+    serializer_class = UserDynamicSerializer
+    pagination_class = LimitOffsetPagination
+    permission_classes = (IsLoginUser,)
+
+    def get_queryset(self):
+        return UserDynamic.objects.filter(user_id=self.request.user.id)\
+            .values('created_time__date').distinct()
+
+    def paginate_queryset(self, page):
+        page = super().paginate_queryset(page)
+        res = UserDynamic.get_dynamic_data(values=page, user=self.request.user)
+        return res

@@ -65,7 +65,7 @@ def after_praise_or_trample(operation: int, user_id: int, resource_id: int, prai
                 'praise_or_trample': praise_or_trample
             }, user_id=user_id, resource_id=resource_id, t=t)
 
-    # 添加用户日志
+    # 添加用户点赞日志
     if praise_or_trample in [0, -1]:
         UserDynamic.delete_praise_dynamic(user_id=user_id, resource_id=resource_id, t=t, ip=ip)
     else:

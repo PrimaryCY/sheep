@@ -106,6 +106,10 @@ export const api_post_reply=common_crud('v1/web/post_reply')
  */
 export const api_user_reply=common_crud('v1/web/user_reply')
 /*
+用户动态
+ */
+export const api_dynamic=common_crud('v1/web/dynamic/')
+/*
 关于我们
  */
 export const api_about=common_crud('v1/web/about')

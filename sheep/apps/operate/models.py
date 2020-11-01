@@ -1,10 +1,13 @@
+import ast
 import math
 import random
 import time
 import functools
 import logging
 from datetime import datetime, timedelta
+from typing import Iterable
 
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import F, Q
 from django.conf import settings
@@ -19,6 +22,10 @@ from sheep.constant import RET, error_map
 from utils.django_util.models import BaseModel
 
 logger = logging.getLogger('django')
+
+
+User = get_user_model()
+
 # 废弃
 TYPE_CHOICES_MAPPING = (
     (1, '帖子'),
@@ -221,7 +228,7 @@ class Praise(BaseModel):
     )
     PRAISE_TYPE_CHOICE = {
         1: '文章',
-        2: '回复'
+        2: '评论'
     }
 
     PRAISE_TYPE_MODEL_MAPPING = {
@@ -375,7 +382,12 @@ class Focus(BaseModel):
 
 
 class UserDynamic(BaseModel):
-    """用户操作动态"""
+    """
+    用户操作动态表
+    分区语句:
+        使用分区sql语句前需要id,user_id手动修改为联合主键
+        Alter table operate_userdynamic partition by LINEAR HASH(user_id)partitions 10;
+    """
     ACTION_CHOICES = (
         (1, '用户注册'),
         (2, '用户登录'),
@@ -384,7 +396,7 @@ class UserDynamic(BaseModel):
         (5, '用户评论'),
         (6, '用户点赞'),
     )
-    user_id = models.PositiveIntegerField(verbose_name='用户', db_index=True)
+    user_id = models.PositiveIntegerField(verbose_name='用户')
     action = models.PositiveSmallIntegerField(choices=ACTION_CHOICES, verbose_name="用户动作",
                                               default=0, db_index=True)
     ip = models.GenericIPAddressField(verbose_name='操作ip', default='0.0.0.0')
@@ -394,6 +406,7 @@ class UserDynamic(BaseModel):
 
     class Meta:
         verbose_name_plural = verbose_name = '用户动态表'
+        ordering = ('-created_time__date',)
 
     @classmethod
     def add_login_dynamic(cls, user_id, ip, login_method):
@@ -415,7 +428,7 @@ class UserDynamic(BaseModel):
 
     @classmethod
     def delete_post_dynamic(cls, user_id, resource_id, ip):
-        cls.objects.filter(Q(action=4) | Q(action=3), user_id=user_id, resource_id=resource_id,). \
+        cls.objects.filter(Q(action=4) | Q(action=3), user_id=user_id, resource_id=resource_id, is_active=True). \
             update(is_active=False, ip=ip)
 
     @classmethod
@@ -429,7 +442,7 @@ class UserDynamic(BaseModel):
         """
         instance = PostReply.raw_objects.filter(id=resource_id).first()
         other = model_to_dict(instance)
-        cls.objects.create(user_id=user_id, resource_id=resource_id, action=5, extra_data=other, ip=ip)
+        cls.objects.create(user_id=user_id, resource_id=instance.id, action=5, extra_data=other, ip=ip)
 
     @classmethod
     def delete_reply_dynamic(cls, user_id, resource_id, ip):
@@ -440,7 +453,8 @@ class UserDynamic(BaseModel):
         :param ip:
         :return:
         """
-        cls.objects.filter(user_id=user_id, resource_id=resource_id, action=5). \
+        instance = PostReply.raw_objects.filter(id=resource_id).first()
+        cls.objects.filter(user_id=user_id, resource_id=instance.id, action=5). \
             update(is_active=False, ip=ip)
 
     @classmethod
@@ -453,8 +467,17 @@ class UserDynamic(BaseModel):
         :param t: 类型
         :return:
         """
-        other = Post.get_simple_post_info(resource_id)
-        cls.objects.create(user_id=user_id, resource_id=resource_id, action=6, extra_type=t, extra_data=other, ip=ip)
+        kwargs = {
+            "user_id": user_id,
+            "resource_id": resource_id,
+            "action": 6,
+            "extra_type": t,
+            "ip": ip
+        }
+        if t == 2:
+            r = PostReply.objects.filter(id=resource_id).only('post_id').first()
+            kwargs['extra_data'] = model_to_dict(r)
+        cls.objects.create(**kwargs)
 
     @classmethod
     def delete_praise_dynamic(cls, user_id, resource_id, t, ip):
@@ -469,5 +492,81 @@ class UserDynamic(BaseModel):
         cls.objects.filter(user_id=user_id, resource_id=resource_id, action=6, extra_type=t). \
             update(is_active=False, ip=ip)
 
+    def serializer_object(self, user):
+        """
+        前端展示文字
+        :return:
+        """
+        return_dict = model_to_dict(self, fields=['ip', 'action', 'resource_id', 'extra_type'])
+        return_dict['created_time'] = self.created_time.strftime("%Y-%m-%d %H:%M:%S")
+        return_dict['update_time'] = self.update_time.strftime("%Y-%m-%d %H:%M:%S")
+        return_dict['resource_is_active'] = True
+
+        action = self.action
+        if action == 1:
+            show_data= user.username
+        elif action == 2:
+            show_data = self.extra_data
+        elif action == 3:
+            show_data = ast.literal_eval(self.extra_data)
+        elif action == 4:
+            show_data = ast.literal_eval(self.extra_data)
+
+        elif action == 5:
+            # 评论动态
+            extra_data = ast.literal_eval(self.extra_data)
+            p = Post.raw_objects.filter(id=extra_data['post_id']).values('id', 'name', 'post_type', 'status').first()
+            if p['status'] != 0:
+                p['name'] = '已删除'
+            show_data = p
+
+        elif action == 6:
+            # 点赞动态
+            if self.extra_type == 1:
+                p = Post.raw_objects.filter(id=self.resource_id).values('id', 'name', 'post_type', 'status').first()
+            else:
+                extra_data = ast.literal_eval(self.extra_data)
+                p = Post.raw_objects.filter(id=extra_data['post_id']).values('id', 'name', 'post_type', 'status').first()
+                u = User.objects.filter(id=extra_data['author_id']).values('id', 'username').first()
+                p['user'] = u
+
+            if p['status'] != 0:
+                p['name'] = '已删除'
+
+            show_data = p
+        else:
+            show_data = {}
+
+        return_dict['show_data'] = show_data
+        return return_dict
+
+    @classmethod
+    def get_dynamic_data(cls, values: Iterable, user: User):
+        """
+        按query_set的distinct日期之后获取用户动态数据
+        :param user:
+        :param values:UserDynamic.objects.values('created_time__date').distinct()的值
+        :return:
+        """
+        if not values:
+            return values
+
+        date = [i['created_time__date'] for i in values]
+        min_date = min(date)
+        max_date = max(date) + timedelta(days=1)
+
+        for obj in cls.objects.filter(user_id=user.id, created_time__range=[min_date, max_date]).\
+                order_by('-created_time'):
+            obj_date = obj.created_time.date()
+            for v in values:
+                if v['created_time__date'] != obj_date:
+                    continue
+                v.setdefault('data', [])
+                v['data'].append(obj.serializer_object(user))
+        return values
+
     def __str__(self):
-        return self.user_id
+        return str(self.user_id)
+
+
+

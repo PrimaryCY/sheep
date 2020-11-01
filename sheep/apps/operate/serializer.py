@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import F
 from rest_framework import serializers
 
-from apps.operate.models import CollectCategory, Collect, Praise, Focus, CollectRedisModel
+from apps.operate.models import CollectCategory, Collect, Praise, Focus, CollectRedisModel, UserDynamic
 from apps.post.models import Post
 from apps.post.serializer import PostSerializer
 from sheep.constant import RET
@@ -183,3 +183,12 @@ class BrowsingHistorySerializer(PostSerializer):
     class Meta:
         model = Post
         exclude = ("content", "html_content")
+
+
+class UserDynamicSerializer(serializers.ModelSerializer):
+    created_time = serializers.DateField(source='created_time__date')
+    data = serializers.ListField()
+
+    class Meta:
+        model = UserDynamic
+        fields = ('data', 'created_time')

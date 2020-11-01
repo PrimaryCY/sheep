@@ -351,7 +351,7 @@ class Post(BaseModel):
         :param post_id:
         :return:
         """
-        fields = ['name', 'author_id', 'category',
+        fields = ['id', 'name', 'author_id', 'category',
                   'image', 'post_type', 'desc']
         return Post.raw_objects.filter(id=post_id).values(*fields).first()
 
@@ -468,6 +468,8 @@ class Sensitive(models.Model):
             key_word = cache_key_word
         else:
             key_word = cls.objects.values_list('key_word', flat=True)
+            if not key_word:
+                return False, None
             key_word = '|'.join(key_word)
             # 缓存keyword时常为10分钟
             cls.con.set(cls.CACHE_KEY, key_word, ex=60 * 10)

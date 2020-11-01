@@ -9,7 +9,7 @@ from apps.user.views import UserViewSet, LoginViewSet, PwdViewSet
 from apps.post.views import PostCategoryViewSet, UserPostViewSet, UserReplyViewSet, \
     PostReplyViewSet, AllPostViewSet, CategoryPostViewSet, AuthorPostViewSet, CorrelationCategoryViewSet
 from apps.operate.views import UserCollectCategoryViewSet, CollectCategoryViewSet, CollectViewSet, PraiseViewSet, \
-    FocusViewSet, BrowsingHistoryViewSet
+    FocusViewSet, BrowsingHistoryViewSet, UserDynamicViewSet
 from apps.index.views import BannerViewSet, HotViewSet
 from apps.about.views import AboutUsViewSet
 
@@ -52,6 +52,9 @@ router.register('user_reply', UserReplyViewSet, basename='user_reply')
 router.register('about', AboutUsViewSet, basename='about')
 # 个人关注
 router.register('user_focus', FocusViewSet, basename='user_focus')
+# 个人动态
+router.register('dynamic', UserDynamicViewSet, basename='dynamic')
+
 
 # 所有用户收藏分类
 router.register('collect_category', CollectCategoryViewSet, basename='collect_category')

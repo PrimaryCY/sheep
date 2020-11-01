@@ -25,7 +25,10 @@ def delete_trash_post():
     定时删除垃圾文章删除
     :return:
     """
-    Post.objects.filter(praise_num__lt=-50).update(status=3)
+    qs = Post.objects.filter(praise_num__lt=-50)
+    qs.update(status=3)
+    for i in qs:
+        after_delete_post(user_id=i.author_id, ip='', resource_id=i.id)
 
 
 @shared_task()

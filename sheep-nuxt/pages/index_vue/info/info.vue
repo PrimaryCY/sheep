@@ -105,7 +105,16 @@
         <div class="info">
             <el-tabs class="space" type="card" :stretch="true">
                 <el-tab-pane label="📅动态">
-                    <tbe :img_src="require('../../../static/img/tbe.gif')"></tbe>
+                    <dynamic :results="user_dynamic.results"></dynamic>
+                    <div v-show="user_dynamic.next" class="loading">
+                        <el-button
+                                style="width: 15%;margin-top: 20px"
+                                v-show="user_dynamic_params.offset < user_dynamic.count"
+                                :loading="user_dynamic_loading"
+                                @click="get_user_dynamic">
+                            查看更多>>
+                        </el-button>
+                    </div>
                 </el-tab-pane>
                 <!--			用户信息修改-->
                 <el-tab-pane label="📃个人资料" class="data">
@@ -203,14 +212,14 @@
 <script>
 import {mapState} from 'vuex'
 
-import tbe from '../../../components/tbe'
 import change_pwd from '@/components/form/change-pwd'
+import dynamic from "@/components/dynamic/dynamic"
 import focus from '@/components/focus/focus'
 import {
     api_o_user_oauth,
     api_user_focus,
     api_upload,
-    api_user
+    api_user, api_dynamic
 } from "../../../api"
 import re from '../../../utils/re'
 
@@ -223,6 +232,14 @@ export default {
     },
     data() {
         return {
+            user_dynamic:{
+                results:[]
+            },
+            user_dynamic_params: {
+                offset:0,
+                limit: 1
+            },
+            user_dynamic_loading:false,
             user_fans: [],
             user_focus: [],
             user_oauth: [],  // 用户oauth信息
@@ -398,11 +415,29 @@ export default {
             }
             reader.readAsDataURL(file)
         },
+        async get_user_dynamic(){
+            this.user_dynamic_loading = true
+            this.user_dynamic_params.offset += this.user_dynamic_params.limit
+            await this._get_user_dynamic()
+            this.user_dynamic_loading = false
+        },
+        async _get_user_dynamic(){
+            // 获取用户动态
+            let res = await api_dynamic.list(this.user_dynamic_params)
+            res = res.data
+            if (res.code !== 2000) {
+                return this.$message(res.msg)
+            }
+            this.user_dynamic.count = res.data.count
+            this.user_dynamic.next = res.data.next
+            this.user_dynamic.results.push.apply(this.user_dynamic.results, res.data.results)
+
+        }
     },
     components: {
-        tbe,
         change_pwd,
-        focus
+        focus,
+        dynamic
     },
     created() {
         if (process.server) {
@@ -411,6 +446,7 @@ export default {
         this._get_user_oauth_info()
         this._get_user_fans()
         this._get_user_focus()
+        this._get_user_dynamic()
     },
     inject: ['blank_window_push']
 }

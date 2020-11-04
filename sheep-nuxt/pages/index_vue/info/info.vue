@@ -237,7 +237,7 @@ export default {
             },
             user_dynamic_params: {
                 offset:0,
-                limit: 1
+                limit: 3
             },
             user_dynamic_loading:false,
             user_fans: [],

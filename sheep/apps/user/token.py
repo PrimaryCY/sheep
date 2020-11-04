@@ -9,7 +9,6 @@ from typing import Union
 
 
 class Token(object):
-
     """
     user_info = {
         'username': 1
@@ -48,7 +47,7 @@ class Token(object):
 
         if config.get('TOKEN_REDIS'):
             # 设置token过期时间,默认七天
-            self.expires = config.get('TOKEN_EXPIRES', 7*24*3600)
+            self.expires = config.get('TOKEN_EXPIRES', 7 * 24 * 3600)
             self.redis = config.get('TOKEN_REDIS')
 
         self.conf = config
@@ -80,7 +79,7 @@ class Token(object):
                 self._redis_key = f'tk_pc_{self.data.get(self.key)}'
             else:
                 ua = self.get_ua()
-                if 'android'in ua or 'Linux' in ua:
+                if 'android' in ua or 'Linux' in ua:
                     self._redis_key = f'tk_android_{self.data.get(self.key)}'
                 elif 'iphone' in ua:
                     self._redis_key = f'tk_ios_{self.data.get(self.key)}'
@@ -115,7 +114,7 @@ class Token(object):
                 '传入的属性必须要有唯一标识属性ID来作为redis的key!')
 
             res = self.redis.setex(self.redis_key, self.expires, token)
-            if not res:return False
+            if not res: return False
         return token
 
     def _deleteTk(self, data: Mapping) -> bool:
@@ -136,7 +135,7 @@ class Token(object):
         """
         try:
             bytes_user_info = self.token.decrypt(token.encode()[::-1])
-            user_info = msgpack.loads(bytes_user_info,encoding='utf8')
+            user_info = msgpack.loads(bytes_user_info, encoding='utf8')
         except InvalidToken:
             return False
         except Exception as ex:
@@ -177,7 +176,7 @@ class Token(object):
         return cls(config, request)._unpackTk(token)
 
     @classmethod
-    def deleteTk(cls, config: dict, request: object, data: Mapping)->bool:
+    def deleteTk(cls, config: dict, request: object, data: Mapping) -> bool:
         """
         删除redis中token
         :param config:配置文件,dict形式

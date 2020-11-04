@@ -42,7 +42,7 @@
                          class="dynamic">
                         {{created_time_format(dynamic.created_time)}} 在 {{post_type_text(dynamic.show_data.post_type)}}
                         <a :href="dynamic.show_data.status === 0  ?
-                         $router.resolve({name:'post_detail',params:{id:dynamic.show_data.id}}).href: ''"
+                         $router.resolve({name:'post_detail',params:{id:dynamic.show_data.id}}).href: 'javascript:;'"
                            class="dynamic-keyword pointer">
                             {{dynamic.show_data.name}}
                         </a>
@@ -54,7 +54,7 @@
                              class="dynamic">
                             {{created_time_format(dynamic.created_time)}} 点赞了 {{post_type_text(dynamic.show_data.post_type)}}
                             <a :href="dynamic.show_data.status === 0  ?
-                            $router.resolve({name:'post_detail',params:{id:dynamic.show_data.id}}).href: ''"
+                            $router.resolve({name:'post_detail',params:{id:dynamic.show_data.id}}).href: 'javascript:;'"
                                class="dynamic-keyword pointer">
                                 {{dynamic.show_data.name}}
                             </a>
@@ -67,7 +67,7 @@
                             </span>
                              在 {{post_type_text(dynamic.show_data.post_type)}}
                             <a :href="dynamic.show_data.status === 0 ?
-                            $router.resolve({name:'post_detail',params:{id:dynamic.show_data.id}}).href: ''"
+                            $router.resolve({name:'post_detail',params:{id:dynamic.show_data.id}}).href: 'javascript:;'"
                                class="dynamic-keyword pointer">
                                 {{dynamic.show_data.name}}
                             </a>

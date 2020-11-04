@@ -247,15 +247,15 @@
                                     回复
                                 </el-link>
                             </div>
-<!--                            <div slot="actions" class="actions">-->
-<!--                                <el-link type="info"-->
-<!--                                         size="mini"-->
-<!--                                         class="cancel-select"-->
-<!--                                         v-show="item.children.length > 0 "-->
-<!--                                         @click="$set(show_more, item.id, !show_more[item.id])">-->
-<!--                                    查看更多({{ item.children.length }})-->
-<!--                                </el-link>-->
-<!--                            </div>-->
+                            <!--                            <div slot="actions" class="actions">-->
+                            <!--                                <el-link type="info"-->
+                            <!--                                         size="mini"-->
+                            <!--                                         class="cancel-select"-->
+                            <!--                                         v-show="item.children.length > 0 "-->
+                            <!--                                         @click="$set(show_more, item.id, !show_more[item.id])">-->
+                            <!--                                    查看更多({{ item.children.length }})-->
+                            <!--                                </el-link>-->
+                            <!--                            </div>-->
                             <div slot="actions" class="actions">
                                 <el-popconfirm
                                         confirmButtonText='好的'
@@ -334,8 +334,8 @@
                                     </el-link>
                                 </div>
                                 <a slot="author">{{ child_item.author_info.username }} 回复 {{
-                                        get_reply_title(item,
-                                                child_item.parent).username
+                                    get_reply_title(item,
+                                    child_item.parent).username
                                     }}</a>
                                 <a-avatar
                                         slot="avatar"
@@ -357,11 +357,11 @@
                                 </reply_input>
                             </a-comment>
                             <el-link type="info"
-                                         size="mini"
-                                         class="cancel-select"
-                                         v-show="item.children.length > 0"
-                                         @click="$set(show_more, item.id, !show_more[item.id])">
-                                    {{!show_more[item.id] ? `查看回复(${item.children.length})`:'收起'}}
+                                     size="mini"
+                                     class="cancel-select"
+                                     v-show="item.children.length > 0"
+                                     @click="$set(show_more, item.id, !show_more[item.id])">
+                                {{!show_more[item.id] ? `查看回复(${item.children.length})`:'收起'}}
                             </el-link>
 
                         </a-comment>
@@ -483,243 +483,234 @@
 </template>
 
 <script>
-import moment from '@/utils/moment'
-import {mapState} from 'vuex'
+    import moment from '@/utils/moment'
+    import {mapState} from 'vuex'
 
-import {
-    api_post,
-    api_category_post,
-    api_user_collect,
-    api_user_collect_category,
-    api_correlation_category,
-    api_user_praise,
-    api_author_post,
-    api_post_reply,
-    api_user_reply,
-    api_user_focus
-} from '../../../api'
-import reply_input from "../../../components/reply/reply_input"
-import post_detail_list from '../../../components/list/post-detail-list'
-import post_detail_item from '@/components/list/item/post-detail-item'
-import font_icon from '@/components/small/font_icon'
-import star from '@/components/common/star'
-import {get_tree_first_node} from '@/utils/util'
-import pagination from "../../../components/pagination"
+    import {
+        api_post,
+        api_category_post,
+        api_user_collect,
+        api_user_collect_category,
+        api_correlation_category,
+        api_user_praise,
+        api_author_post,
+        api_post_reply,
+        api_user_reply,
+        api_user_focus
+    } from '../../../api'
+    import reply_input from "../../../components/reply/reply_input"
+    import post_detail_list from '../../../components/list/post-detail-list'
+    import post_detail_item from '@/components/list/item/post-detail-item'
+    import font_icon from '@/components/small/font_icon'
+    import star from '@/components/common/star'
+    import {get_tree_first_node} from '@/utils/util'
+    import pagination from "../../../components/pagination"
 
-export default {
-    head() {
-        return {
-            title: this.data.name,
-            meta: [
-                {hid: 'description', name: 'description', content: this.data.desc}
-            ],
-            link: [
-                {res: "stylesheet", type: 'text/css', href: "http://biger.applinzi.com/api/css/animate.min.css"}
-            ],
-        }
-    },
-    name: 'post_detail',
-    data() {
-        return {
-            focus_loading:false,    // 关注按钮等待状态
-            show_more: {},       //评论回答查看更多
-            comments_input: 0,
-            comments: {          //评论内容,
-
-            },
-            comments_params: {
-                post_id: this.$route.params.id,
-                offset: 0,
-                limit: 10
-            },
-            moment,
-            data: {        // 文章内容
-                author_info: {}
-            },
-            correlation_category: {  //相关分类
-                results: []
-            },
-            author_post: {       //作者其它文章
-                results: []
-            },
-            category_post: {     //相同分类下文章
-                results: []
-            },
-            collect: [],        //用户收藏类别列表
-            collect_form: {    //新增收藏集表单
-                name: '',
-                flag: false      //是否展示新增类别输入框
-            },
-            isFixed: false,    //吸顶
-            offsetTop: 0,     //吸顶
-            not_found_page: false, //是否展示404页面
-            like_dialog: false,    // 点击收藏的dialog
-        }
-    },
-    components: {
-        post_detail_list,
-        post_detail_item,
-        star,
-        font_icon,
-        reply_input,
-        pagination,
-    },
-    computed: {
-        ...mapState(['pack_up', 'user', 'option']),
-    },
-    inject: ['blank_push', 'blank_inner_window'],
-    async asyncData(context) {
-        let id, post_res, detail_recommend_list
-        id = context.params.id
-        let return_dict = {}
-        try {
-            post_res = await api_post.retrieve(id)
-            post_res = post_res.data
-
-            return_dict['data'] = post_res.data ? post_res.data : {}
-            if (post_res.code === 404) {
-                return_dict['not_found_page'] = true
-            } else {
-                let corr_res, au_post_res, cate_post_res
-                detail_recommend_list = [
-                    // 相关分类
-                    api_correlation_category.list({id: post_res.data.category_id}),
-                    // 作者相关文章
-                    api_author_post.list({author_id: post_res.data.author_id, limit: 5}),
-                    // 相关分类文章
-                    api_category_post.list({category: post_res.data.category_id, limit: 5})
-                ];
-                [corr_res, au_post_res, cate_post_res] = await Promise.all(detail_recommend_list)
-                return_dict['correlation_category'] = corr_res.data.data
-                return_dict['author_post'] = au_post_res.data.data
-                return_dict['category_post'] = cate_post_res.data.data
+    export default {
+        head() {
+            return {
+                title: this.data.name,
+                meta: [
+                    {hid: 'description', name: 'description', content: this.data.desc}
+                ],
+                link: [
+                    {res: "stylesheet", type: 'text/css', href: "http://biger.applinzi.com/api/css/animate.min.css"}
+                ],
             }
-        } catch (e) {
-            context.error({statusCode: 500, message: 'ssr internal server error'})
-        }
-        return return_dict
-    },
-    methods: {
-        async click_focus() {
-            // 关注
-            if (this.user.is_anonymity) {
-                return this._move_to_login('关注❤️', '未登录用户暂不可以关注🙈')
+        },
+        name: 'post_detail',
+        data() {
+            return {
+                focus_loading: false,    // 关注按钮等待状态
+                show_more: {},       //评论回答查看更多
+                comments_input: 0,
+                comments: {          //评论内容,
+
+                },
+                comments_params: {
+                    post_id: this.$route.params.id,
+                    offset: 0,
+                    limit: 10
+                },
+                moment,
+                data: {        // 文章内容
+                    author_info: {}
+                },
+                correlation_category: {  //相关分类
+                    results: []
+                },
+                author_post: {       //作者其它文章
+                    results: []
+                },
+                category_post: {     //相同分类下文章
+                    results: []
+                },
+                collect: [],        //用户收藏类别列表
+                collect_form: {    //新增收藏集表单
+                    name: '',
+                    flag: false      //是否展示新增类别输入框
+                },
+                isFixed: false,    //吸顶
+                offsetTop: 0,     //吸顶
+                not_found_page: false, //是否展示404页面
+                like_dialog: false,    // 点击收藏的dialog
             }
-            this.focus_loading = true
-            let res = await api_user_focus.create({focus_id: this.data.author_info.id})
-            res = res.data
-            if(res.code !== 2000){
+        },
+        components: {
+            post_detail_list,
+            post_detail_item,
+            star,
+            font_icon,
+            reply_input,
+            pagination,
+        },
+        computed: {
+            ...mapState(['pack_up', 'user', 'option']),
+        },
+        inject: ['blank_push', 'blank_inner_window'],
+        async asyncData(context) {
+            let id, post_res, detail_recommend_list
+            id = context.params.id
+            let return_dict = {}
+            try {
+                post_res = await api_post.retrieve(id)
+                post_res = post_res.data
+
+                return_dict['data'] = post_res.data ? post_res.data : {}
+                if (post_res.code === 404) {
+                    return_dict['not_found_page'] = true
+                } else {
+                    let corr_res, au_post_res, cate_post_res
+                    detail_recommend_list = [
+                        // 相关分类
+                        api_correlation_category.list({id: post_res.data.category_id}),
+                        // 作者相关文章
+                        api_author_post.list({author_id: post_res.data.author_id, limit: 5}),
+                        // 相关分类文章
+                        api_category_post.list({category: post_res.data.category_id, limit: 5})
+                    ];
+                    [corr_res, au_post_res, cate_post_res] = await Promise.all(detail_recommend_list)
+                    return_dict['correlation_category'] = corr_res.data.data
+                    return_dict['author_post'] = au_post_res.data.data
+                    return_dict['category_post'] = cate_post_res.data.data
+                }
+            } catch (e) {
+                context.error({statusCode: 500, message: 'ssr internal server error'})
+            }
+            return return_dict
+        },
+        methods: {
+            async click_focus() {
+                // 关注
+                if (this.user.is_anonymity) {
+                    return this._move_to_login('关注❤️', '未登录用户暂不可以关注🙈')
+                }
+                this.focus_loading = true
+                let res = await api_user_focus.create({focus_id: this.data.author_info.id})
+                res = res.data
+                if (res.code !== 2000) {
+                    this.focus_loading = false
+                    return this.$message(res.msg)
+                }
+                await this.sleep(0.5)
+                this.data.author_info.is_focus = !this.data.author_info.is_focus
                 this.focus_loading = false
-                return this.$message(res.msg)
-            }
-            await this.sleep(0.5)
-            this.data.author_info.is_focus = !this.data.author_info.is_focus
-            this.focus_loading = false
-        },
-        share_blank(app) {
-            // 分享
-            let now_url = window.location.href
-            // let features = 'height=400, width=800, toolbar=no, menubar=no, scrollbars=no, status=no'
-            if (app === 'weibo') {
-                let pic = this.data.image !== null ? this.data.image : ''
-                let share_url = `https://service.weibo.com/share/share.php?url=${now_url}&title=${this.data.name} -
+            },
+            share_blank(app) {
+                // 分享
+                let now_url = window.location.href
+                // let features = 'height=400, width=800, toolbar=no, menubar=no, scrollbars=no, status=no'
+                if (app === 'weibo') {
+                    let pic = this.data.image !== null ? this.data.image : ''
+                    let share_url = `https://service.weibo.com/share/share.php?url=${now_url}&title=${this.data.name} -
                 ${this.data.author_info.username} sheep&pic=${pic}`
-                this.blank_inner_window(share_url, '分享到微博', 800, 400)
-            }
-        },
-        async click_reply_praise_or_tread(item, flag) {
-            // 用户回复点赞
-            let data = {
-                t: 2,
-                resource_id: item.id
-            }
-            if (item.is_praise === flag) {
-                console.log('取消点赞')
-                data['praise_or_trample'] = 0
-                let res = await api_user_praise.create(data)
-                res = res.data
-                if (res.code !== 2000) return
-                // eslint-disable-next-line require-atomic-updates
-                item.praise_num += res.data.return_num
-                this.custom_notify(res.data.msg)
-                // eslint-disable-next-line require-atomic-updates
-                item.is_praise = 0
-            } else if (flag === 1) {
-                console.log('点赞')
-                data['praise_or_trample'] = 1
-                let res = await api_user_praise.create(data)
-                res = res.data
-                if (res.code !== 2000) return
-                // eslint-disable-next-line require-atomic-updates
-                item.praise_num += res.data.return_num
-                this.custom_notify(res.data.msg)
-                // eslint-disable-next-line require-atomic-updates
-                item.is_praise = 1
-            }
-        },
-        async click_delete_btn(items, item) {
-            // 用户点击删除回复按钮
-            let res = await api_user_reply.destory(item.id)
-            res = res.data
-            if (res.code !== 2000) return this.$message(res.msg)
-            let list = items.results ? items.results : items.children
-            let i = list.indexOf(item)
-            list.splice(i, 1)
-            if (items.author_id === this.user.id && list.length === 0) {
-                console.log('进入')
-                items.is_del = 2
-            }
-            this.data.post_num--
-        },
-        get_reply_title(items, parent) {
-            // 获取回复头
-            if (items.id === parent) return items.author_info
-            for (let i of items.children) {
-                if (i.id === parent) {
-                    return i.author_info
+                    this.blank_inner_window(share_url, '分享到微博', 800, 400)
                 }
-            }
-        },
-        async click_reply_btn(data, callback) {
-            // 用户点击回复
-            let loading = this.openLoading({
-                target: ".article-reply",
-                text: '提交中...'
-            })
-            let res = await api_user_reply.create(data)
-            res = res.data
-            if (res.code !== 2000) {
-                loading.close()
-                return this.$message(res.msg)
-            }
-            // 将回复添加到回复列表中
-            this._append_reply(res.data)
-            this.comments_input = 0
-            callback && callback()
-            loading.close()
-        },
-        _append_reply(reply) {
-            reply.author_info = this.user
-            reply.children = []
-            reply.is_praise = 0
-            reply.is_del = 2
-            this.comments.count++
-            this.data.post_num++
-            if (!reply.parent) {
-                return this.comments.results.unshift(reply)
-            }
-            for (let i of this.comments.results) {
-                console.log(i)
-                if (i.id === reply.parent) {
-                    this.$set(this.show_more, i.id, true)
-                    i.children.unshift(reply)
-                    if (i.author_id === this.user.id) {
-                        i.is_del = 1
+            },
+            async click_reply_praise_or_tread(item, flag) {
+                // 用户回复点赞
+                let data = {
+                    t: 2,
+                    resource_id: item.id
+                }
+                if (item.is_praise === flag) {
+                    console.log('取消点赞')
+                    data['praise_or_trample'] = 0
+                    let res = await api_user_praise.create(data)
+                    res = res.data
+                    if (res.code !== 2000) return
+                    // eslint-disable-next-line require-atomic-updates
+                    item.praise_num += res.data.return_num
+                    this.custom_notify(res.data.msg)
+                    // eslint-disable-next-line require-atomic-updates
+                    item.is_praise = 0
+                } else if (flag === 1) {
+                    console.log('点赞')
+                    data['praise_or_trample'] = 1
+                    let res = await api_user_praise.create(data)
+                    res = res.data
+                    if (res.code !== 2000) return
+                    // eslint-disable-next-line require-atomic-updates
+                    item.praise_num += res.data.return_num
+                    this.custom_notify(res.data.msg)
+                    // eslint-disable-next-line require-atomic-updates
+                    item.is_praise = 1
+                }
+            },
+            async click_delete_btn(items, item) {
+                // 用户点击删除回复按钮
+                let res = await api_user_reply.destory(item.id)
+                res = res.data
+                if (res.code !== 2000) return this.$message(res.msg)
+                let list = items.results ? items.results : items.children
+                let i = list.indexOf(item)
+                list.splice(i, 1)
+                if (items.author_id === this.user.id && list.length === 0) {
+                    console.log('进入')
+                    items.is_del = 2
+                }
+                this.data.post_num--
+            },
+            get_reply_title(items, parent) {
+                // 获取回复头
+                if (items.id === parent) return items.author_info
+                for (let i of items.children) {
+                    if (i.id === parent) {
+                        return i.author_info
                     }
-                    break
                 }
-                for (let c of i.children) {
-                    if (c.id === reply.parent) {
+            },
+            async click_reply_btn(data, callback) {
+                // 用户点击回复
+                let loading = this.openLoading({
+                    target: ".article-reply",
+                    text: '提交中...'
+                })
+                let res = await api_user_reply.create(data)
+                res = res.data
+                if (res.code !== 2000) {
+                    loading.close()
+                    return this.$message(res.msg)
+                }
+                // 将回复添加到回复列表中
+                this._append_reply(res.data)
+                this.comments_input = 0
+                callback && callback()
+                loading.close()
+            },
+            _append_reply(reply) {
+                reply.author_info = this.user
+                reply.children = []
+                reply.is_praise = 0
+                reply.is_del = 2
+                this.comments.count++
+                this.data.post_num++
+                if (!reply.parent) {
+                    return this.comments.results.unshift(reply)
+                }
+                for (let i of this.comments.results) {
+                    console.log(i)
+                    if (i.id === reply.parent) {
                         this.$set(this.show_more, i.id, true)
                         i.children.unshift(reply)
                         if (i.author_id === this.user.id) {
@@ -727,550 +718,568 @@ export default {
                         }
                         break
                     }
-                }
-            }
-        },
-        async click_praise_or_tread(flag) {
-            // 用户点赞与点踩
-            console.log(flag)
-            let data = {
-                t: 1,
-                resource_id: this.data.id
-            }
-            if (this.data.is_praise === flag) {
-                console.log('取消点赞/踩')
-                data['praise_or_trample'] = 0
-                let res = await api_user_praise.create(data)
-                res = res.data
-                if (res.code !== 2000) return
-                this.data.praise_num += res.data.return_num
-                this.custom_notify(res.data.msg)
-                this.data.is_praise = 0
-            } else if (flag === 1) {
-                if (this.$refs['tread'].active) {
-                    this.$refs['tread'].toggle()
-                }
-                console.log('点赞')
-                data['praise_or_trample'] = 1
-                let res = await api_user_praise.create(data)
-                res = res.data
-                if (res.code !== 2000) return
-                this.data.praise_num += res.data.return_num
-                this.custom_notify(res.data.msg)
-                this.data.is_praise = 1
-
-            } else if (flag === -1) {
-                if (this.$refs['praise'].active) {
-                    this.$refs['praise'].toggle()
-                }
-                console.log('踩')
-                data['praise_or_trample'] = -1
-                let res = await api_user_praise.create(data)
-                res = res.data
-                if (res.code !== 2000) return
-                this.data.praise_num += res.data.return_num
-                this.custom_notify(res.data.msg)
-                this.data.is_praise = -1
-            }
-        },
-        async add_or_del_like(category) {
-            // 用户收藏与取消收藏
-            let res = await api_user_collect.create({
-                resource_id: this.data.id,
-                category_id: category.id,
-            })
-            res = res.data
-            if (res.code !== 2000) {
-                return this.custom_notify(res.msg)
-            }
-            // eslint-disable-next-line require-atomic-updates
-            category.is_like = !category.is_like
-            this.custom_notify(res.data)
-            if (category.is_like) {
-                category.total++
-                this.data.like_num++
-                this.data.is_like = true
-            } else {
-                category.total--
-                this.data.like_num--
-                let flag
-                for (let i of this.collect) {
-                    if (i.is_like) {
-                        flag = true
-                        break
-                    }
-                    flag = false
-                }
-                this.data.is_like = flag
-            }
-            this.like_dialog = !this.like_dialog
-        },
-        async click_like() {
-            // 点击收藏星星图标
-            if (this.user.is_anonymity) {
-                this.like_dialog = false
-                return this._move_to_login('收藏👋', '未登录用户暂不可以收藏🙈')
-            }
-            let collect = await api_user_collect_category.list({
-                resource_id: this.data.id,
-                type: 1
-            })
-            collect = collect.data
-            if (collect.code !== 2000) {
-                this.custom_notify(collect.msg)
-                this.like_dialog = false
-                return null
-            }
-            this.collect = collect.data
-        },
-        _move_to_login(title, content) {
-            const h = this.$createElement
-            return this.$msgbox({
-                title: title,
-                message: h('p', null, [
-                    h('i', {style: 'color: teal'}, content)
-                ]),
-                showCancelButton: true,
-                confirmButtonText: '现在去登录➡️',
-                cancelButtonText: '取消',
-            }).then(() => {
-                return this.blank_push({
-                    'name': 'login', 'query': {
-                        from: this.$route.path
-                    }
-                })
-            }).catch(() => {
-            })
-        },
-        custom_notify(msg) {
-            this.$notify({
-                message: `<strong>${msg}</strong>`,
-                dangerouslyUseHTMLString: true,
-                showClose: true,
-            })
-        },
-        async create_like_category() {
-            let loading = this.openLoading({
-                text: '创建中...',
-                target: '.like-dialog'
-            })
-            let res = await api_user_collect_category.create(this.collect_form)
-            res = res.data
-            if (res.code !== 2000) {
-                loading.close()
-                return this.custom_notify(res.msg)
-            }
-            this.collect_form.name = ''
-            this.collect_form.flag = !this.collect_form.flag
-            this.collect.unshift(res.data)
-            loading.close()
-        },
-        initHeight() {
-            // 文章顶部栏吸顶效果
-            var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
-            this.isFixed = scrollTop - 15 > this.offsetTop ? true : false
-            let el = document.getElementById('boxFixed')
-            if (!el) return null
-            if (this.isFixed) {
-                let width = document.getElementsByClassName('left')[0].clientWidth
-                el.style.width = `${width}px`
-            } else {
-                el.style.width = 'initial'
-            }
-        },
-        async _get_404_data() {
-            if (process.server) {
-                return null
-            }
-            if (this.not_found_page) {
-                let c, corr_res, cate_post_res
-                c = get_tree_first_node(this.$store.state.option.post_category);
-                [corr_res, cate_post_res] = await Promise.all([
-                    api_correlation_category.list({id: c}),
-                    api_category_post.list({category: c})
-                ])
-                this.correlation_category = corr_res.data.data
-                this.category_post = cate_post_res.data.data
-            }
-        },
-        _pre_like_praise() {
-            // 页面加载预处理点赞状态收藏状态
-            if (!this.$refs['like']) return
-            this.$refs['like'].status = this.data.is_like
-            if (this.data.is_praise === 1) {
-                this.$refs['praise'].status = true
-            } else if (this.data.is_praise === -1) {
-                this.$refs['tread'].status = true
-            }
-        },
-        click_add_category_btn() {
-            // 点击新增收藏集按钮
-            this.collect_form.flag = !this.collect_form.flag
-            this.$nextTick(() => {
-                this.$refs['like-input'].focus()
-            })
-        },
-        async _get_comments() {
-            // 获取留言回答
-            this.comments.loading = true
-            let res = await api_post_reply.list(this.comments_params)
-            res = res.data
-            if (res.code !== 2000) {
-                this.comments.loading = false
-                this.$message(res.msg)
-            } else {
-                this.comments = res.data
-                this.comments.loading = false
-            }
-        }
-    },
-    async created() {
-        await this._get_404_data()
-        this._get_comments()
-        this._pre_like_praise()
-    },
-    mounted() {
-        window.addEventListener('scroll', this.initHeight)
-        this.$nextTick(() => {
-            let el = document.querySelector('#boxFixed')
-            if (el) this.offsetTop = el.offsetTop
-        })
-    },
-    destroyed() {
-        window.removeEventListener('scroll', this.handleScroll)
-    },
-    watch: {
-        "data.is_like": {
-            deep: true,
-            handler: function (n) {
-                if (!this.$refs['like']) return
-                this.$refs['like'].status = n
-            }
-        },
-        "comments.results": {
-            deep: true,
-            handler: function () {
-                this.$nextTick(() => {
-                    for (let i of this.comments.results) {
-                        this.$refs['praise' + i.id].status = i.is_praise === 1
-                        for (let j of i.children) {
-                            this.$refs['praise' + j.id][0].status = j.is_praise === 1
+                    for (let c of i.children) {
+                        if (c.id === reply.parent) {
+                            this.$set(this.show_more, i.id, true)
+                            i.children.unshift(reply)
+                            if (i.author_id === this.user.id) {
+                                i.is_del = 1
+                            }
+                            break
                         }
                     }
+                }
+            },
+            async click_praise_or_tread(flag) {
+                // 用户点赞与点踩
+                console.log(flag)
+                let data = {
+                    t: 1,
+                    resource_id: this.data.id
+                }
+                if (this.data.is_praise === flag) {
+                    console.log('取消点赞/踩')
+                    data['praise_or_trample'] = 0
+                    let res = await api_user_praise.create(data)
+                    res = res.data
+                    if (res.code !== 2000) return
+                    this.data.praise_num += res.data.return_num
+                    this.custom_notify(res.data.msg)
+                    this.data.is_praise = 0
+                } else if (flag === 1) {
+                    if (this.$refs['tread'].active) {
+                        this.$refs['tread'].toggle()
+                    }
+                    console.log('点赞')
+                    data['praise_or_trample'] = 1
+                    let res = await api_user_praise.create(data)
+                    res = res.data
+                    if (res.code !== 2000) return
+                    this.data.praise_num += res.data.return_num
+                    this.custom_notify(res.data.msg)
+                    this.data.is_praise = 1
+
+                } else if (flag === -1) {
+                    if (this.$refs['praise'].active) {
+                        this.$refs['praise'].toggle()
+                    }
+                    console.log('踩')
+                    data['praise_or_trample'] = -1
+                    let res = await api_user_praise.create(data)
+                    res = res.data
+                    if (res.code !== 2000) return
+                    this.data.praise_num += res.data.return_num
+                    this.custom_notify(res.data.msg)
+                    this.data.is_praise = -1
+                }
+            },
+            async add_or_del_like(category) {
+                // 用户收藏与取消收藏
+                let res = await api_user_collect.create({
+                    resource_id: this.data.id,
+                    category_id: category.id,
                 })
+                res = res.data
+                if (res.code !== 2000) {
+                    return this.custom_notify(res.msg)
+                }
+                // eslint-disable-next-line require-atomic-updates
+                category.is_like = !category.is_like
+                this.custom_notify(res.data)
+                if (category.is_like) {
+                    category.total++
+                    this.data.like_num++
+                    this.data.is_like = true
+                } else {
+                    category.total--
+                    this.data.like_num--
+                    let flag
+                    for (let i of this.collect) {
+                        if (i.is_like) {
+                            flag = true
+                            break
+                        }
+                        flag = false
+                    }
+                    this.data.is_like = flag
+                }
+                this.like_dialog = !this.like_dialog
+            },
+            async click_like() {
+                // 点击收藏星星图标
+                if (this.user.is_anonymity) {
+                    this.like_dialog = false
+                    return this._move_to_login('收藏👋', '未登录用户暂不可以收藏🙈')
+                }
+                let collect = await api_user_collect_category.list({
+                    resource_id: this.data.id,
+                    type: 1
+                })
+                collect = collect.data
+                if (collect.code !== 2000) {
+                    this.custom_notify(collect.msg)
+                    this.like_dialog = false
+                    return null
+                }
+                this.collect = collect.data
+            },
+            _move_to_login(title, content) {
+                const h = this.$createElement
+                return this.$msgbox({
+                    title: title,
+                    message: h('p', null, [
+                        h('i', {style: 'color: teal'}, content)
+                    ]),
+                    showCancelButton: true,
+                    confirmButtonText: '现在去登录➡️',
+                    cancelButtonText: '取消',
+                }).then(() => {
+                    return this.blank_push({
+                        'name': 'login', 'query': {
+                            from: this.$route.path
+                        }
+                    })
+                }).catch(() => {
+                })
+            },
+            custom_notify(msg) {
+                this.$notify({
+                    message: `<strong>${msg}</strong>`,
+                    dangerouslyUseHTMLString: true,
+                    showClose: true,
+                })
+            },
+            async create_like_category() {
+                let loading = this.openLoading({
+                    text: '创建中...',
+                    target: '.like-dialog'
+                })
+                let res = await api_user_collect_category.create(this.collect_form)
+                res = res.data
+                if (res.code !== 2000) {
+                    loading.close()
+                    return this.custom_notify(res.msg)
+                }
+                this.collect_form.name = ''
+                this.collect_form.flag = !this.collect_form.flag
+                this.collect.unshift(res.data)
+                loading.close()
+            },
+            initHeight() {
+                // 文章顶部栏吸顶效果
+                var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
+                this.isFixed = scrollTop - 15 > this.offsetTop ? true : false
+                let el = document.getElementById('boxFixed')
+                if (!el) return null
+                if (this.isFixed) {
+                    let width = document.getElementsByClassName('left')[0].clientWidth
+                    el.style.width = `${width}px`
+                } else {
+                    el.style.width = 'initial'
+                }
+            },
+            async _get_404_data() {
+                if (process.server) {
+                    return null
+                }
+                if (this.not_found_page) {
+                    let c, corr_res, cate_post_res
+                    c = get_tree_first_node(this.$store.state.option.post_category);
+                    [corr_res, cate_post_res] = await Promise.all([
+                        api_correlation_category.list({id: c}),
+                        api_category_post.list({category: c})
+                    ])
+                    this.correlation_category = corr_res.data.data
+                    this.category_post = cate_post_res.data.data
+                }
+            },
+            _pre_like_praise() {
+                // 页面加载预处理点赞状态收藏状态
+                if (!this.$refs['like']) return
+                this.$refs['like'].status = this.data.is_like
+                if (this.data.is_praise === 1) {
+                    this.$refs['praise'].status = true
+                } else if (this.data.is_praise === -1) {
+                    this.$refs['tread'].status = true
+                }
+            },
+            click_add_category_btn() {
+                // 点击新增收藏集按钮
+                this.collect_form.flag = !this.collect_form.flag
+                this.$nextTick(() => {
+                    this.$refs['like-input'].focus()
+                })
+            },
+            async _get_comments() {
+                // 获取留言回答
+                this.comments.loading = true
+                let res = await api_post_reply.list(this.comments_params)
+                res = res.data
+                if (res.code !== 2000) {
+                    this.comments.loading = false
+                    this.$message(res.msg)
+                } else {
+                    this.comments = res.data
+                    this.comments.loading = false
+                }
             }
         },
+        async created() {
+            await this._get_404_data()
+            this._get_comments()
+            this._pre_like_praise()
+        },
+        mounted() {
+            window.addEventListener('scroll', this.initHeight)
+            this.$nextTick(() => {
+                let el = document.querySelector('#boxFixed')
+                if (el) this.offsetTop = el.offsetTop
+            })
+        },
+        destroyed() {
+            window.removeEventListener('scroll', this.handleScroll)
+        },
+        watch: {
+            "data.is_like": {
+                deep: true,
+                handler: function (n) {
+                    if (!this.$refs['like']) return
+                    this.$refs['like'].status = n
+                }
+            },
+            "comments.results": {
+                deep: true,
+                handler: function () {
+                    this.$nextTick(() => {
+                        for (let i of this.comments.results) {
+                            this.$refs['praise' + i.id].status = i.is_praise === 1
+                            for (let j of i.children) {
+                                this.$refs['praise' + j.id][0].status = j.is_praise === 1
+                            }
+                        }
+                    })
+                }
+            },
+        }
     }
-}
 </script>
 
 <style scoped lang="scss">
 
-.like-dialog {
-    font-size: 12px;
-    text-align: left;
-    margin-top: 6px;
-
-    .add-like-category {
-        text-align: center;
-
+    .like-dialog {
         font-size: 12px;
-        border-top: 1px solid #EBEEF5;
+        text-align: left;
+        margin-top: 6px;
 
-        button {
-            height: 35px;
-            color: #d2d2d2;
-        }
+        .add-like-category {
+            text-align: center;
 
-        .like-input {
-            height: 100%;
+            font-size: 12px;
+            border-top: 1px solid #EBEEF5;
 
-            /deep/ input {
-                height: 100% !important;
+            button {
+                height: 35px;
+                color: #d2d2d2;
             }
-        }
-    }
 
-    .list {
-        max-height: 300px;
-        overflow-y: auto;
-        padding-bottom: 35px;
+            .like-input {
+                height: 100%;
 
-        .item {
-            padding: 8px 10px;
-            outline: 0;
-
-            img {
-                width: 30px;
-                height: 30px;
-                vertical-align: middle;
+                /deep/ input {
+                    height: 100% !important;
+                }
             }
         }
 
-        .is_like {
-            background-color: #ecf5ff;
+        .list {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-bottom: 35px;
+
+            .item {
+                padding: 8px 10px;
+                outline: 0;
+
+                img {
+                    width: 30px;
+                    height: 30px;
+                    vertical-align: middle;
+                }
+            }
+
+            .is_like {
+                background-color: #ecf5ff;
+            }
+
+            .item:hover {
+                background-color: #f5f7fa;
+            }
+
+            /*.item:focus{*/
+            /*outline: -webkit-focus-ring-color auto 1px;*/
+            /*}*/
         }
 
-        .item:hover {
-            background-color: #f5f7fa;
+        .add-like-category:hover {
+            button {
+                color: #007fff;
+            }
         }
 
-        /*.item:focus{*/
-        /*outline: -webkit-focus-ring-color auto 1px;*/
-        /*}*/
     }
 
-    .add-like-category:hover {
-        button {
-            color: #007fff;
+    /* 吸顶 */
+    .is_fixed {
+        position: fixed;
+        top: 0;
+        z-index: 999;
+        margin: 0;
+        padding: 0 !important;
+        background-color: white;
+
+        .el-divider--horizontal {
+            margin-top: 5px;
+            margin-bottom: initial !important;
         }
     }
 
-}
-
-/* 吸顶 */
-.is_fixed {
-    position: fixed;
-    top: 0;
-    z-index: 999;
-    margin: 0;
-    padding: 0 !important;
-    background-color: white;
+    /*更新日期文字样式*/
+    .updatetime-text {
+        font-size: 12px;
+        text-align: right;
+        font-weight: 600;
+        color: #999;
+    }
 
     .el-divider--horizontal {
         margin-top: 5px;
-        margin-bottom: initial !important;
     }
-}
 
-/*更新日期文字样式*/
-.updatetime-text {
-    font-size: 12px;
-    text-align: right;
-    font-weight: 600;
-    color: #999;
-}
-
-.el-divider--horizontal {
-    margin-top: 5px;
-}
-
-.wrap {
-    position: initial !important;
-    height: 100%;
-
-    .left {
+    .wrap {
+        position: initial !important;
         height: 100%;
-        /*margin-right: 180px;*/
-        margin-left: -30px;
 
-        .article {
-            .article-title {
-                padding: 10px 0;
+        .left {
+            height: 100%;
+            /*margin-right: 180px;*/
+            margin-left: -30px;
 
-                h1 {
-                    font-size: 28px;
-                    word-wrap: break-word;
-                    color: #222226;
-                    line-height: 33px;
-                    font-weight: 600;
-                    margin: 0;
-                    word-break: break-all;
+            .article {
+                .article-title {
+                    padding: 10px 0;
+
+                    h1 {
+                        font-size: 28px;
+                        word-wrap: break-word;
+                        color: #222226;
+                        line-height: 33px;
+                        font-weight: 600;
+                        margin: 0;
+                        word-break: break-all;
+                    }
+
+                    .article-info {
+                        font-size: 11px;
+
+                        .on {
+                            height: 30px;
+                            margin-top: 1em;
+
+                            svg {
+                                vertical-align: bottom;
+                            }
+
+                            span {
+                                display: inline-block;
+                                min-width: 20px;
+                            }
+
+                            .compatibility-icon {
+                                margin-top: 2px;
+                                width: 18px;
+                                height: 18px;
+                                vertical-align: sub;
+                            }
+                        }
+
+                        .byline {
+                            text-align: right;
+                            font-weight: 600;
+                        }
+
+                        .divider {
+                            margin-top: 1em;
+                            line-height: 100%;
+                            font-size: 15px;
+                            text-align: center;
+                        }
+
+                        .num_data {
+                            border-radius: 25%;
+                        }
+
+                        .num_data:hover {
+                            background-color: #ecf5ff;
+                        }
+                    }
                 }
 
-                .article-info {
-                    font-size: 11px;
+                .article-content-wrap {
+                    //text-align: initial;
+                    .share {
+                        text-align: right;
+                        padding: 10px 0;
+                        font-size: 12px;
 
-                    .on {
-                        height: 30px;
-                        margin-top: 1em;
+                        .share-text {
+                            display: inline-block;
+                            font-weight: bold;
+                            color: #999;
+                            -moz-user-select: none; /*火狐*/
+                            -webkit-user-select: none; /*webkit浏览器*/
+                            -ms-user-select: none; /*IE10*/
+                            -khtml-user-select: none; /*早期浏览器*/
+                            user-select: none;
+                        }
 
+                        .green_channel_weibo {
+                            display: inline-block;
+                            background: none;
+                            padding: 3px 2px;
+                            -moz-border-radius: none;
+                            -webkit-border-radius: none;
+                            -moz-box-shadow: none;
+                            -webkit-box-shadow: none;
+                            text-shadow: none;
+                            cursor: pointer;
+
+                            img {
+                                vertical-align: middle;
+                                border: none;
+                                margin-left: 5px;
+                                box-shadow: none;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .article-reply {
+                text-align: right;
+
+                .reply-list {
+                    text-align: left;
+                    width: 100%;
+
+                    .ant-list-item {
+                        padding: 4px 0;
+                    }
+
+                    .ant-comment {
+                        width: 100%;
+
+                        .actions {
+                            padding-top: 3px;
+                            padding-right: 20px;
+                        }
+                    }
+                }
+            }
+        }
+
+        .right {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 240px;
+            border-left: 1px ridge rgba(150, 150, 150, 0.1);
+
+            .author-info-wrap {
+                border-bottom: 1px solid #EBEEF5;
+                /*border-left: 1px solid #EBEEF5;*/
+                padding-bottom: 15px;
+
+                .author-title {
+                    padding: 20px 20px 0 15px;
+                    display: flex;
+
+                    .title {
+                        text-align: left;
+                        font-size: 14px;
+                        font-weight: bold;
+                        color: #333;
+                        flex: 0 0 auto;
+                    }
+
+                    .focus {
+                        text-align: right;
+                        flex: 1 1 auto;
+                    }
+                }
+
+                .author-info {
+                    color: #1a1a1a;
+                    display: flex;
+                    font-weight: 500;
+                    padding: 1.2rem 1.5rem 0.5rem 15px;
+
+                    .portrait {
+                        flex: 0 0 auto;
+                    }
+
+                    .author-name {
+                        flex: 1 1 auto;
+                        text-align: left;
+                        margin-left: 5px;
+
+                        h1 {
+                            font-weight: bold;
+                        }
+
+                        p {
+                            margin-bottom: 0;
+                        }
+                    }
+
+                }
+
+                .author-brief {
+                    text-indent: 1em;
+                    color: #72777b;
+                    margin-bottom: 0.5rem;
+                    text-align: left;
+                }
+
+                .author-other {
+                    text-align: left;
+                    padding: 0 1.5rem 0 15px;
+                    font-weight: bold;
+
+                    span {
+                        font-weight: bold;
+                        font-size: 15px;
+                    }
+
+                    .normal {
                         svg {
                             vertical-align: bottom;
                         }
+                    }
 
-                        span {
-                            display: inline-block;
-                            min-width: 20px;
-                        }
-
-                        .compatibility-icon {
-                            margin-top: 2px;
-                            width: 18px;
+                    .special {
+                        svg {
                             height: 18px;
                             vertical-align: sub;
                         }
                     }
 
-                    .byline {
-                        text-align: right;
-                        font-weight: 600;
-                    }
-
-                    .divider {
-                        margin-top: 1em;
-                        line-height: 100%;
-                        font-size: 15px;
-                        text-align: center;
-                    }
-
-                    .num_data {
-                        border-radius: 25%;
-                    }
-
-                    .num_data:hover {
-                        background-color: #ecf5ff;
-                    }
                 }
             }
 
-            .article-content-wrap {
-                //text-align: initial;
-                .share {
-                    text-align: right;
-                    padding: 10px 0;
-                    font-size: 12px;
-
-                    .share-text {
-                        display: inline-block;
-                        font-weight: bold;
-                        color: #999;
-                        -moz-user-select: none; /*火狐*/
-                        -webkit-user-select: none; /*webkit浏览器*/
-                        -ms-user-select: none; /*IE10*/
-                        -khtml-user-select: none; /*早期浏览器*/
-                        user-select: none;
-                    }
-
-                    .green_channel_weibo {
-                        display: inline-block;
-                        background: none;
-                        padding: 3px 2px;
-                        -moz-border-radius: none;
-                        -webkit-border-radius: none;
-                        -moz-box-shadow: none;
-                        -webkit-box-shadow: none;
-                        text-shadow: none;
-                        cursor: pointer;
-
-                        img {
-                            vertical-align: middle;
-                            border: none;
-                            margin-left: 5px;
-                            box-shadow: none;
-                        }
-                    }
-                }
-            }
-        }
-
-        .article-reply {
-            text-align: right;
-
-            .reply-list {
-                text-align: left;
-                width: 100%;
-
-                .ant-list-item {
-                    padding: 4px 0;
-                }
-
-                .ant-comment {
-                    width: 100%;
-
-                    .actions {
-                        padding-top: 3px;
-                        padding-right: 20px;
-                    }
-                }
+            .list-wrap {
+                text-align: initial;
             }
         }
     }
-
-    .right {
-        position: absolute;
-        right: 0;
-        top: 0;
-        width: 240px;
-        border-left: 1px ridge rgba(150, 150, 150, 0.1);
-
-        .author-info-wrap {
-            border-bottom: 1px solid #EBEEF5;
-            /*border-left: 1px solid #EBEEF5;*/
-            padding-bottom: 15px;
-
-            .author-title{
-                padding: 20px 20px 0 15px;
-                display: flex;
-                .title {
-                    text-align: left;
-                    font-size: 14px;
-                    font-weight: bold;
-                    color: #333;
-                    flex: 0 0 auto;
-                }
-                .focus{
-                    text-align: right;
-                    flex: 1 1 auto;
-                }
-            }
-            .author-info {
-                color: #1a1a1a;
-                display: flex;
-                font-weight: 500;
-                padding: 1.2rem 1.5rem 0.5rem 15px;
-
-                .portrait {
-                    flex: 0 0 auto;
-                }
-
-                .author-name {
-                    flex: 1 1 auto;
-                    text-align: left;
-                    margin-left: 5px;
-
-                    h1 {
-                        font-weight: bold;
-                    }
-                    p {
-                        margin-bottom: 0;
-                    }
-                }
-
-            }
-            .author-brief {
-                text-indent:1em;
-                color: #72777b;
-                margin-bottom: 0.5rem;
-                text-align: left;
-            }
-            .author-other{
-                text-align: left;
-                padding: 0 1.5rem 0 15px;
-                font-weight: bold;
-                span{
-                    font-weight: bold;
-                    font-size: 15px;
-                }
-                .normal{
-                    svg{
-                        vertical-align: bottom;
-                    }
-                }
-                .special{
-                    svg{
-                        height: 18px;
-                        vertical-align: sub;
-                    }
-                }
-
-            }
-        }
-
-        .list-wrap {
-            text-align: initial;
-        }
-    }
-}
 
 </style>

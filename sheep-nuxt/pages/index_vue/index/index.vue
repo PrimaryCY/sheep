@@ -106,7 +106,7 @@
                 <bubble_text
                         style="margin: 20px"
                         v-if="one_category===0"
-                        text="轮播图按点赞数，热门按浏览数，推荐页按收藏数排序🍔︎"
+                        text="轮播图按点赞数，热门按浏览数，推荐页按创建日期排序🍔︎"
                         position="right">
                     <template v-slot:user>
                         <div class="dialog_reply">

@@ -24,7 +24,7 @@ django-celery-results==1.2.1
 django-celery-beat==2.0.0
 flower==0.9.5
 eventlet==0.25.2
-cryptography==2.8.0
+cryptography==3.2
 msgpack==0.6.2
 pipdeptree==1.0.0
 qiniu==7.2.8

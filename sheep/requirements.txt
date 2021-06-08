@@ -10,7 +10,7 @@ mysqlclient==1.4.5
 pytz==2019.3
 six==1.13.0
 sqlparse==0.3.0
-pillow==6.2.1
+pillow==8.2.0
 django-mptt==0.10.0
 drf-extensions==0.5.0
 xpinyin==0.5.6

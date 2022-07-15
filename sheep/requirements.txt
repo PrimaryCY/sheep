@@ -20,7 +20,7 @@ channels-redis==2.4.2
 ConcurrentLogHandler==0.9.1
 concurrent-log-handler==0.9.16
 celery==4.4.6
-django-celery-results==1.2.1
+django-celery-results==2.4.0
 django-celery-beat==2.0.0
 flower==0.9.5
 eventlet==0.25.2
